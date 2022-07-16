@@ -18,9 +18,9 @@ def read_docker_secret(secret):
 POCKET_ACCESS_TOKEN = read_docker_secret("POCKET_ACCESS_TOKEN")
 POCKET_CONSUMER_KEY = read_docker_secret("POCKET_CONSUMER_KEY")
 
-NATS_SUBJECT = os.getenv('NATS_SUBJECT', "4pocket")
+NATS_SUBJECT = os.getenv('NATS_SUBJECT', "match-url")
 NATS_SERVER = os.getenv('NATS_SERVER', "localhost:4222")
-NATS_QUEUE = os.getenv('NATS_QUEUE', "NATS-RPLY-22")
+NATS_QUEUE = os.getenv('NATS_QUEUE', "match-urls")
 
 
 print("-------------- Config variables -----------------")

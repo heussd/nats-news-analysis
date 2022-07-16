@@ -1,21 +1,22 @@
 import asyncio
-import nats
-from nats.errors import ConnectionClosedError, TimeoutError, NoServersError
 
-import Config
+from nats.aio.msg import Msg
+
 import Pocket
+from NATS import NATS
 
 
-async def main():
-    nc = await nats.connect("nats://" + Config.NATS_SERVER)
+async def add_to_pocket(msg: Msg):
+    payload = msg.data.decode()
+    print(f"Received a message on '{msg.subject} {msg.reply}': {payload}")
+    Pocket.add_to_pocket(payload, "JUPP")
+    await msg.ack()
 
-    async def add_to_pocket(msg):
-        payload = msg.data.decode()
-        print(f"Received a message on '{msg.subject} {msg.reply}': {payload}")
-        Pocket.add_to_pocket(payload, "JUPP")
-        await nc.publish(msg.reply, b'Item added to Pocket')
 
-    await nc.subscribe(Config.NATS_SUBJECT, Config.NATS_QUEUE, add_to_pocket)
+async def listen():
+    nats = NATS()
+    await nats.connect()
+    await nats.subscribe(callback=add_to_pocket)
 
     while True:
         await asyncio.sleep(10)
@@ -23,4 +24,4 @@ async def main():
 
 if __name__ == '__main__':
     print("Starting NATS-Pocket-Integration...")
-    asyncio.run(main())
+    asyncio.run(listen())
