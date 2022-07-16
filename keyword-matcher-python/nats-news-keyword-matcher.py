@@ -3,8 +3,8 @@ import asyncio
 from nats.aio.msg import Msg
 
 import Config
-import Keywords
 import RSSFullText
+from Keywords import Keywords
 from NATS import NATS
 
 nats = NATS()
@@ -13,7 +13,10 @@ nats = NATS()
 async def callback(message: Msg):
     print(message)
     news = RSSFullText.retrieve_full_text(message.data.decode())
-    match = Keywords.match(news)
+
+    keywords = Keywords()
+    keywords.init()
+    match = keywords.match(news)
 
     if match is not None:
         print("Found relevant match", match)
@@ -33,5 +36,3 @@ async def listen():
 if __name__ == '__main__':
     print("Starting NATS-News-Keyword-Matcher...")
     asyncio.run(listen())
-
-
