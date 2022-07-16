@@ -17,7 +17,7 @@ class NATS:
         self.js = nc.jetstream()
 
         await self.js.add_stream(
-            name=Config.NATS_SUBJECT + "s",
+            name=Config.NATS_QUEUE,
             subjects=[Config.NATS_SUBJECT],
             config=StreamConfig(
                 retention=RetentionPolicy.WORK_QUEUE,
@@ -30,7 +30,7 @@ class NATS:
             Config.NATS_SUBJECT,
             message.encode(),
             headers={
-                NATS.HEADER_MESSAGE_ID: message
+                NATS.HEADER_MESSAGE_ID: "rss-article-url-feed-" + message
             }
         )
         print(ack)
