@@ -3,7 +3,7 @@ import os
 NATS_SUBJECT = os.getenv('NATS_SUBJECT', "article-url")
 NATS_SERVER = os.getenv('NATS_SERVER', "localhost:4222")
 RELOAD_EVERY_S = os.getenv('RELOAD_EVERY_S', 3*60*60)
-URLS = os.getenv('URLS', "/urls.txt")
+URLS = os.getenv('URLS', "urls.txt")
 
 
 print("-------------- Config variables -----------------")
