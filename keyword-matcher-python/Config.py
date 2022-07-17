@@ -6,8 +6,10 @@ NATS_QUEUE_INPUT = os.getenv('NATS_QUEUE_INPUT', "article-urls")
 NATS_QUEUE_OUTPUT = os.getenv('NATS_QUEUE_OUTPUT', "match-urls")
 NATS_SERVER = os.getenv('NATS_SERVER', "localhost:4222")
 FULLTEXTRSS_SERVER = os.getenv('FULLTEXTRSS_SERVER', "http://localhost:80")
-KEYWORDS_FILE = os.getenv('KEYWORDS_FILE', "keywords.txt")
 RELOAD_EVERY_S = os.getenv('RELOAD_EVERY_S', 10)
+
+KEYWORDS_FILE = os.getenv('KEYWORDS_FILE', "keywords.txt")
+MAX_ARTICLE_LENGTH = os.getenv('MAX_ARTICLE_LENGTH', 6000)
 URLS = os.getenv('URLS', "urls.txt")
 
 

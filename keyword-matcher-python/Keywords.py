@@ -24,7 +24,7 @@ class Keywords:
                         try:
                             expr = re.compile(one_line)
                             self.keywords.append(expr)
-                            print("Added keyword id", (len(self.keywords) - 1), "expr", expr.pattern)
+                            #print("Added keyword id", (len(self.keywords) - 1), "expr", expr.pattern)
                         except re.error:
                             raise Exception("Error parsing keyword regexp: " + one_line)
 
@@ -36,23 +36,29 @@ class Keywords:
 
         assert len(self.keywords) > 0
 
-        print("Keywords initialized")
+        print(len(self.keywords), "keywords initialized")
 
     def match(self, news: RSSFullTextResponse) -> Match:
-        news_text = news.excerpt + news.content
+        news_text = ""
+        news_text = news_text + " {}".format(news.excerpt)
+        news_text = news_text + " {}".format(news.title)
+        news_text = news_text + " {}".format(news.content)
         news_text = clean_content(news_text)
-        news_text = news.title + "\n\n" + news_text
         news_text = news_text.lower()
-        # news_text = news_text[:MAX_ARTICLE_LENGTH]
+        news_text = news_text[:Config.MAX_ARTICLE_LENGTH]
 
+        print("Analysing news...")
         for i in range(len(self.keywords)):
+            if i % 25. == 0:
+                print("... keywords >= " + str(i))
+
             keyword = self.keywords[i]
 
             if keyword.search(news_text):
                 m = Match(kw_id=str(i),
                           kw_pattern=keyword.pattern,
                           news=news)
-                print(m)
+                print("Match", m)
                 return m
 
         return None
