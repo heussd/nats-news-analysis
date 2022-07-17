@@ -19,6 +19,9 @@ async def feed_urls():
             for link in RSS.retrieve_article_links(feedurl):
                 link = link.strip()
 
+                if link == "":
+                    continue
+
                 print("Publishing", link)
                 await nats.publish(link)
 
