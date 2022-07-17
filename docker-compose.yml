@@ -6,7 +6,7 @@ services:
       - "8222:8222" # 8222 is an HTTP management port for information reporting.
       - "6222:6222" # 6222 is a routing port for clustering.
     volumes:
-      - "nats-persistence:/data"
+      - "./nats-persistence/:/data"
     command: "--jetstream --http_port 8222 --store_dir /data"
 
   fullfeedrss:
@@ -55,7 +55,6 @@ services:
 
 volumes:
   rss-cache:
-  nats-persistence:
 
 
 secrets:
