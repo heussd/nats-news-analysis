@@ -7,7 +7,7 @@ services:
       - "6222:6222" # 6222 is a routing port for clustering.
     volumes:
       - "nats-persistence:/data"
-    command: "--jetstream --store_dir=/data"
+    command: "--jetstream --http_port 8222 --store_dir /data"
 
   fullfeedrss:
     image: "heussd/fivefilters-full-text-rss:latest"
@@ -42,7 +42,7 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
     deploy:
-      replicas: 10
+      replicas: 14
 
   nats-pocket-integration:
     image: ghcr.io/heussd/nats-pocket-integration
