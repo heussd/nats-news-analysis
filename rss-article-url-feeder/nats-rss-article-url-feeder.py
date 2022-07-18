@@ -22,8 +22,12 @@ async def feed_urls():
                 if link == "":
                     continue
 
-                print("Publishing", link)
-                await nats.publish(link)
+                # Workaround for https://github.com/nats-io/nats-server/issues/3272
+                # Use KV storage for remembering what we already put on the queue
+                if not await nats.has_KV(link):
+                    print("Publishing", link)
+                    await nats.publish(link)
+                    await nats.put_KV(link, "1")
 
     print("Waiting", Config.RELOAD_EVERY_S, "seconds to reload...")
     await asyncio.sleep(Config.RELOAD_EVERY_S)

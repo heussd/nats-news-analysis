@@ -1,5 +1,5 @@
 import nats
-from nats.js.api import StreamConfig, RetentionPolicy
+from nats.js.api import StreamConfig, RetentionPolicy, StorageType
 
 import Config
 
@@ -11,16 +11,19 @@ class NATS:
 
     def __init__(self):
         self.js = None
+        self.kv = None
 
     async def connect(self):
         nc = await nats.connect("nats://" + Config.NATS_SERVER)
         self.js = nc.jetstream()
+        self.kv = await self.js.create_key_value(bucket='article-urls-proposed')
 
         await self.js.add_stream(
             name=Config.NATS_QUEUE,
             subjects=[Config.NATS_SUBJECT],
             config=StreamConfig(
                 retention=RetentionPolicy.WORK_QUEUE,
+                storage=StorageType.FILE,
                 duplicate_window=NATS.DUPLICATION_WINDOW_1_MONTH
             )
         )
@@ -34,3 +37,13 @@ class NATS:
             }
         )
         print(ack)
+
+    async def has_KV(self, key):
+        try:
+            await self.kv.get(key)
+            return True
+        except nats.js.errors.NotFoundError:
+            return False
+
+    async def put_KV(self, key, value: str):
+        await self.kv.put(key, value.encode())
