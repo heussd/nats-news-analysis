@@ -23,7 +23,7 @@ async def feed_urls():
                     continue
 
                 # Workaround for https://github.com/nats-io/nats-server/issues/3272
-                # Use KV storage for remembering what we already put on the queue
+                # Use KV storage for remembering what we already put on the queue.
                 if not await nats.has_KV(link):
                     print("Publishing", link)
                     await nats.publish(link)

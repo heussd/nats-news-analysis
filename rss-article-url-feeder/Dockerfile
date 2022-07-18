@@ -9,4 +9,4 @@ RUN   pip install -r requirements.txt
 COPY  *.py ./
 COPY  urls.txt /
 
-CMD [ "python3", "-u", "nats-rss-article-url-feeder.py"]
+CMD [ "python3", "-u", "main.py"]
