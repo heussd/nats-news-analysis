@@ -1,7 +1,7 @@
 FROM  python:slim-buster
 RUN   apt-get update && \
       apt-get -y install --no-install-recommends \
-      libxml2-dev libxslt1-dev zlib1g-dev python3-pip python-dev\
+      build-essential libxml2-dev libxslt1-dev zlib1g-dev python3-pip python-dev\
       && rm -rf /var/lib/apt/lists/*
 WORKDIR /
 COPY    requirements.txt ./
