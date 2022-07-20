@@ -1,20 +1,14 @@
-from xml.etree import ElementTree
-import requests
+import feedparser
 
 
 def retrieve_article_links(feedurl):
     article_urls = []
 
     try:
-        page = requests.get(feedurl)
-        assert page.ok
+        feed = feedparser.parse(feedurl)
 
-        tree = ElementTree.fromstring(page.content)
-        links = tree.findall('.//item/link')
-
-        for link in links:
-            article_urls.append(link.text)
-            article_urls.append(link.tail)
+        for entry in feed['entries']:
+            article_urls.append(entry.link)
 
     except Exception as e:
         print("Retrieval failed:", feedurl)
@@ -26,10 +20,15 @@ def retrieve_article_links(feedurl):
 
     if len(article_urls) == 0:
         print("WARNING: No article URLs found in feed", feedurl)
+        if (feedurl.startswith("http://")):
+            print("Retrying with https")
+            return retrieve_article_links(feedurl.replace("http:", "https:"))
 
     return article_urls
 
 
 if __name__ == "__main__":
-    print(retrieve_article_links('https://hnrss.org/newest?count=50'))
+    print(retrieve_article_links('https://www.hessenschau.de/index.rss'))
+    print(retrieve_article_links('https://katapult-magazin.de/feed/rss'))
+    'https://waylonwalker.com/rss.xml'
 
