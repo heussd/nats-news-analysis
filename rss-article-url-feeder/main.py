@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 import Config
 import RSS
@@ -34,6 +35,8 @@ async def feed_urls():
 
 
 if __name__ == '__main__':
+    print("Allow NATS-Server to come up...")
+    time.sleep(15)
     print("Starting NATS-RSS-Article-URL-Feeder...")
 
     while True:
