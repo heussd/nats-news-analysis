@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 from nats.aio.msg import Msg
 
@@ -23,5 +24,7 @@ async def listen():
 
 
 if __name__ == '__main__':
+    print("Allow NATS-Server to come up...")
+    time.sleep(15)
     print("Starting NATS-Pocket-Integration...")
     asyncio.run(listen())

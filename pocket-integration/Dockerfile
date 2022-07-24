@@ -4,4 +4,4 @@ COPY    requirements.txt ./
 RUN   pip install -r requirements.txt
 COPY  *.py ./
 
-CMD [ "python3", "-u", "nats-pocket-integration.py"]
+CMD [ "python3", "-u", "main.py"]
