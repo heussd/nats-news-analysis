@@ -30,6 +30,7 @@ services:
       - "URLS=/urls.txt"
     deploy:
       replicas: 2
+    restart: always
 
   nats-news-keyword-matcher:
     image: ghrc.io/heussd/nats-news-keyword-matcher:latest
