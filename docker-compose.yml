@@ -28,8 +28,6 @@ services:
     environment:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
-    deploy:
-      replicas: 2
     restart: always
 
   nats-news-keyword-matcher:
@@ -44,8 +42,6 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
-    deploy:
-      replicas: 14
 
   nats-pocket-integration:
     image: ghcr.io/heussd/nats-pocket-integration:main
