@@ -1,5 +1,6 @@
 import asyncio
 import time
+import random
 
 import Config
 import RSS
@@ -13,6 +14,8 @@ async def feed_urls():
 
     with open(Config.URLS) as f:
         feedurls = f.readlines()
+
+        random.shuffle(feedurls)
 
         for feedurl in feedurls:
             feedurl = feedurl.strip()
