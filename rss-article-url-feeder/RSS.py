@@ -1,5 +1,9 @@
 import feedparser
+import ssl
 
+# https://stackoverflow.com/questions/28282797/feedparser-parse-ssl-certificate-verify-failed
+if hasattr(ssl, '_create_unverified_context'):
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 def retrieve_article_links(feedurl):
     article_urls = []
@@ -28,7 +32,7 @@ def retrieve_article_links(feedurl):
 
 
 if __name__ == "__main__":
-    print(retrieve_article_links('https://www.hessenschau.de/index.rss'))
-    print(retrieve_article_links('https://katapult-magazin.de/feed/rss'))
-    'https://waylonwalker.com/rss.xml'
+    #print(retrieve_article_links('https://www.hessenschau.de/index.rss'))
+    #print(retrieve_article_links('https://katapult-magazin.de/feed/rss'))
+    print(retrieve_article_links('https://www.tomshardware.com/feeds/all'))
 
