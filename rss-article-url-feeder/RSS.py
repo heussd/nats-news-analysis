@@ -5,6 +5,7 @@ import ssl
 if hasattr(ssl, '_create_unverified_context'):
     ssl._create_default_https_context = ssl._create_unverified_context
 
+
 def retrieve_article_links(feedurl):
     article_urls = []
 
@@ -22,9 +23,11 @@ def retrieve_article_links(feedurl):
     article_urls = list(filter(lambda item: item.startswith('http'), article_urls))
     article_urls = [i.strip() for i in article_urls]
 
+    print("Found", len(article_urls), "articles")
+
     if len(article_urls) == 0:
         print("WARNING: No article URLs found in feed", feedurl)
-        if (feedurl.startswith("http://")):
+        if feedurl.startswith("http://"):
             print("Retrying with https")
             return retrieve_article_links(feedurl.replace("http:", "https:"))
 
