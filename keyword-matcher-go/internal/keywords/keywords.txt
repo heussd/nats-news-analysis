@@ -1,0 +1,5 @@
+(?i)\b(Apple|peach)
+(?i)banana Split
+(?i)(delicious).*(pie|recipes)
+(?i)ice \w* cream
+# Should not match
