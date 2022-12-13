@@ -1,8 +1,8 @@
 version: "3.7"
 
 services:
-  nats-news-keyword-matcher:
-    image: ghrc.io/heussd/nats-news-keyword-matcher
+  nats-news-keyword-matcher-python:
+    image: ghrc.io/heussd/nats-news-keyword-matcher-python
     build: .
     volumes:
       - type: bind

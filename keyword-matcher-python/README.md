@@ -1,1 +1,1 @@
-# news-keyword-matcher
+# nats-news-keyword-matcher-python
