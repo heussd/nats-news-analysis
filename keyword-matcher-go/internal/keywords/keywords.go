@@ -3,19 +3,18 @@ package keywords
 import (
 	"bufio"
 	"fmt"
-	"github.com/heussd/nats-news-keyword-matcher.go/internal/utils"
+	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"os"
 	"regexp"
 	"strings"
 )
 
-var keywordsFile = utils.GetEnv("KEYWORDS_FILE", "keywords.txt")
 var keywords []regexp.Regexp = parseKeywordsFile()
 
 func parseKeywordsFile() []regexp.Regexp {
 	var keywords []regexp.Regexp
 
-	readFile, err := os.Open(keywordsFile)
+	readFile, err := os.Open(config.KeywordsFile)
 	if err != nil {
 		panic(err)
 	}

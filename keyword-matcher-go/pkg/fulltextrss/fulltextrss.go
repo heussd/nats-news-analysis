@@ -2,13 +2,11 @@ package fulltextrss
 
 import (
 	"encoding/json"
-	"github.com/heussd/nats-news-keyword-matcher.go/internal/utils"
+	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"io"
 	"net/http"
 	"strconv"
 )
-
-var server = utils.GetEnv("FULLTEXTRSS_SERVER", "http://localhost:80")
 
 type RSSFullTextResponse struct {
 	Title              string `json:"title"`
@@ -36,7 +34,7 @@ type RSSFullTextResponse struct {
 
 func RetrieveFullText(url string) RSSFullTextResponse {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", server+"/extract.php", nil)
+	req, err := http.NewRequest("GET", config.FullTextRssServer+"/extract.php", nil)
 	if err != nil {
 		panic(err)
 	}
