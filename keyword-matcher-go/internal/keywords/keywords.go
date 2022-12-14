@@ -40,8 +40,6 @@ func parseKeywordsFile() []regexp.Regexp {
 }
 
 func Match(s string) bool {
-	fmt.Println("Analysing news...")
-
 	for i, v := range keywords {
 		if i%25 == 0 {
 			fmt.Printf(" ... keywords >= %d\n", i)

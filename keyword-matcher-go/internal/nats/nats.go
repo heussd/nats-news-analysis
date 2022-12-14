@@ -3,6 +3,7 @@ package nats
 import (
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"github.com/nats-io/nats.go"
+	"sync"
 	"time"
 )
 
@@ -19,7 +20,11 @@ func init() {
 }
 
 func WithArticleUrls(f func(m *nats.Msg)) {
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	js.Subscribe(config.NatsInputQueueSubject, f)
+	wg.Done()
+	wg.Wait()
 }
 
 func PushToPocket(s string) {
