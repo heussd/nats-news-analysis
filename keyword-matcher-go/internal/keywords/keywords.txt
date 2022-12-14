@@ -3,3 +3,6 @@
 (?i)(delicious).*(pie|recipes)
 (?i)ice \w* cream
 # Should not match
+(?i)mis\w*pi
+\bas\b
+All\Wof\Wus

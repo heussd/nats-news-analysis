@@ -19,4 +19,15 @@ func TestLocalIT(t *testing.T) {
 	assert.Equal(t, false, Match("ICE and also some cream"))
 	assert.Equal(t, false, Match("whipped cream"))
 	assert.Equal(t, false, Match("# Should not match"))
+
+	assert.Equal(t, false, Match("Mister Cool"))
+	assert.Equal(t, false, Match("Miss Gray"))
+	assert.Equal(t, true, Match("Mississippi"))
+
+	assert.Equal(t, false, Match("Bias"))
+	assert.Equal(t, true, Match("as"))
+
+	assert.Equal(t, true, Match("All of us"))
+	assert.Equal(t, true, Match("All-of-us"))
+	assert.Equal(t, false, Match("Alloofuus"))
 }
