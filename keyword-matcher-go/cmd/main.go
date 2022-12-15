@@ -10,13 +10,14 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 )
 
 func main() {
 
 	queue.WithArticleUrls(func(m *nats.Msg) {
 		var url = string(m.Data)
-		fmt.Printf("Processing %s...\n", url)
+		var startTime = time.Now()
 		var fulltext = fulltextrss.RetrieveFullText(url)
 
 		var text = strings.Join([]string{
@@ -25,8 +26,13 @@ func main() {
 			fulltext.Content,
 		}, " ")
 
-		if keywords.Match(text) {
+		var match = keywords.Match(text)
+		var elapsedTime = time.Since(startTime)
+		if match {
 			queue.PushToPocket(url)
+			fmt.Printf("✅ %s (analysis took %s)\n", url, elapsedTime)
+		} else {
+			fmt.Printf("❌ %s (analysis took %s)\n", url, elapsedTime)
 		}
 	})
 	fmt.Println("\n🚀Keyword Matcher is ready to perform 🚀")

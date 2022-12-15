@@ -40,15 +40,10 @@ func parseKeywordsFile() []regexp.Regexp {
 }
 
 func Match(s string) bool {
-	for i, v := range keywords {
-		if i%25 == 0 {
-			fmt.Printf(" ... keywords >= %d\n", i)
-		}
+	for _, v := range keywords {
 		if v.MatchString(s) {
-			fmt.Println(" ✅ Match")
 			return true
 		}
 	}
-	fmt.Println(" ❌ No match")
 	return false
 }

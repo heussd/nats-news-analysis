@@ -6,7 +6,7 @@ services:
     build: .
     volumes:
       - type: bind
-        source: ./keywords.txt
+        source: ./internal/keywords/keywords.txt
         target: /keywords.txt
         consistency: cached
         read_only: true
