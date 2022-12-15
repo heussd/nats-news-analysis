@@ -7,22 +7,39 @@ import (
 	"time"
 )
 
-var nc, _ = nats.Connect(config.NatsServer)
-var js, _ = nc.JetStream(nats.PublishAsyncMaxPending(256))
+var nc *nats.Conn
+var js nats.JetStreamContext
 
 func init() {
+	var err error
+	nc, err = nats.Connect(config.NatsServer)
+	if err != nil {
+		panic(err)
+	}
+
+	js, err = nc.JetStream(nats.PublishAsyncMaxPending(256))
+	if err != nil {
+		panic(err)
+	}
+
 	js.AddStream(&nats.StreamConfig{
 		Name:       config.NatsOutputQueueName,
 		Subjects:   []string{config.NatsOutputQueueSubject},
 		Retention:  nats.WorkQueuePolicy,
 		Duplicates: time.Hour * 24 * 30,
 	})
+
 }
 
 func WithArticleUrls(f func(m *nats.Msg)) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-	js.Subscribe(config.NatsInputQueueSubject, f)
+
+	_, err := js.QueueSubscribe(config.NatsInputQueueSubject, config.NatsInputQueueName, f)
+	if err != nil {
+		panic(err)
+	}
+
 	wg.Done()
 	wg.Wait()
 }
