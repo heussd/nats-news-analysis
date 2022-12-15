@@ -1,6 +1,6 @@
 services:
   nats-server:
-    image: docker.io/nats:2.8
+    image: docker.io/nats:2.9
     ports:
       - "4222:4222" # 4222 is for clients.
       - "8222:8222" # 8222 is an HTTP management port for information reporting.
@@ -30,8 +30,8 @@ services:
       - "URLS=/urls.txt"
     restart: always
 
-  nats-news-keyword-matcher:
-    image: ghrc.io/heussd/nats-news-keyword-matcher:latest
+  nats-news-keyword-matcher-go:
+    image: ghrc.io/heussd/nats-news-keyword-matcher-go:main
     volumes:
       - type: bind
         source: ./keywords.txt

@@ -6,16 +6,16 @@ SCALE_POWER_SAFE  = $$(($(CPU_CORES)*30/100))
 all:
 	@echo "Scaling to $(SCALE_PERFORMANCE) (performance)"
 	docker-compose up -d \
-		--scale nats-news-keyword-matcher=$(SCALE_PERFORMANCE) \
+		--scale nats-news-keyword-matcher-go=$(SCALE_PERFORMANCE) \
 		--scale nats-rss-article-url-feeder=3
 
 stop:
 	docker-compose down
 watch:
-	watch nats stream info article-urls
+	watch nats stream ls
 retrieve-only:
 	docker-compose up -d \
-		--scale nats-news-keyword-matcher=0 \
+		--scale nats-news-keyword-matcher-go=0 \
 		--scale fullfeedrss=0 \
 		--scale nats-pocket-integration=0 \
 		--scale nats-rss-article-url-feeder=3
@@ -23,5 +23,5 @@ retrieve-only:
 power-safe-mode:
 	@echo "Scaling to $(SCALE_POWER_SAFE) (power safe)"
 	docker-compose up -d \
-		--scale nats-news-keyword-matcher=$(SCALE_POWER_SAFE)
+		--scale nats-news-keyword-matcher-go=$(SCALE_POWER_SAFE)
 
