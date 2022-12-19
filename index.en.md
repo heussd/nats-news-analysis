@@ -11,14 +11,14 @@ Systematically retrieves online news articles, enriches them, scans them for key
 
 ## Involved services
 
-All services are orchestrated and scaled with [docker-compose](docker-compose.yml).
+All services are orchestrated and scaled with `docker-compose.yml`.
 
 ### Own services
 
-- [rss-article-url-feeder](rss-article-url-feeder) - Feeds news articles from RSS feeds.
-- [keyword-matcher-python](keyword-matcher-python) - Matches against keywords list
-- [keyword-matcher-go](keyword-matcher-go) - Matches against keywords list (Go reimplementation)
-- [pocket-integration](pocket-integration) - Feeds matches into getpocket.com.
+- `rss-article-url-feeder` - Feeds news articles from RSS feeds.
+- `keyword-matcher-python` - Matches against keywords list
+- `keyword-matcher-go` - Matches against keywords list (Go re-implementation)
+- `pocket-integration` - Feeds matches into getpocket.com.
 - [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
 
 

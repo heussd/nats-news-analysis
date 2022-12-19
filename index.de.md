@@ -10,16 +10,16 @@ Fragt systematisch Online-Nachrichtenartikel ab, reichert sie an, sucht nach Sch
 
 ## Beteiligte Services
 
-Alle Services sind durch [docker-compose](docker-compose.yml) orchestriert und skaliert.
+Alle Services sind durch `docker-compose.yml` orchestriert und skaliert.
 
 ### Eigene Services
 
 <!--PYSPELL-BEGIN-IGNORE-->
 
-- [rss-article-url-feeder](rss-article-url-feeder) - Speist Nachrichtenartikel aus RSS-Feeds ein.
-- [keyword-matcher-python](keyword-matcher-python) - Gleicht gegen eine Keyword-Liste ab.
-- [keyword-matcher-go](keyword-matcher-go) - Gleicht gegen eine Keyword-Liste ab. (Go Reimplementierung)
-- [pocket-integration](pocket-integration) - Speist Treffer in getpocket.com ein.
+- `rss-article-url-feeder` - Speist Nachrichtenartikel aus RSS-Feeds ein.
+- `keyword-matcher-python` - Gleicht gegen eine Keyword-Liste ab.
+- `keyword-matcher-go` - Gleicht gegen eine Keyword-Liste ab. (Go Reimplementierung)
+- `pocket-integration` - Speist Treffer in getpocket.com ein.
 - [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Ruft den Volltext von Nachrichten ab.
 
 
