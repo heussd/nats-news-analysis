@@ -1,4 +1,5 @@
 import asyncio
+import json
 import time
 
 from nats.aio.msg import Msg
@@ -8,9 +9,16 @@ from NATS import NATS
 
 
 async def add_to_pocket(msg: Msg):
-    payload = msg.data.decode()
-    print(f"Received a message on '{msg.subject} {msg.reply}': {payload}")
-    Pocket.add_to_pocket(payload, "JUPP")
+    url, matchingtext = "", "UNDEFINED"
+    try:
+        payload = json.loads(msg.data.decode())
+        matchingtext = payload["MatchingText"]
+        url = payload["Url"]
+    except json.decoder.JSONDecodeError:
+        url = msg.data.decode()
+
+    print(f"Received a message on '{msg.subject} {msg.reply}': {url} {matchingtext}")
+    Pocket.add_to_pocket(url, matchingtext)
     await msg.ack()
 
 
@@ -25,6 +33,6 @@ async def listen():
 
 if __name__ == '__main__':
     print("Allow NATS-Server to come up...")
-    time.sleep(15)
+    time.sleep(10)
     print("Starting NATS-Pocket-Integration...")
     asyncio.run(listen())
