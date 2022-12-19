@@ -15,9 +15,10 @@ All services are orchestrated and scaled with [docker-compose](docker-compose.ym
 
 ### Own services
 
-- [ghcr.io/heussd/nats-rss-article-url-feeder](https://github.com/heussd/nats-rss-article-url-feeder/pkgs/container/nats-rss-article-url-feeder) - Feeds news articles from RSS feeds.
-- [ghcr.io/heussd/nats-news-keyword-matcher](https://github.com/heussd/nats-news-keyword-matcher/pkgs/container/nats-news-keyword-matcher) - Matches against keywords list.
-- [ghcr.io/heussd/nats-pocket-integration](https://github.com/heussd/nats-pocket-integration/pkgs/container/nats-pocket-integration) - Feeds matches into getpocket.com.
+- [rss-article-url-feeder](rss-article-url-feeder) - Feeds news articles from RSS feeds.
+- [keyword-matcher-python](keyword-matcher-python) - Matches against keywords list
+- [keyword-matcher-go](keyword-matcher-go) - Matches against keywords list (Go reimplementation)
+- [pocket-integration](pocket-integration) - Feeds matches into getpocket.com.
 - [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
 
 

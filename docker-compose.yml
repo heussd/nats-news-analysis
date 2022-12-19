@@ -17,8 +17,9 @@ services:
     volumes:
       - "rss-cache:/var/www/html/cache"
 
-  nats-rss-article-url-feeder:
-    image: ghcr.io/heussd/nats-rss-article-url-feeder:main
+  rss-article-url-feeder:
+    image: rss-article-url-feeder
+    build: rss-article-url-feeder/.
     volumes:
       - type: bind
         source: ./urls.txt
@@ -30,8 +31,23 @@ services:
       - "URLS=/urls.txt"
     restart: always
 
-  nats-news-keyword-matcher-go:
-    image: ghrc.io/heussd/nats-news-keyword-matcher-go:main
+  keyword-matcher-go:
+    image: keyword-matcher-go
+    build: keyword-matcher-go/.
+    volumes:
+      - type: bind
+        source: ./keywords.txt
+        target: /keywords.txt
+        consistency: cached
+        read_only: true
+    environment:
+      - "KEYWORDS_FILE:/keywords.txt"
+      - "NATS_SERVER=nats-server:4222"
+      - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
+  
+  keyword-matcher-python:
+    image: keyword-matcher-python
+    build: keyword-matcher-python/.
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -43,8 +59,9 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
 
-  nats-pocket-integration:
-    image: ghcr.io/heussd/nats-pocket-integration:main
+  pocket-integration:
+    image: pocket-integration
+    build: pocket-integration/.
     environment:
       - "NATS_SERVER=nats-server:4222"
     secrets:
