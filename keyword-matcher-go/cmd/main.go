@@ -26,10 +26,10 @@ func main() {
 			fulltext.Content,
 		}, " ")
 
-		var match, _ = keywords.Match(text)
+		var match, matchingText = keywords.Match(text)
 		var elapsedTime = time.Since(startTime)
 		if match {
-			queue.PushToPocket(url)
+			queue.PushToPocket(url, matchingText)
 			fmt.Printf("✅ %s (analysis took %s)\n", url, elapsedTime)
 		} else {
 			fmt.Printf("❌ %s (analysis took %s)\n", url, elapsedTime)

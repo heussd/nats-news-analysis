@@ -1,6 +1,8 @@
 package nats
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"github.com/nats-io/nats.go"
 	"sync"
@@ -44,14 +46,26 @@ func WithArticleUrls(f func(m *nats.Msg)) {
 	wg.Wait()
 }
 
-func PushToPocket(s string) {
+type match struct {
+	MatchingText string `json:matchingText`
+	Url          string `json:url`
+}
+
+func PushToPocket(url string, matchingText string) {
 	headers := nats.Header{}
-	headers.Add(nats.MsgIdHdr, "news-keyword-matcher"+s)
+	headers.Add(nats.MsgIdHdr, "news-keyword-matcher"+url)
+
+	data, _ := json.Marshal(&match{
+		Url:          url,
+		MatchingText: matchingText,
+	})
+
+	fmt.Println(data)
 
 	msg := &nats.Msg{
 		Header:  headers,
 		Subject: config.NatsOutputQueueSubject,
-		Data:    []byte(s),
+		Data:    data,
 	}
 
 	js.PublishMsg(msg)

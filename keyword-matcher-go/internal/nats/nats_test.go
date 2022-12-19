@@ -7,11 +7,14 @@ import (
 	"testing"
 )
 
-func TestLocalMakeIT(t *testing.T) {
+func TestPull(t *testing.T) {
 	WithArticleUrls(func(m *nats.Msg) {
 		data := string(m.Data)
 		fmt.Printf("Received from %s\n", data)
 		assert.Equal(t, "https://www.tagesschau.de/", data)
 	})
-	PushToPocket("HELLO WORL2D2")
+}
+
+func TestPush(t *testing.T) {
+	PushToPocket("https://www.tagesschau.de/2", "TEXT")
 }

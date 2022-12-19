@@ -37,6 +37,6 @@ func TestLocalIT(t *testing.T) {
 }
 
 func TestLocalIT2(t *testing.T) {
-	_, text := Match("Peach")
-	assert.Equal(t, "(?i)\\b(Apple|peach)", text)
+	_, text := Match("A little Peach a day")
+	assert.Equal(t, "Peach", text)
 }

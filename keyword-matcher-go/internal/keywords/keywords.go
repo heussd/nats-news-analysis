@@ -49,8 +49,9 @@ func parseKeywordsFile() []KeywordEntry {
 
 func Match(s string) (bool, string) {
 	for _, v := range keywords {
+
 		if v.regexp.MatchString(s) {
-			return true, v.text
+			return true, v.regexp.FindString(s)
 		}
 	}
 	return false, ""
