@@ -9,10 +9,15 @@ import (
 	"strings"
 )
 
-var keywords []regexp.Regexp = parseKeywordsFile()
+type KeywordEntry struct {
+	regexp regexp.Regexp
+	text   string
+}
 
-func parseKeywordsFile() []regexp.Regexp {
-	var keywords []regexp.Regexp
+var keywords []KeywordEntry = parseKeywordsFile()
+
+func parseKeywordsFile() []KeywordEntry {
+	var keywords []KeywordEntry
 
 	readFile, err := os.Open(config.KeywordsFile)
 	if err != nil {
@@ -33,17 +38,20 @@ func parseKeywordsFile() []regexp.Regexp {
 		fmt.Printf("Parsing \"%s\" as regex\n", text)
 
 		var regex = regexp.MustCompile(text)
-		keywords = append(keywords, *regex)
+		keywords = append(keywords, KeywordEntry{
+			regexp: *regex,
+			text:   text,
+		})
 	}
 
 	return keywords
 }
 
-func Match(s string) bool {
+func Match(s string) (bool, string) {
 	for _, v := range keywords {
-		if v.MatchString(s) {
-			return true
+		if v.regexp.MatchString(s) {
+			return true, v.text
 		}
 	}
-	return false
+	return false, ""
 }

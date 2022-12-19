@@ -26,7 +26,7 @@ func main() {
 			fulltext.Content,
 		}, " ")
 
-		var match = keywords.Match(text)
+		var match, _ = keywords.Match(text)
 		var elapsedTime = time.Since(startTime)
 		if match {
 			queue.PushToPocket(url)
