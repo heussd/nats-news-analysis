@@ -14,6 +14,12 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"
+      - "14268:14268"
+      - "16686:16686"
   nats-server:
     image: nats:2.8
     ports:
