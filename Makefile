@@ -13,6 +13,13 @@ all:
 build:
 	docker-compose build
 
+logs:
+	docker-compose logs -f keyword-matcher-go
+
+logs-feeder:
+	docker-compose logs -f rss-article-url-feeder
+
+
 stop:
 	docker-compose down
 
