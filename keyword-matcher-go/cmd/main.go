@@ -35,7 +35,7 @@ func main() {
 			fmt.Printf("❌ %s (analysis took %s)\n", url, elapsedTime)
 		}
 	})
-	fmt.Println("\n🚀Keyword Matcher is ready to perform 🚀")
+	fmt.Println("🚀Keyword Matcher is ready to perform 🚀")
 
 	// https://callistaenterprise.se/blogg/teknik/2019/10/05/go-worker-cancellation/
 	termChan := make(chan os.Signal)

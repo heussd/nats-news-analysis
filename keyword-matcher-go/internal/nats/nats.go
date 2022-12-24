@@ -13,12 +13,18 @@ var nc *nats.Conn
 var js nats.JetStreamContext
 
 func init() {
-	var err error
-	nc, err = nats.Connect(config.NatsServer)
-	if err != nil {
-		panic(err)
+
+	for nc == nil {
+		var err error
+		nc, err = nats.Connect(config.NatsServer)
+		if err != nil {
+			fmt.Printf("Could not connect to NATS server at %s, because: ", config.NatsServer)
+			fmt.Println(err)
+			time.Sleep(5 * time.Second)
+		}
 	}
 
+	var err error
 	js, err = nc.JetStream(nats.PublishAsyncMaxPending(256))
 	if err != nil {
 		panic(err)
@@ -37,9 +43,16 @@ func WithArticleUrls(f func(m *nats.Msg)) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	_, err := js.QueueSubscribe(config.NatsInputQueueSubject, config.NatsInputQueueName, f)
-	if err != nil {
-		panic(err)
+	var subscribed = false
+	for !subscribed {
+		_, err := js.QueueSubscribe(config.NatsInputQueueSubject, config.NatsInputQueueName, f)
+		if err != nil {
+			fmt.Printf("Cannot subscribe queue %s subject %s, because: ", config.NatsInputQueueName, config.NatsInputQueueSubject)
+			fmt.Println(err)
+			time.Sleep(5 * time.Second)
+		} else {
+			subscribed = true
+		}
 	}
 
 	wg.Done()
