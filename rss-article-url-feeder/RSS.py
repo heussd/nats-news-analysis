@@ -1,4 +1,7 @@
+from io import BytesIO
+
 import feedparser
+import requests
 import ssl
 
 # https://stackoverflow.com/questions/28282797/feedparser-parse-ssl-certificate-verify-failed
@@ -10,7 +13,13 @@ def retrieve_article_links(feedurl):
     article_urls = []
 
     try:
-        feed = feedparser.parse(feedurl)
+        # https://stackoverflow.com/questions/9772691/feedparser-with-timeout
+        resp = requests.get(feedurl,
+                            verify=False,
+                            timeout=10.0
+                            )
+        content = BytesIO(resp.content)
+        feed = feedparser.parse(content)
 
         for entry in feed['entries']:
             article_urls.append(entry.link)
@@ -35,7 +44,6 @@ def retrieve_article_links(feedurl):
 
 
 if __name__ == "__main__":
-    #print(retrieve_article_links('https://www.hessenschau.de/index.rss'))
-    #print(retrieve_article_links('https://katapult-magazin.de/feed/rss'))
+    print(retrieve_article_links('https://www.hessenschau.de/index.rss'))
+    print(retrieve_article_links('https://katapult-magazin.de/feed/rss'))
     print(retrieve_article_links('https://www.tomshardware.com/feeds/all'))
-
