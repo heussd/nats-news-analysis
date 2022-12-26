@@ -14,11 +14,9 @@ type KeywordEntry struct {
 	text   string
 }
 
-var keywords []KeywordEntry = parseKeywordsFile()
+var keywords []KeywordEntry
 
-func parseKeywordsFile() []KeywordEntry {
-	var keywords []KeywordEntry
-
+func init() {
 	readFile, err := os.Open(config.KeywordsFile)
 	if err != nil {
 		panic(err)
@@ -44,7 +42,10 @@ func parseKeywordsFile() []KeywordEntry {
 		})
 	}
 
-	return keywords
+	if len(keywords) == 0 {
+		fmt.Println("Error: No keywords found")
+		os.Exit(1)
+	}
 }
 
 func Match(s string) (bool, string) {

@@ -73,8 +73,6 @@ func PushToPocket(url string, matchingText string) {
 		MatchingText: matchingText,
 	})
 
-	fmt.Println(data)
-
 	msg := &nats.Msg{
 		Header:  headers,
 		Subject: config.NatsOutputQueueSubject,
