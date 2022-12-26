@@ -1,0 +1,18 @@
+version: '3.2'
+services:
+  fullfeedrss:
+    scale: 2
+    image: "heussd/fivefilters-full-text-rss:latest"
+    environment:
+      # Leave empty to disable admin section
+      - FTR_ADMIN_PASSWORD=
+
+  loadbalancer:
+      image: nginx
+      volumes:
+        - "./nginx.conf:/etc/nginx/nginx.conf"
+      depends_on:
+          - fullfeedrss
+      ports:
+          - '80:80'
+

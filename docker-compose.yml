@@ -1,5 +1,6 @@
 services:
   nats-server:
+    scale: 1
     image: docker.io/nats:2.9
     ports:
       - "4222:4222" # 4222 is for clients.
@@ -10,14 +11,26 @@ services:
     command: "--jetstream --http_port 8222 --store_dir /data"
 
   fullfeedrss:
+    scale: 2
     image: "heussd/fivefilters-full-text-rss:latest"
     environment:
       # Leave empty to disable admin section
       - FTR_ADMIN_PASSWORD=
     volumes:
       - "rss-cache:/var/www/html/cache"
+    
+  loadbalancer:
+    scale: 1
+    image: nginx
+    volumes:
+      - "./loadbalancer/nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+        - fullfeedrss
+    ports:
+        - '80:80'
 
   rss-article-url-feeder:
+    scale: 2
     image: rss-article-url-feeder
     build: rss-article-url-feeder/.
     volumes:
@@ -32,6 +45,7 @@ services:
     restart: always
 
   keyword-matcher-go:
+    scale: 5
     image: keyword-matcher-go
     build: keyword-matcher-go/.
     volumes:
@@ -43,9 +57,10 @@ services:
     environment:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
-      - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
+      - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
   
   keyword-matcher-python:
+    scale: 0
     image: keyword-matcher-python
     build: keyword-matcher-python/.
     volumes:
@@ -60,6 +75,7 @@ services:
       - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
 
   pocket-integration:
+    scale: 1
     image: pocket-integration
     build: pocket-integration/.
     environment:

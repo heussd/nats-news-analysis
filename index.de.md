@@ -8,6 +8,9 @@ Fragt systematisch Online-Nachrichtenartikel ab, reichert sie an, sucht nach Sch
 
 ![](architecture.drawio.svg)
 
+[In Draw.io öffnen](https://app.diagrams.net/?url=https://raw.githubusercontent.com/heussd/nats-news-analysis/main/architecture.drawio)
+
+
 ## Beteiligte Services
 
 Alle Services sind durch `docker-compose.yml` orchestriert und skaliert.
@@ -26,6 +29,7 @@ Alle Services sind durch `docker-compose.yml` orchestriert und skaliert.
 ### Drittanbieter Services
 
 - [docker.io/nats](https://hub.docker.com/_/nats) - Event Queue, key-value store und Deduplikation.
+- [NGINX](https://www.nginx.com/) - Einfacher Load-Balancer / Reverse Proxy
 - [getpocket.com API](https://getpocket.com/developer/) - Online Service zum "Später lesen".
 
 <!--PYSPELL-END-IGNORE-->

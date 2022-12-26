@@ -6,14 +6,17 @@ summary: Automatically find relevant news from the Web.
 Systematically retrieves online news articles, enriches them, scans them for keywords and sends hits to [GetPocket.com](https://getpocket.com/). All analysis components are loosely-coupled with [NATS.io](https://nats.io/) work queues, which also allows scaling single-core-CPU-intensive components easily.
 
 
+
 ![](architecture.drawio.svg)
+
+[Open In Draw.io](https://app.diagrams.net/?url=https://raw.githubusercontent.com/heussd/nats-news-analysis/main/architecture.drawio)
 
 
 ## Involved services
 
 All services are orchestrated and scaled with `docker-compose.yml`.
 
-### Own services
+### Custom services
 
 - `rss-article-url-feeder` - Feeds news articles from RSS feeds.
 - `keyword-matcher-python` - Matches against keywords list
@@ -25,6 +28,7 @@ All services are orchestrated and scaled with `docker-compose.yml`.
 ### Third party services
 
 - [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
+- [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy
 - [getpocket.com API](https://getpocket.com/developer/) - "Read it later" online service.
 
 ## Message queue for scaling

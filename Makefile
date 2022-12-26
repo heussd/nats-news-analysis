@@ -3,7 +3,7 @@ CPU_CORES         = $(shell nproc)
 SCALE_PERFORMANCE = $$(($(CPU_CORES)*70/100))
 SCALE_POWER_SAFE  = $$(($(CPU_CORES)*30/100))
 
-run: performance-mode
+run: start
 	bash -c "trap 'trap - SIGINT SIGTERM ERR; $(MAKE) stop; exit 1' SIGINT SIGTERM ERR; $(MAKE) logs"
 
 
@@ -27,11 +27,9 @@ watch:
 	watch nats stream ls
 
 
-power-safe-mode:
-	@echo "Scaling to $(SCALE_POWER_SAFE) (power safe)"
-	docker-compose up -d \
-		--scale keyword-matcher-go=$(SCALE_POWER_SAFE) \
-		--scale keyword-matcher-python=0 \
+start:
+	docker-compose up -d 
+
 
 performance-mode:
 	@echo "Scaling to $(SCALE_PERFORMANCE) (performance)"
