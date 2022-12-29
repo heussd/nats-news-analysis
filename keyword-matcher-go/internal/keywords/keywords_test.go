@@ -34,9 +34,15 @@ func TestLocalIT(t *testing.T) {
 	assert.Equal(t, true, first(Match("All of us")))
 	assert.Equal(t, true, first(Match("All-of-us")))
 	assert.Equal(t, false, first(Match("Alloofuus")))
+
+	assert.Equal(t, false, first(Match("I drink cold beer. I eat hot pizza.")))
+	assert.Equal(t, true, first(Match("I ate cold yummy pizza yesterday afternoon. I drink hot chocolate.")))
 }
 
-func TestLocalIT2(t *testing.T) {
+func TestStringMatchReturn(t *testing.T) {
 	_, text := Match("A little Peach a day")
 	assert.Equal(t, "Peach", text)
+
+	_, text = Match("I like to eat delicious original organic-sourced pineapple pies twice a day")
+	assert.Equal(t, "delicious original organic-sourced pineapple pie", text)
 }

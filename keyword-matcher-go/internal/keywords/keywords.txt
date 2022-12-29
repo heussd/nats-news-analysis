@@ -6,3 +6,4 @@
 (?i)mis\w*pi
 \bas\b
 All\Wof\Wus
+(?i)(cold)[^.!?]*(pizza)
