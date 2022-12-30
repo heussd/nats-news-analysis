@@ -31,8 +31,7 @@ services:
 
   rss-article-url-feeder-go:
     scale: 1
-    image: rss-article-url-feeder-go
-    build: rss-article-url-feeder-go/.
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go
     volumes:
       - type: bind
         source: ./urls.txt
@@ -46,8 +45,7 @@ services:
 
   rss-article-url-feeder-python:
     scale: 0
-    image: rss-article-url-feeder-python
-    build: rss-article-url-feeder-python/.
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python
     volumes:
       - type: bind
         source: ./urls.txt
@@ -61,8 +59,7 @@ services:
 
   keyword-matcher-go:
     scale: 5
-    image: keyword-matcher-go
-    build: keyword-matcher-go/.
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -76,8 +73,7 @@ services:
   
   keyword-matcher-python:
     scale: 0
-    image: keyword-matcher-python
-    build: keyword-matcher-python/.
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -91,8 +87,7 @@ services:
 
   pocket-integration:
     scale: 1
-    image: pocket-integration
-    build: pocket-integration/.
+    image: ghcr.io/heussd/nats-news-analysis/pocket-integration
     environment:
       - "NATS_SERVER=nats-server:4222"
     secrets:
