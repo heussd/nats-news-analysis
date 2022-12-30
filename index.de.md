@@ -19,10 +19,11 @@ Alle Services sind durch `docker-compose.yml` orchestriert und skaliert.
 
 <!--PYSPELL-BEGIN-IGNORE-->
 
-- `rss-article-url-feeder` - Speist Nachrichtenartikel aus RSS-Feeds ein.
-- `keyword-matcher-python` - Gleicht gegen eine Keyword-Liste ab.
-- `keyword-matcher-go` - Gleicht gegen eine Keyword-Liste ab. (Go Reimplementierung)
-- `pocket-integration` - Speist Treffer in getpocket.com ein.
+- [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python) - Speist Nachrichtenartikel aus RSS-Feeds ein.
+- [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - Speist Nachrichtenartikel aus RSS-Feeds ein (Go re-implementation).
+- [ghcr.io/heussd/nats-news-analysis/keyword-matcher-python](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-python) - Gleicht gegen eine Keyword-Liste ab.
+- [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - Gleicht gegen eine Keyword-Liste ab (Go Reimplementierung).
+- [ghcr.io/heussd/nats-news-analysis/pocket-integration](https://ghcr.io/heussd/nats-news-analysis/pocket-integration) - Speist Treffer in getpocket.com ein.
 - [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Ruft den Volltext von Nachrichten ab.
 
 

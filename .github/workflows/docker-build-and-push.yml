@@ -4,7 +4,12 @@ on:
   push:
     branches:
       - 'main'
-
+    paths-ignore:
+      - '**.md'
+      - 'docker-compose.yml'
+      - 'architecture.drawio'
+      - 'architecture.drawio.svg'
+      - '**.png'
 jobs:
   bake:
     runs-on: ubuntu-latest
