@@ -15,7 +15,7 @@ def retrieve_article_links(feedurl):
     try:
         # https://stackoverflow.com/questions/9772691/feedparser-with-timeout
         resp = requests.get(feedurl,
-                            verify=False,
+                            verify=True,
                             timeout=10.0
                             )
         content = BytesIO(resp.content)
