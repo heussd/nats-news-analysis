@@ -29,10 +29,25 @@ services:
     ports:
         - '80:80'
 
-  rss-article-url-feeder:
-    scale: 2
-    image: rss-article-url-feeder
-    build: rss-article-url-feeder/.
+  rss-article-url-feeder-go:
+    scale: 1
+    image: rss-article-url-feeder-go
+    build: rss-article-url-feeder-go/.
+    volumes:
+      - type: bind
+        source: ./urls.txt
+        target: /urls.txt
+        consistency: cached
+        read_only: true
+    environment:
+      - "NATS_SERVER=nats-server:4222"
+      - "URLS=/urls.txt"
+    restart: always
+
+  rss-article-url-feeder-python:
+    scale: 0
+    image: rss-article-url-feeder-python
+    build: rss-article-url-feeder-python/.
     volumes:
       - type: bind
         source: ./urls.txt
