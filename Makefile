@@ -8,7 +8,7 @@ run: start
 
 
 build:
-	docker buildx bake --file docker-compose.build.yml
+	docker-compose -f docker-compose.build.yml build
 
 
 logs:
