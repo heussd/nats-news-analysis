@@ -5,6 +5,7 @@ import (
 	"github.com/SlyMarbo/rss"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // https://stackoverflow.com//questions/72387330/how-to-extract-base-url-using-golang#answer-72387843
@@ -29,6 +30,9 @@ func ArticleUrls(feedUrl string) []string {
 		return articleUrls
 	}
 
+	// Force feed update
+	feed.Refresh = time.Now()
+
 	err = feed.Update()
 	if err != nil {
 		fmt.Printf("⚠️ %s not updated: %s\n", feedUrl, err)
@@ -48,5 +52,7 @@ func ArticleUrls(feedUrl string) []string {
 	if len(articleUrls) == 0 {
 		fmt.Printf("❌ No articles found in %s\n", feedUrl)
 	}
+
+	fmt.Printf("✅ %3d items found in %s\n", len(articleUrls), feedUrl)
 	return articleUrls
 }
