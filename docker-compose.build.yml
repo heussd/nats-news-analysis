@@ -1,6 +1,6 @@
 services:   
   rss-article-url-feeder-go:
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     build:
       context: rss-article-url-feeder-go/.
       x-bake:
