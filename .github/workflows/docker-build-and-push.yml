@@ -36,5 +36,7 @@ jobs:
         name: Build and push
         uses: docker/bake-action@v2
         with:
-          files: "docker-compose.build.yml"
+          files: |
+            "docker-compose.build.yml",
+            "docker-compose.override.yml"
           push: true

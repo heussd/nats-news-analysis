@@ -5,6 +5,8 @@ services:
     image: docker.io/nginx
   fullfeedrss:
     image: docker.io/heussd/fivefilters-full-text-rss:latest
+  rss-article-url-feeder-go:
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
   rss-article-url-feeder-go-1st:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
   rss-article-url-feeder-go-2nd:
