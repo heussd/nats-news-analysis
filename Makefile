@@ -8,15 +8,14 @@ run: start
 
 
 build:
-	docker-compose -f docker-compose.build.yml build
+	docker-compose \
+		-f docker-compose.build.yml \
+		-f docker-compose.override.yml \
+		build
 
 
 logs:
 	docker-compose logs -f keyword-matcher-go
-
-
-logs-feeder:
-	docker-compose logs -f rss-article-url-feeder
 
 
 stop:

@@ -1,0 +1,19 @@
+services:
+  nats-server:
+    image: docker.io/nats:2.9
+  loadbalancer:
+    image: docker.io/nginx
+  fullfeedrss:
+    image: docker.io/heussd/fivefilters-full-text-rss:latest
+  rss-article-url-feeder-go-1st:
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
+  rss-article-url-feeder-go-2nd:
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
+  rss-article-url-feeder-python:
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
+  keyword-matcher-python:
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
+  keyword-matcher-go:
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
+  pocket-integration:
+    image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest

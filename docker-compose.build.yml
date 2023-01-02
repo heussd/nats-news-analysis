@@ -1,6 +1,5 @@
 services:   
   rss-article-url-feeder-go:
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     build:
       context: rss-article-url-feeder-go/.
       x-bake:
@@ -9,18 +8,16 @@ services:
           - linux/arm64
 
   rss-article-url-feeder-python:
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python
     build:
       context: rss-article-url-feeder-python/.
       cache_from:
-        - ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python
+        - ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
       x-bake:
         platforms:
           - linux/amd64
           - linux/arm64
 
   keyword-matcher-go:
-    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go
     build:
       context: keyword-matcher-go/.
       x-bake:
@@ -29,22 +26,20 @@ services:
           - linux/arm64
   
   keyword-matcher-python:
-    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python
     build:
       context: keyword-matcher-python/.
       cache_from:
-        - ghcr.io/heussd/nats-news-analysis/keyword-matcher-python
+        - ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
       x-bake:
         platforms:
           - linux/amd64
           - linux/arm64
 
   pocket-integration:
-    image: ghcr.io/heussd/nats-news-analysis/pocket-integration
     build:
       context: pocket-integration/.
       cache_from:
-        - ghcr.io/heussd/nats-news-analysis/pocket-integration
+        - ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
       x-bake:
         platforms:
           - linux/amd64

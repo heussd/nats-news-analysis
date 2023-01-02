@@ -1,7 +1,6 @@
 services:
   nats-server:
     scale: 1
-    image: docker.io/nats:2.9
     ports:
       - "4222:4222" # 4222 is for clients.
       - "8222:8222" # 8222 is an HTTP management port for information reporting.
@@ -12,7 +11,6 @@ services:
 
   fullfeedrss:
     scale: 2
-    image: "heussd/fivefilters-full-text-rss:latest"
     environment:
       # Leave empty to disable admin section
       - FTR_ADMIN_PASSWORD=
@@ -21,7 +19,6 @@ services:
     
   loadbalancer:
     scale: 1
-    image: nginx
     volumes:
       - "./loadbalancer/nginx.conf:/etc/nginx/nginx.conf"
     depends_on:
@@ -31,7 +28,6 @@ services:
 
   rss-article-url-feeder-go-1st:
     scale: 1
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     volumes:
       - type: bind
         source: ./urls-primary.txt
@@ -46,7 +42,6 @@ services:
 
   rss-article-url-feeder-go-2nd:
     scale: 1
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     volumes:
       - type: bind
         source: ./urls-secondary.txt
@@ -60,7 +55,6 @@ services:
 
   rss-article-url-feeder-python:
     scale: 0
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python
     volumes:
       - type: bind
         source: ./urls.txt
@@ -74,7 +68,6 @@ services:
 
   keyword-matcher-go:
     scale: 5
-    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -88,7 +81,6 @@ services:
   
   keyword-matcher-python:
     scale: 0
-    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -102,7 +94,6 @@ services:
 
   pocket-integration:
     scale: 1
-    image: ghcr.io/heussd/nats-news-analysis/pocket-integration
     environment:
       - "NATS_SERVER=nats-server:4222"
     secrets:
