@@ -3,14 +3,14 @@ package keywords
 import (
 	"bufio"
 	"fmt"
+	"github.com/dlclark/regexp2"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"os"
-	"regexp"
 	"strings"
 )
 
 type KeywordEntry struct {
-	regexp regexp.Regexp
+	regexp regexp2.Regexp
 	text   string
 }
 
@@ -35,7 +35,7 @@ func init() {
 
 		fmt.Printf("Parsing \"%s\" as regex\n", text)
 
-		var regex = regexp.MustCompile(text)
+		var regex = regexp2.MustCompile(text, 0)
 		keywords = append(keywords, KeywordEntry{
 			regexp: *regex,
 			text:   text,
@@ -50,9 +50,14 @@ func init() {
 
 func Match(s string) (bool, string) {
 	for _, v := range keywords {
-
-		if v.regexp.MatchString(s) {
-			return true, v.regexp.FindString(s)
+		var matches []string
+		m, _ := v.regexp.FindStringMatch(s)
+		for m != nil {
+			matches = append(matches, m.String())
+			m, _ = v.regexp.FindNextMatch(m)
+		}
+		if len(matches) > 0 {
+			return true, strings.Join(matches, "")
 		}
 	}
 	return false, ""

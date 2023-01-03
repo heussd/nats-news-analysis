@@ -37,6 +37,14 @@ func TestLocalIT(t *testing.T) {
 
 	assert.Equal(t, false, first(Match("I drink cold beer. I eat hot pizza.")))
 	assert.Equal(t, true, first(Match("I ate cold yummy pizza yesterday afternoon. I drink hot chocolate.")))
+
+	assert.Equal(t, true, first(Match("The king lived long and prosper.")))
+	assert.Equal(t, true, first(Match("Long live the king.")))
+	assert.Equal(t, true, first(Match("The queen lived long and prosper.")))
+	assert.Equal(t, true, first(Match("Long live the queen.")))
+
+	assert.Equal(t, false, first(Match("Like king and queen.")))
+
 }
 
 func TestStringMatchReturn(t *testing.T) {
@@ -45,4 +53,8 @@ func TestStringMatchReturn(t *testing.T) {
 
 	_, text = Match("I like to eat delicious original organic-sourced pineapple pies twice a day")
 	assert.Equal(t, "delicious original organic-sourced pineapple pie", text)
+
+	_, text = Match("Long live the queen. Something else")
+	assert.Equal(t, "Long live the queen. Something else", text)
+
 }

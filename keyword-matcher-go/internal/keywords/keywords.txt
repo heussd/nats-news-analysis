@@ -7,3 +7,5 @@
 \bas\b
 All\Wof\Wus
 (?i)(cold)[^.!?]*(pizza)
+# Positive lookahead 🤘
+(?i)^(?=.*(king|queen))(?=.*long).*
