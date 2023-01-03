@@ -6,6 +6,7 @@ services:
   fullfeedrss:
     image: docker.io/heussd/fivefilters-full-text-rss:latest
   rss-article-url-feeder-go:
+    scale: 0
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
   rss-article-url-feeder-go-1st:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
