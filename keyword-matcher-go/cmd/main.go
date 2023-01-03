@@ -5,6 +5,7 @@ import (
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/keywords"
 	queue "github.com/heussd/nats-news-keyword-matcher.go/internal/nats"
 	"github.com/heussd/nats-news-keyword-matcher.go/pkg/fulltextrss"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/nats-io/nats.go"
 	"os"
 	"os/signal"
@@ -13,18 +14,25 @@ import (
 	"time"
 )
 
+var bm = bluemonday.StrictPolicy()
+
+func prepareAndCleanString(fulltext fulltextrss.RSSFullTextResponse) string {
+	var text = strings.Join([]string{
+		fulltext.Title,
+		fulltext.Excerpt,
+		bm.Sanitize(fulltext.Content),
+	}, " ")
+
+	return text
+}
+
 func main() {
 
 	queue.WithArticleUrls(func(m *nats.Msg) {
 		var url = string(m.Data)
 		var startTime = time.Now()
 		var fulltext = fulltextrss.RetrieveFullText(url)
-
-		var text = strings.Join([]string{
-			fulltext.Title,
-			fulltext.Excerpt,
-			fulltext.Content,
-		}, " ")
+		var text = prepareAndCleanString(fulltext)
 
 		var match, matchingText = keywords.Match(text)
 		var elapsedTime = time.Since(startTime)
