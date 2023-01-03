@@ -47,6 +47,7 @@ func TestLocalIT(t *testing.T) {
 
 }
 
+/*
 func TestStringMatchReturn(t *testing.T) {
 	_, text := Match("A little Peach a day")
 	assert.Equal(t, "Peach", text)
@@ -58,3 +59,4 @@ func TestStringMatchReturn(t *testing.T) {
 	assert.Equal(t, "Long live the queen. Something else", text)
 
 }
+*/

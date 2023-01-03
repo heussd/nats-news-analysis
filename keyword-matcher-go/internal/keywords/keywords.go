@@ -50,14 +50,8 @@ func init() {
 
 func Match(s string) (bool, string) {
 	for _, v := range keywords {
-		var matches []string
-		m, _ := v.regexp.FindStringMatch(s)
-		for m != nil {
-			matches = append(matches, m.String())
-			m, _ = v.regexp.FindNextMatch(m)
-		}
-		if len(matches) > 0 {
-			return true, strings.Join(matches, "")
+		if match, _ := v.regexp.MatchString(s); match {
+			return true, ""
 		}
 	}
 	return false, ""
