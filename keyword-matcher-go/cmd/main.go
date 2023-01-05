@@ -34,10 +34,10 @@ func main() {
 		var fulltext = fulltextrss.RetrieveFullText(url)
 		var text = prepareAndCleanString(fulltext)
 
-		var match, matchingText = keywords.Match(text)
+		var match, regexId = keywords.Match(text)
 		var elapsedTime = time.Since(startTime)
 		if match {
-			queue.PushToPocket(url, matchingText)
+			queue.PushToPocket(url, regexId)
 			fmt.Printf("✅ %s (analysis took %s)\n", url, elapsedTime)
 		} else {
 			fmt.Printf("❌ %s (analysis took %s)\n", url, elapsedTime)

@@ -47,16 +47,19 @@ func TestLocalIT(t *testing.T) {
 
 }
 
-/*
-func TestStringMatchReturn(t *testing.T) {
-	_, text := Match("A little Peach a day")
-	assert.Equal(t, "Peach", text)
-
-	_, text = Match("I like to eat delicious original organic-sourced pineapple pies twice a day")
-	assert.Equal(t, "delicious original organic-sourced pineapple pie", text)
-
-	_, text = Match("Long live the queen. Something else")
-	assert.Equal(t, "Long live the queen. Something else", text)
+func TestHumanReadable(t *testing.T) {
+	assert.Equal(t, "delicious pie recipes", humanReadable("(?i)(delicious).*(pie|recipes)"))
 
 }
-*/
+
+func TestStringMatchReturn(t *testing.T) {
+	_, text := Match("A little Peach a day")
+	assert.Equal(t, "Apple peach", text)
+
+	_, text = Match("I like to eat delicious original organic-sourced pineapple pies twice a day")
+	assert.Equal(t, "delicious pie recipes", text)
+
+	_, text = Match("Long live the queen. Something else")
+	assert.Equal(t, "king queen long", text)
+
+}
