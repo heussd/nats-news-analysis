@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
+	"math/rand"
 	"os"
 	"strings"
 )
@@ -15,6 +16,8 @@ func init() {
 }
 
 func ReloadUrls() {
+	Urls = nil
+
 	readFile, err := os.Open(config.UrlsFile)
 	if err != nil {
 		panic(err)
@@ -34,6 +37,12 @@ func ReloadUrls() {
 		fmt.Printf("Adding URL \"%s\"\n", text)
 
 		Urls = append(Urls, text)
+	}
+
+	// Randomize URLs
+	for i := range Urls {
+		j := rand.Intn(i + 1)
+		Urls[i], Urls[j] = Urls[j], Urls[i]
 	}
 
 	if len(Urls) == 0 {
