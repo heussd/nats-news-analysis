@@ -67,7 +67,7 @@ services:
     restart: always
 
   keyword-matcher-go:
-    scale: 5
+    scale: 8
     volumes:
       - type: bind
         source: ./keywords.txt
