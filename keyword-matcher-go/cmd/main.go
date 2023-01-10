@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/keywords"
+	"github.com/heussd/nats-news-keyword-matcher.go/internal/model"
 	queue "github.com/heussd/nats-news-keyword-matcher.go/internal/nats"
 	"github.com/heussd/nats-news-keyword-matcher.go/pkg/fulltextrss"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/nats-io/nats.go"
 	"os"
 	"os/signal"
 	"strings"
@@ -37,7 +37,10 @@ func main() {
 		var match, regexId = keywords.Match(text)
 		var elapsedTime = time.Since(startTime)
 		if match {
-			queue.PushToPocket(url, regexId)
+			queue.PushToPocket(model.Match{
+				Url:     url,
+				RegexId: regexId,
+			})
 			fmt.Printf("✅ %s (analysis took %s)\n", url, elapsedTime)
 		} else {
 			fmt.Printf("❌ %s (analysis took %s)\n", url, elapsedTime)

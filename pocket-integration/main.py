@@ -9,16 +9,17 @@ from NATS import NATS
 
 
 async def add_to_pocket(msg: Msg):
-    url, matchingtext = "", "UNDEFINED"
+    url, regexid = "", "UNDEFINED"
     try:
         payload = json.loads(msg.data.decode())
-        matchingtext = payload["MatchingText"]
+        print("Received this payload: ", payload)
+        regexid = payload["RegexId"]
         url = payload["Url"]
     except json.decoder.JSONDecodeError:
         url = msg.data.decode()
 
-    print(f"Received a message on '{msg.subject} {msg.reply}': {url} {matchingtext}")
-    Pocket.add_to_pocket(url, matchingtext)
+    print(f"Received a message on '{msg.subject} {msg.reply}': {url} {regexid}")
+    Pocket.add_to_pocket(url, regexid)
     await msg.ack()
 
 

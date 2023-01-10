@@ -2,7 +2,7 @@ package nats
 
 import (
 	"fmt"
-	"github.com/nats-io/nats.go"
+	"github.com/heussd/nats-news-keyword-matcher.go/internal/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -16,5 +16,5 @@ func TestPull(t *testing.T) {
 }
 
 func TestPush(t *testing.T) {
-	PushToPocket("https://www.tagesschau.de/2", "TEXT")
+	PushToPocket(model.Match{Url: "https://www.tagesschau.de/2", RegexId: "TEXT"})
 }

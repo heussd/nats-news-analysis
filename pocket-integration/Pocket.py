@@ -9,12 +9,13 @@ pocket = Pocket(
 
 def add_to_pocket(url, tags):
     try:
-        response = pocket.add(url=url, tags=([tags] + ["spoiler"]))
+        # Limit tags to 30 characters
+        response = pocket.add(url=url, tags=([tags[0:29]] + ["spoiler"]))
         item_id = response.get("item").get("item_id")
         assert item_id is not None
         print("Added to Pocket", url)
-    except PocketException:
-        print("ERROR: Could not add", url)
+    except PocketException as e:
+        raise("Could not add", e)
 
 
 if __name__ == "__main__":
