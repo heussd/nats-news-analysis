@@ -7,6 +7,7 @@ import (
 	queue "github.com/heussd/nats-news-keyword-matcher.go/internal/nats"
 	"github.com/heussd/nats-news-keyword-matcher.go/pkg/fulltextrss"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/nats-io/nats.go"
 	"os"
 	"os/signal"
 	"strings"
