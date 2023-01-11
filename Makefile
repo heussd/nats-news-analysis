@@ -3,6 +3,13 @@ CPU_CORES         = $(shell nproc)
 SCALE_PERFORMANCE = $$(($(CPU_CORES)*70/100))
 SCALE_POWER_SAFE  = $$(($(CPU_CORES)*30/100))
 
+
+kitty:
+	kitty @launch --location split --cwd=current make watch
+	kitty @launch --location split --cwd=current ctop 
+	$(MAKE) run
+
+
 run: start
 	bash -c "trap 'trap - SIGINT SIGTERM ERR; $(MAKE) stop; exit 1' SIGINT SIGTERM ERR; $(MAKE) logs"
 
