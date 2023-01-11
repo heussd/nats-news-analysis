@@ -3,6 +3,7 @@ package nats
 import (
 	"fmt"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/model"
+	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -2,10 +2,11 @@ package fulltextrss
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"io"
 	"net/http"
-	"strconv"
+	"time"
 )
 
 type RSSFullTextResponse struct {
@@ -32,6 +33,18 @@ type RSSFullTextResponse struct {
 	Content            string `json:"content"`
 }
 
+func init() {
+	for status := 0; status != 200; {
+		resp, _ := http.Get(config.FullTextRssServer)
+		if resp == nil {
+			fmt.Printf("Waiting for %s to come up...\n", config.FullTextRssServer)
+			time.Sleep(2 * time.Second)
+		} else {
+			status = resp.StatusCode
+		}
+	}
+}
+
 func RetrieveFullText(url string) RSSFullTextResponse {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", config.FullTextRssServer+"/extract.php", nil)
@@ -43,15 +56,20 @@ func RetrieveFullText(url string) RSSFullTextResponse {
 	q.Add("url", url)
 	req.URL.RawQuery = q.Encode()
 
-	response, error := client.Do(req)
-	if error != nil {
-		panic(error)
+	var response *http.Response
+	for {
+		var err error
+		if response, err = client.Do(req); err != nil {
+			panic(err)
+		}
+		if status := response.StatusCode; status != 200 {
+			fmt.Printf("HTTP request failed with status code %d, retrying...\n", status)
+			time.Sleep(2 * time.Second)
+		} else {
+			break
+		}
 	}
 	defer response.Body.Close()
-
-	if status := response.StatusCode; status != 200 {
-		panic("HTTP request failed with status code " + strconv.Itoa(status))
-	}
 
 	body, _ := io.ReadAll(response.Body)
 

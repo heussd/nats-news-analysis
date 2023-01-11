@@ -38,6 +38,8 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
     restart: always
+
+
   rss-article-url-feeder-go-2nd:
     scale: 1
     volumes:
@@ -50,6 +52,7 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
     restart: always
+
   rss-article-url-feeder-python:
     scale: 0
     volumes:
@@ -75,6 +78,7 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
+  
   keyword-matcher-python:
     scale: 0
     volumes:
