@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   rss-article-url-feeder-go:
-    image: ghrc.io/heussd/rss-article-url-feeder-go:main
+    image: ghcr.io/heussd/rss-article-url-feeder-go:main
     build: .
     volumes:
       - type: bind
