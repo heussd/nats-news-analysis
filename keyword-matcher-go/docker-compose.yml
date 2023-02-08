@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   nats-news-keyword-matcher-go:
-    image: ghrc.io/heussd/nats-news-keyword-matcher-go:main
+    image: ghcr.io/heussd/nats-news-keyword-matcher-go:main
     build: .
     volumes:
       - type: bind
