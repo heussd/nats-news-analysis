@@ -78,6 +78,18 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
+    logging:
+      driver: loki # Requires loki docker driver
+      options:
+        loki-url: "http://host.docker.internal:3100/loki/api/v1/push" # <-- MUST be this address and NOT service name, otherwise Docker crashes
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/local-config.yaml:/etc/loki/local-config.yaml
   
   keyword-matcher-python:
     scale: 0
@@ -100,6 +112,16 @@ services:
       - POCKET_ACCESS_TOKEN
       - POCKET_CONSUMER_KEY
 
+  grafana:
+    image: grafana/grafana:master
+    volumes:
+      - ./grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - "3000:3000"
 
 volumes:
   rss-cache:

@@ -43,3 +43,8 @@ performance-mode:
 		--scale keyword-matcher-go=$(SCALE_PERFORMANCE) \
 		--scale keyword-matcher-python=0 \
 		--scale rss-article-url-feeder=3
+
+
+# https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/
+install-loki-driver:
+	docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
