@@ -301,7 +301,7 @@
       "pluginVersion": "8.2.0-33922pre",
       "targets": [
         {
-          "expr": "count by (match, service, container_name) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
+          "expr": "count by (service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
           "refId": "A"
         }
       ],
