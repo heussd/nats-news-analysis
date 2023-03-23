@@ -1,13 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/keywords"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/model"
 	queue "github.com/heussd/nats-news-keyword-matcher.go/internal/nats"
 	"github.com/heussd/nats-news-keyword-matcher.go/pkg/fulltextrss"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/nats-io/nats.go"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
 	"strings"
@@ -28,6 +29,13 @@ func prepareAndCleanString(fulltext fulltextrss.RSSFullTextResponse) string {
 }
 
 func main() {
+	// UNIX Time is faster and smaller than most timestamps
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	var hostname, _ = os.LookupEnv("host")
+	var logger = log.With().
+		Str("service", "keyword-matcher-go").
+		Str("container", hostname).
+		Logger()
 
 	queue.WithArticleUrls(func(m *nats.Msg) {
 		var url = string(m.Data)
@@ -42,12 +50,17 @@ func main() {
 				Url:     url,
 				RegexId: regexId,
 			})
-			fmt.Printf("✅ %s (analysis took %s)\n", url, elapsedTime)
-		} else {
-			fmt.Printf("❌ %s (analysis took %s)\n", url, elapsedTime)
 		}
+
+		logger.Info().
+			Bool("match", match).
+			Str("regex-id", regexId).
+			Str("url", url).
+			Int64("keyword-matching-duration-ms", elapsedTime.Milliseconds()).
+			Msg("Analysis complete")
+
 	})
-	fmt.Println("🚀Keyword Matcher is ready to perform 🚀")
+	logger.Info().Msg("🚀Keyword Matcher is ready to perform 🚀")
 
 	// https://callistaenterprise.se/blogg/teknik/2019/10/05/go-worker-cancellation/
 	termChan := make(chan os.Signal)
