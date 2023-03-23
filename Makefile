@@ -4,14 +4,9 @@ SCALE_PERFORMANCE = $$(($(CPU_CORES)*70/100))
 SCALE_POWER_SAFE  = $$(($(CPU_CORES)*30/100))
 
 
-kitty:
-	kitty @launch --location split --cwd=current make watch
-	kitty @launch --location split --cwd=current ctop 
-	$(MAKE) run
-
-
-run: start
-	bash -c "trap 'trap - SIGINT SIGTERM ERR; $(MAKE) stop; exit 1' SIGINT SIGTERM ERR; $(MAKE) logs"
+start:
+	docker-compose up -d 
+	open http://localhost:3000/d/QyuE2Of4z/news-analysis?orgId=1&refresh=5s
 
 
 build:
@@ -33,16 +28,10 @@ watch:
 	watch nats stream ls
 
 
-start:
-	docker-compose up -d 
 
-
-performance-mode:
-	@echo "Scaling to $(SCALE_PERFORMANCE) (performance)"
+scale:
 	docker-compose up -d \
-		--scale keyword-matcher-go=$(SCALE_PERFORMANCE) \
-		--scale keyword-matcher-python=0 \
-		--scale rss-article-url-feeder=3
+		--scale keyword-matcher-go=12
 
 
 # https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/

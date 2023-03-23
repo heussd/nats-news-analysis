@@ -1,6 +1,6 @@
 services:
   nats-server:
-    scale: 1
+    image: docker.io/nats:2.9
     ports:
       - "4222:4222" # 4222 is for clients.
       - "8222:8222" # 8222 is an HTTP management port for information reporting.
@@ -10,6 +10,7 @@ services:
     command: "--jetstream --http_port 8222 --store_dir /data"
 
   fullfeedrss:
+    image: docker.io/heussd/fivefilters-full-text-rss:latest
     scale: 2
     environment:
       # Leave empty to disable admin section
@@ -18,7 +19,7 @@ services:
       - "rss-cache:/var/www/html/cache"
     
   loadbalancer:
-    scale: 1
+    image: docker.io/nginx
     volumes:
       - "./loadbalancer/nginx.conf:/etc/nginx/nginx.conf"
     depends_on:
@@ -27,7 +28,7 @@ services:
         - '80:80'
 
   rss-article-url-feeder-go-1st:
-    scale: 1
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     volumes:
       - type: bind
         source: ./urls-primary.txt
@@ -41,7 +42,7 @@ services:
 
 
   rss-article-url-feeder-go-2nd:
-    scale: 1
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     volumes:
       - type: bind
         source: ./urls-secondary.txt
@@ -54,6 +55,7 @@ services:
     restart: always
 
   rss-article-url-feeder-python:
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
     scale: 0
     volumes:
       - type: bind
@@ -67,7 +69,7 @@ services:
     restart: always
 
   keyword-matcher-go:
-    scale: 8
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -92,6 +94,7 @@ services:
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
   
   keyword-matcher-python:
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
     scale: 0
     volumes:
       - type: bind
@@ -105,7 +108,7 @@ services:
       - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
 
   pocket-integration:
-    scale: 1
+    image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
     environment:
       - "NATS_SERVER=nats-server:4222"
     secrets:
