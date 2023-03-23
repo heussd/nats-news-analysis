@@ -29,6 +29,159 @@
       "fieldConfig": {
         "defaults": {
           "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 0,
+        "y": 0
+      },
+      "id": 123128,
+      "options": {
+        "reduceOptions": {
+          "calcs": ["mean"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.2.0-33922pre",
+      "targets": [
+        {
+          "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (service)",
+          "refId": "A"
+        }
+      ],
+      "title": "Average Matching Time",
+      "type": "gauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 14,
+        "x": 5,
+        "y": 0
+      },
+      "id": 123133,
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.2.0-33922pre",
+      "targets": [
+        {
+          "expr": "count by (match, service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
+          "refId": "A"
+        }
+      ],
+      "title": "Processed",
+      "type": "gauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 19,
+        "y": 0
+      },
+      "id": 123135,
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.2.0-33922pre",
+      "targets": [
+        {
+          "expr": "count (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1m]\n))",
+          "refId": "A"
+        }
+      ],
+      "title": "Matching / m",
+      "type": "gauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
             "mode": "palette-classic"
           },
           "custom": {
@@ -77,10 +230,89 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 7
+      },
+      "id": 123134,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.2.0-33922pre",
+      "targets": [
+        {
+          "expr": "count by (match, service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
+          "refId": "A"
+        }
+      ],
+      "title": "Processed",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 15
       },
       "id": 123125,
       "options": {
@@ -95,122 +327,12 @@
       },
       "targets": [
         {
-          "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (match)",
+          "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (service)",
           "refId": "A"
         }
       ],
       "title": "Panel Title",
       "type": "timeseries"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 9
-      },
-      "id": 123128,
-      "options": {
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
-        {
-          "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (match)",
-          "refId": "A"
-        }
-      ],
-      "title": "Panel Title",
-      "type": "gauge"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 18
-      },
-      "id": 123127,
-      "options": {
-        "bucketOffset": 0,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        }
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
-        {
-          "expr": "count_over_time({compose_project=\"nats-news-analysis\"}| json | message = \"Analysis complete\"| match = \"false\"[1h])",
-          "refId": "A"
-        }
-      ],
-      "title": "Panel Title",
-      "type": "histogram"
     }
   ],
   "refresh": "5s",
@@ -244,5 +366,5 @@
   "timezone": "browser",
   "title": "News Analysis",
   "uid": "QyuE2Of4z",
-  "version": 6
+  "version": 1
 }
