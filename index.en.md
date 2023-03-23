@@ -30,6 +30,8 @@ All services are orchestrated and scaled with `docker-compose.yml`.
 
 - [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
 - [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy
+- [docker.io/grafana/loki](https://hub.docker.com/r/grafana/loki) - Log aggregation
+- [docker.io/grafana/grafana](https://hub.docker.com/r/grafana/grafana) - Dashboard
 - [getpocket.com API](https://getpocket.com/developer/) - "Read it later" online service.
 
 ## Message queue for scaling
