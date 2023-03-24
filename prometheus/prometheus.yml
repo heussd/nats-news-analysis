@@ -1,0 +1,10 @@
+global:
+  scrape_interval:     3s
+
+
+# A scrape configuration containing exactly one endpoint to scrape.
+scrape_configs:
+  - job_name: 'natsexporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['natsexporter:7777']

@@ -127,6 +127,18 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     ports:
       - "3000:3000"
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - ./prom-storage/:/usr/local/share/prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/share/prometheus
+
+  natsexporter:
+    image: natsio/prometheus-nats-exporter
+    ports:
+    - "7777:7777"
+    command: ['-varz', '-subz', "-serverz", '-connz', '-channelz', '-jsz', 'all', 'http://nats-server:8222']
 
 volumes:
   rss-cache:

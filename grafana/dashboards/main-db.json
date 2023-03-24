@@ -178,7 +178,7 @@
       "type": "gauge"
     },
     {
-      "datasource": null,
+      "datasource": "-- Mixed --",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -249,8 +249,29 @@
       "pluginVersion": "8.2.0-33922pre",
       "targets": [
         {
+          "datasource": "Loki",
           "expr": "count by (match, service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
           "refId": "A"
+        },
+        {
+          "datasource": "Prometheus",
+          "exemplar": false,
+          "expr": "jetstream_stream_total_messages{stream_name=\"article-urls\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "article_urls",
+          "refId": "B"
+        },
+        {
+          "datasource": "Prometheus",
+          "exemplar": false,
+          "expr": "jetstream_stream_total_messages{stream_name=\"match-urls\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "match_urls",
+          "refId": "C"
         }
       ],
       "title": "Processed",
@@ -301,7 +322,7 @@
       "pluginVersion": "8.2.0-33922pre",
       "targets": [
         {
-          "expr": "count by (service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
+          "expr": "count by (container_name) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
           "refId": "A"
         }
       ],
