@@ -1,15 +1,39 @@
 import re
+from re import Pattern
+from typing import List
+
+from pydantic import BaseModel
 
 import Config
-from model.Match import Match
-from Utils import clean_content
-from model.RSSFullTextResponse import RSSFullTextResponse
+
+
+class KeywordEntry(BaseModel):
+    id: str
+    text: str
+    regexp: Pattern
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+clean_up_regexes = [
+    re.compile("[^a-zA-Z]"),
+    re.compile("\\s\\S\\s"),
+    re.compile("\\s\\s+")
+]
 
 
 class Keywords:
 
     def __init__(self):
-        self.keywords = []
+        self.keywords: List[KeywordEntry] = []
+
+    def human_readable(self, regex: str):
+        s = regex
+        for r in clean_up_regexes:
+            s = r.sub(" ", s, 0)
+
+        return s.strip()
 
     def init(self):
         try:
@@ -17,14 +41,16 @@ class Keywords:
             line = keywords_file.readline()
             while line:
                 one_line = line.strip()
-                one_line = one_line.lower()
 
                 if not one_line == "":
                     if not one_line.startswith("#"):
                         try:
                             expr = re.compile(one_line)
-                            self.keywords.append(expr)
-                            #print("Added keyword id", (len(self.keywords) - 1), "expr", expr.pattern)
+                            self.keywords.append(KeywordEntry(
+                                regexp=expr,
+                                id=self.human_readable(one_line),
+                                text=one_line
+                            ))
                         except re.error:
                             raise Exception("Error parsing keyword regexp: " + one_line)
 
@@ -38,37 +64,20 @@ class Keywords:
 
         print(len(self.keywords), "keywords initialized")
 
-    def match(self, news: RSSFullTextResponse) -> Match:
-        news_text = ""
-        news_text = news_text + " {}".format(news.excerpt)
-        news_text = news_text + " {}".format(news.title)
-        news_text = news_text + " {}".format(news.content)
-        news_text = clean_content(news_text)
-        news_text = news_text.lower()
-        news_text = news_text[:Config.MAX_ARTICLE_LENGTH]
-
-        print("Analysing news...")
+    def match(self, news: str) -> (bool, str):
         for i in range(len(self.keywords)):
-            if i % 25. == 0:
-                print("... keywords >= " + str(i))
-
             keyword = self.keywords[i]
 
-            if keyword.search(news_text):
-                m = Match(kw_id=str(i),
-                          kw_pattern=keyword.pattern,
-                          news=news)
-                print("Match", m)
-                return m
+            if keyword.regexp.match(news):
+                return True, keyword.id
 
-        return None
+        return False, ""
 
 
 if __name__ == "__main__":
-    print("JAO")
-    n = News()
-    n.content = "sydas red hat developer roundup asdas"
-    n.title = "BEST TITLE"
-    n.url = "https://www.tagesschau.de/newsticker/liveblog-ukraine-mittwoch-121.html"
+    content = "Delicious dark-chocolate pineapple pies"
 
-    print(match(n))
+    keywords = Keywords()
+    keywords.init()
+    print(keywords.match(content))
+
