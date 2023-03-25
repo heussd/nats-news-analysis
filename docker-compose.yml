@@ -1,3 +1,15 @@
+x-loki: &loki
+  logging:
+    driver: loki # Requires loki docker driver: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+    options:
+      loki-url: "http://host.docker.internal:3100/loki/api/v1/push" # <-- MUST be this address and NOT service name, otherwise Docker crashes
+x-build: &build
+  x-bake:
+    platforms:
+      - linux/amd64
+      - linux/arm64
+
+
 services:
   nats-server:
     image: docker.io/nats:2.9
@@ -28,11 +40,8 @@ services:
   rss-article-url-feeder-go-1st:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     build:
+      <<: *build
       context: rss-article-url-feeder-go/.
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
     volumes:
       - type: bind
         source: ./urls-primary.txt
@@ -58,14 +67,10 @@ services:
   rss-article-url-feeder-python:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
     build:
+      <<: *build
       context: rss-article-url-feeder-python/.
       cache_from:
         - ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64    
-
     scale: 0
     volumes:
       - type: bind
@@ -85,16 +90,14 @@ services:
     volumes:
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
   keyword-matcher-python:
+    scale: 0
+    <<: *loki
     image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
     build:
+      <<: *build
       context: keyword-matcher-python/.
       cache_from:
         - ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
-    scale: 1
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -105,18 +108,13 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
-    logging:
-      driver: loki # Requires loki docker driver
-      options:
-        loki-url: "http://host.docker.internal:3100/loki/api/v1/push" # <-- MUST be this address and NOT service name, otherwise Docker crashes
   keyword-matcher-go:
+    scale: 6
+    <<: *loki
     image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
     build:
+      <<: *build
       context: keyword-matcher-go/.
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -127,20 +125,14 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
-    logging:
-      driver: loki # Requires loki docker driver
-      options:
-        loki-url: "http://host.docker.internal:3100/loki/api/v1/push" # <-- MUST be this address and NOT service name, otherwise Docker crashes
+   
   pocket-integration:
     image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
     build:
+      <<: *build
       context: pocket-integration/.
       cache_from:
         - ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
-      x-bake:
-        platforms:
-          - linux/amd64
-          - linux/arm64
     environment:
       - "NATS_SERVER=nats-server:4222"
     secrets:
@@ -162,7 +154,7 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus/:/etc/prometheus/
-      - ./prom-storage/:/usr/local/share/prometheus
+      - ./prom-storage:/usr/local/share/prometheus
     command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/share/prometheus
   natsexporter:
     image: natsio/prometheus-nats-exporter
@@ -172,7 +164,6 @@ services:
 
 volumes:
   rss-cache:
-
 
 secrets:
   POCKET_ACCESS_TOKEN:
