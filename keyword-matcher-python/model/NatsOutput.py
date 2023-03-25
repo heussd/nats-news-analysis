@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class NatsOutput:
     Url: str
     RegExId: str
+
