@@ -35,7 +35,7 @@ class NATS:
             Config.NATS_SUBJECT_OUTPUT,
             json.dumps({
                 "Url": message.Url,
-                "RegExId": message.RegExId
+                "RegexId": message.RegExId
             }).encode(),
             headers={
                 NATS.HEADER_MESSAGE_ID: "news-keyword-matcher" + message.Url
