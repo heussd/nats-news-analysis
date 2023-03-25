@@ -31,7 +31,8 @@ watch:
 
 scale:
 	docker-compose up -d \
-		--scale keyword-matcher-go=12
+		--scale keyword-matcher-go=6 \
+		--scale keyword-matcher-python=6
 
 
 # https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/
