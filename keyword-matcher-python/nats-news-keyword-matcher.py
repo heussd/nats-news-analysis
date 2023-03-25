@@ -60,7 +60,7 @@ async def callback(message: Msg):
         "fulltext-length": len(text),
         "retrieval-duration-ms": int((retrieval_stop-retrieval_start)*1000),
         "keyword-matching-duration-ms": int((matching_stop-matching_start)*1000),
-        "msg": "Analysis complete"
+        "message": "Analysis complete"
     })
 
 async def listen():
