@@ -76,7 +76,6 @@ services:
     environment:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
-    restart: always
   loki:
     container_name: loki
     image: grafana/loki:latest
