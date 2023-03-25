@@ -170,7 +170,7 @@
       "pluginVersion": "8.2.0-33922pre",
       "targets": [
         {
-          "expr": "count (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1m]\n))",
+          "expr": "count by (service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1m]\n))",
           "refId": "A"
         }
       ],
