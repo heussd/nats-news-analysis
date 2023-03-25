@@ -8,7 +8,6 @@ services:
     volumes:
       - "./nats-persistence/:/data"
     command: "--jetstream --http_port 8222 --store_dir /data"
-
   fullfeedrss:
     image: docker.io/heussd/fivefilters-full-text-rss:latest
     scale: 2
@@ -26,9 +25,14 @@ services:
         - fullfeedrss
     ports:
         - '80:80'
-
   rss-article-url-feeder-go-1st:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
+    build:
+      context: rss-article-url-feeder-go/.
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
     volumes:
       - type: bind
         source: ./urls-primary.txt
@@ -39,8 +43,6 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
     restart: always
-
-
   rss-article-url-feeder-go-2nd:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     volumes:
@@ -53,9 +55,17 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
     restart: always
-
   rss-article-url-feeder-python:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
+    build:
+      context: rss-article-url-feeder-python/.
+      cache_from:
+        - ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64    
+
     scale: 0
     volumes:
       - type: bind
@@ -67,9 +77,25 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
     restart: always
-
-  keyword-matcher-go:
-    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/local-config.yaml:/etc/loki/local-config.yaml
+  keyword-matcher-python:
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
+    build:
+      context: keyword-matcher-python/.
+      cache_from:
+        - ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    scale: 1
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -84,18 +110,14 @@ services:
       driver: loki # Requires loki docker driver
       options:
         loki-url: "http://host.docker.internal:3100/loki/api/v1/push" # <-- MUST be this address and NOT service name, otherwise Docker crashes
-  loki:
-    container_name: loki
-    image: grafana/loki:latest
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    volumes:
-      - ./loki/local-config.yaml:/etc/loki/local-config.yaml
-  
-  keyword-matcher-python:
-    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
-    scale: 0
+  keyword-matcher-go:
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
+    build:
+      context: keyword-matcher-go/.
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
     volumes:
       - type: bind
         source: ./keywords.txt
@@ -105,16 +127,26 @@ services:
     environment:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
-      - "FULLTEXTRSS_SERVER=http://fullfeedrss:80"
-
+      - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
+    logging:
+      driver: loki # Requires loki docker driver
+      options:
+        loki-url: "http://host.docker.internal:3100/loki/api/v1/push" # <-- MUST be this address and NOT service name, otherwise Docker crashes
   pocket-integration:
     image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
+    build:
+      context: pocket-integration/.
+      cache_from:
+        - ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
     environment:
       - "NATS_SERVER=nats-server:4222"
     secrets:
       - POCKET_ACCESS_TOKEN
       - POCKET_CONSUMER_KEY
-
   grafana:
     image: grafana/grafana:master
     volumes:
@@ -133,7 +165,6 @@ services:
       - ./prometheus/:/etc/prometheus/
       - ./prom-storage/:/usr/local/share/prometheus
     command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/share/prometheus
-
   natsexporter:
     image: natsio/prometheus-nats-exporter
     ports:
