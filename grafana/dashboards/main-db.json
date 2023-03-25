@@ -73,6 +73,22 @@
         }
       ],
       "title": "Average Matching Time",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "keyword-matcher-go",
+            "renamePattern": "Go"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "keyword-matcher-python",
+            "renamePattern": "Python"
+          }
+        }
+      ],
       "type": "gauge"
     },
     {
@@ -124,6 +140,22 @@
         }
       ],
       "title": "Processed",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "keyword-matcher-go",
+            "renamePattern": "Go"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "keyword-matcher-python",
+            "renamePattern": "Python"
+          }
+        }
+      ],
       "type": "gauge"
     },
     {
@@ -175,6 +207,22 @@
         }
       ],
       "title": "Matching / m",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "keyword-matcher-go",
+            "renamePattern": "Go"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "keyword-matcher-python",
+            "renamePattern": "Python"
+          }
+        }
+      ],
       "type": "gauge"
     },
     {
