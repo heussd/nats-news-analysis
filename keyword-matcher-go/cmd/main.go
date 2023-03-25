@@ -31,20 +31,23 @@ func prepareAndCleanString(fulltext fulltextrss.RSSFullTextResponse) string {
 func main() {
 	// UNIX Time is faster and smaller than most timestamps
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	var hostname, _ = os.LookupEnv("host")
 	var logger = log.With().
 		Str("service", "keyword-matcher-go").
-		Str("container", hostname).
 		Logger()
 
 	queue.WithArticleUrls(func(m *nats.Msg) {
 		var url = string(m.Data)
-		var startTime = time.Now()
+
+		var retrievalStart = time.Now()
 		var fulltext = fulltextrss.RetrieveFullText(url)
+		var retrievalTime = time.Since(retrievalStart)
+
 		var text = prepareAndCleanString(fulltext)
 
+		var matchingStart = time.Now()
 		var match, regexId = keywords.Match(text)
-		var elapsedTime = time.Since(startTime)
+		var matchingTime = time.Since(matchingStart)
+
 		if match {
 			queue.PushToPocket(model.Match{
 				Url:     url,
@@ -55,8 +58,10 @@ func main() {
 		logger.Info().
 			Bool("match", match).
 			Str("regex-id", regexId).
-			Str("url", url).
-			Int64("keyword-matching-duration-ms", elapsedTime.Milliseconds()).
+			Str("domain", fulltext.Domain).
+			Int("fulltext-length", len(text)).
+			Int64("retrieval-duration-ms", retrievalTime.Milliseconds()).
+			Int64("keyword-matching-duration-ms", matchingTime.Milliseconds()).
 			Msg("Analysis complete")
 
 	})
