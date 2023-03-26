@@ -1,7 +1,6 @@
 import json
 
 import nats
-from nats.js.api import StreamConfig, RetentionPolicy
 
 import Config
 from model.NatsOutput import NatsOutput

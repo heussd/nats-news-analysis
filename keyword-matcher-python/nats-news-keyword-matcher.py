@@ -63,14 +63,15 @@ async def callback(message: Msg):
         "message": "Analysis complete"
     })
 
-async def listen():
+
+async def run():
     await nats.connect()
     await nats.subscribe(callback=callback)
-
-    while True:
-        await asyncio.sleep(Config.RELOAD_EVERY_S)
 
 
 if __name__ == '__main__':
     logger.info("Starting NATS-News-Keyword-Matcher...")
-    asyncio.run(listen())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run())
+    loop.run_forever()
+    loop.close()
