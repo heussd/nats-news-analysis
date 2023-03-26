@@ -30,8 +30,10 @@ All services are orchestrated and scaled with `docker-compose.yml`.
 
 - [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
 - [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy
-- [docker.io/grafana/loki](https://hub.docker.com/r/grafana/loki) - Log aggregation
-- [docker.io/grafana/grafana](https://hub.docker.com/r/grafana/grafana) - Dashboard
+- [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus
+- [Prometheus](https://prometheus.io/) - Metrics & monitoring
+- [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation
+- [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats
 - [getpocket.com API](https://getpocket.com/developer/) - "Read it later" online service.
 
 ## Message queue for scaling
@@ -41,9 +43,56 @@ Instead of blocking the application with a single core keyword matching operatio
 
 ### Keyword matching containers, scaled up
 
-![](docker-container.png)
+![](containers.png)
 
 
 ### One core per keyword matching
 
 ![](cpu-cores.png)
+
+
+## Observability
+
+![](dashboard.png)
+
+A typical Prometheus-Loki-Grafana stack is used to monitor application metrics and statistics.
+
+NATS server stats are made available to Prometheus via [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter). 
+
+Keyword-matcher-containers use zerolog and expose their logs to [Loki using the Docker Loki logging driver](https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/).
+
+A Grafana dashboard ships with the [source of this repository](grafana/dashboards/).
+
+
+## Comparing Python with Golang
+
+As one of the core components responsible for the main analysis task, keyword-matcher has been ported from Python to Golang, for fun and research purposes. Both implementations of keyword-matcher can play alongside or even to compete with each other:
+
+	NAME                                                 CPU %     MEM USAGE / LIMIT  
+	loki                                                 1.33%     74.55MiB / 7.667GiB
+	nats-news-analysis_fullfeedrss_1                     0.00%     76.68MiB / 7.667GiB
+	nats-news-analysis_fullfeedrss_2                     0.01%     70.62MiB / 7.667GiB
+	nats-news-analysis_grafana_1                         0.17%     35.95MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-go_1              0.00%     8.051MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-go_2              0.00%     8.422MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-go_3              0.00%     8.781MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-go_4              0.00%     8.059MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-python_1          0.00%     22.64MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-python_2          0.00%     23.21MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-python_3          0.00%     24.23MiB / 7.667GiB
+	nats-news-analysis_keyword-matcher-python_4          0.00%     23.8MiB / 7.667GiB 
+	nats-news-analysis_loadbalancer_1                    0.00%     2.316MiB / 7.667GiB
+	nats-news-analysis_nats-server_1                     1.34%     92.97MiB / 7.667GiB
+	nats-news-analysis_natsexporter_1                    0.03%     7.41MiB / 7.667GiB 
+	nats-news-analysis_pocket-integration_1              0.00%     18.41MiB / 7.667GiB
+	nats-news-analysis_prometheus_1                      0.00%     37.22MiB / 7.667GiB
+	nats-news-analysis_rss-article-url-feeder-go-1st_1   0.05%     15.32MiB / 7.667GiB
+	nats-news-analysis_rss-article-url-feeder-go-2nd_1   11.46%    12.95MiB / 7.667GiB
+
+Here are some interesting stats from Docker and Loki, collected during regular operation:
+
+| Metric | Python | Golang | Comparison
+|-----|-----|-----|-----|
+| Docker image size | 424MB | 6.09MB | Go impl. is ~70x smaller
+| Memory consumption | 23,8MiB | 8,33MiB | Go impl. needs ~3x less memory
+| LoC | 447 | 485 | Python impl. has ~8% less lines
