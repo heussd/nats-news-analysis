@@ -90,7 +90,7 @@ services:
     volumes:
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
   keyword-matcher-python:
-    scale: 0
+    scale: 4
     <<: *loki
     image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
     build:
@@ -109,7 +109,7 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
   keyword-matcher-go:
-    scale: 6
+    scale: 4
     <<: *loki
     image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
     build:
