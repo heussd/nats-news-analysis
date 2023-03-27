@@ -1,20 +1,15 @@
 import asyncio
-from time import process_time
+import json
 from timeit import default_timer
 
-import logzero
 from html_sanitizer import Sanitizer
 from nats.aio.msg import Msg
 
-import Config
 import RSSFullText
 from Keywords import Keywords
 from NATS import NATS
-from logzero import logger
-
 from model.NatsOutput import NatsOutput
 
-logzero.json()
 nats = NATS()
 
 sanitizer = Sanitizer()
@@ -52,16 +47,17 @@ async def callback(message: Msg):
 
     await message.ack()
 
-    logger.info({
+    j = json.dumps({
         "service": "keyword-matcher-python",
         "match": match,
         "regex-id": id,
         "domain": fulltext.domain,
         "fulltext-length": len(text),
-        "retrieval-duration-ms": int((retrieval_stop-retrieval_start)*1000),
-        "keyword-matching-duration-ms": int((matching_stop-matching_start)*1000),
+        "retrieval-duration-ms": int(1000*(retrieval_stop-retrieval_start)),
+        "keyword-matching-duration-ms": int(1000*(matching_stop-matching_start)),
         "message": "Analysis complete"
     })
+    print(j)
 
 
 async def run():
@@ -70,7 +66,7 @@ async def run():
 
 
 if __name__ == '__main__':
-    logger.info("Starting NATS-News-Keyword-Matcher...")
+    print("Starting NATS-News-Keyword-Matcher...")
     loop = asyncio.get_event_loop()
     loop.run_until_complete(run())
     loop.run_forever()

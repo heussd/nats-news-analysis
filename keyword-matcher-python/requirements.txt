@@ -1,5 +1,4 @@
 requests~=2.28.1
 nats-py==2.2.0
 pydantic~=1.9.1
-logzero~=1.7.0
 html-sanitizer~=1.9.3

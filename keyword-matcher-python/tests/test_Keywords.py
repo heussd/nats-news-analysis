@@ -66,7 +66,7 @@ class KeywordsUnitTest(unittest.TestCase):
         keywords = Keywords()
         keywords.init()
 
-        (_, text) = keywords.match("A little Peach acc day")
+        (_, text) = keywords.match("A little Peach a day")
         self.assertEqual("Apple peach", text)
 
         (_, text) = keywords.match("I like to eat delicious original organic-sourced pineapple pies twice a day")

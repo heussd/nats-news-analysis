@@ -68,7 +68,7 @@ class Keywords:
         for i in range(len(self.keywords)):
             keyword = self.keywords[i]
 
-            if keyword.regexp.match(news):
+            if keyword.regexp.match(news) is not None:
                 return True, keyword.id
 
         return False, ""
