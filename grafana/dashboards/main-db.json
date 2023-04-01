@@ -337,12 +337,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-purple",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -403,16 +399,13 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "percentage",
             "steps": [
               {
-                "color": "super-light-green",
+                "color": "dark-blue",
                 "value": null
-              },
-              {
-                "color": "green",
-                "value": 80
               }
             ]
           }
@@ -557,5 +550,5 @@
   "timezone": "browser",
   "title": "News Analysis",
   "uid": "QyuE2Of4z",
-  "version": 1
+  "version": 3
 }
