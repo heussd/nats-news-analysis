@@ -90,7 +90,7 @@ services:
     volumes:
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
   keyword-matcher-python:
-    scale: 4
+    scale: 0
     <<: *loki
     image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
     build:
