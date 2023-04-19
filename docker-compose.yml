@@ -18,7 +18,7 @@ services:
       - "8222:8222" # 8222 is an HTTP management port for information reporting.
       - "6222:6222" # 6222 is a routing port for clustering.
     volumes:
-      - "./nats-persistence/:/data"
+      - "./_DEL_ME_nats-persistence/:/data"
     command: "--jetstream --http_port 8222 --store_dir /data"
   fullfeedrss:
     image: docker.io/heussd/fivefilters-full-text-rss:latest
@@ -38,6 +38,7 @@ services:
     ports:
         - '80:80'
   rss-article-url-feeder-go-1st:
+    scale: 0
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     build:
       <<: *build
@@ -53,6 +54,7 @@ services:
       - "URLS=/urls.txt"
     restart: always
   rss-article-url-feeder-go-2nd:
+    scale: 0
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
     volumes:
       - type: bind
@@ -64,23 +66,6 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
     restart: always
-  rss-article-url-feeder-python:
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
-    build:
-      <<: *build
-      context: rss-article-url-feeder-python/.
-      cache_from:
-        - ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
-    scale: 0
-    volumes:
-      - type: bind
-        source: ./urls.txt
-        target: /urls.txt
-        consistency: cached
-        read_only: true
-    environment:
-      - "NATS_SERVER=nats-server:4222"
-      - "URLS=/urls.txt"
   loki:
     container_name: loki
     image: grafana/loki:latest
@@ -109,7 +94,7 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
   keyword-matcher-go:
-    scale: 4
+    scale: 0
     <<: *loki
     image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
     build:
@@ -125,18 +110,6 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
-  pocket-integration:
-    image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
-    build:
-      <<: *build
-      context: pocket-integration/.
-      cache_from:
-        - ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
-    environment:
-      - "NATS_SERVER=nats-server:4222"
-    secrets:
-      - POCKET_ACCESS_TOKEN
-      - POCKET_CONSUMER_KEY
   grafana:
     image: grafana/grafana:master
     volumes:
@@ -153,7 +126,7 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus/:/etc/prometheus/
-      - ./prom-storage:/usr/local/share/prometheus
+      - ./_DEL_ME_prom-storage:/usr/local/share/prometheus
     command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/share/prometheus
   natsexporter:
     image: natsio/prometheus-nats-exporter
