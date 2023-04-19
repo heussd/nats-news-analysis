@@ -125,7 +125,6 @@ services:
       - "KEYWORDS_FILE:/keywords.txt"
       - "NATS_SERVER=nats-server:4222"
       - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
-   
   pocket-integration:
     image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
     build:
