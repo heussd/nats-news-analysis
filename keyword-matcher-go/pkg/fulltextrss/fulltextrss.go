@@ -6,6 +6,7 @@ import (
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"io"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -47,6 +48,8 @@ func init() {
 
 func RetrieveFullText(url string) RSSFullTextResponse {
 	client := &http.Client{}
+	var err error
+
 	req, err := http.NewRequest("GET", config.FullTextRssServer+"/extract.php", nil)
 	if err != nil {
 		panic(err)
@@ -71,10 +74,19 @@ func RetrieveFullText(url string) RSSFullTextResponse {
 	}
 	defer response.Body.Close()
 
-	body, _ := io.ReadAll(response.Body)
+	var body []byte
+	if body, err = io.ReadAll(response.Body); err != nil {
+		panic(err)
+	}
+
+	if string(body) == "Invalid URL supplied" {
+		fmt.Fprintf(os.Stderr, "Fivefilters service indicated an invalid URL: %s", url)
+		return RSSFullTextResponse{}
+	}
 
 	var result RSSFullTextResponse
 	if err := json.Unmarshal(body, &result); err != nil {
+		fmt.Fprintf(os.Stderr, "Fivefilters service responded with invalid JSON: %s", string(body))
 		panic(err)
 	}
 
