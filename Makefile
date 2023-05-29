@@ -5,15 +5,8 @@ SCALE_POWER_SAFE  = $$(($(CPU_CORES)*30/100))
 
 
 start:
-	docker-compose up -d 
+	docker compose up --build -d
 	open http://localhost:3000/d/QyuE2Of4z/news-analysis?orgId=1&refresh=5s
-
-
-build:
-	docker-compose \
-		-f docker-compose.build.yml \
-		-f docker-compose.override.yml \
-		build
 
 
 logs:
@@ -21,18 +14,11 @@ logs:
 
 
 stop:
-	docker-compose down
+	docker compose down
 
 
 watch:
 	watch nats stream ls
-
-
-
-scale:
-	docker-compose up -d \
-		--scale keyword-matcher-go=6 \
-		--scale keyword-matcher-python=6
 
 
 # https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/
