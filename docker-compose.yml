@@ -65,23 +65,6 @@ services:
       - "NATS_SERVER=nats-server:4222"
       - "URLS=/urls.txt"
     restart: always
-  rss-article-url-feeder-python:
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
-    build:
-      <<: *build
-      context: rss-article-url-feeder-python/.
-      cache_from:
-        - ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
-    scale: 0
-    volumes:
-      - type: bind
-        source: ./urls.txt
-        target: /urls.txt
-        consistency: cached
-        read_only: true
-    environment:
-      - "NATS_SERVER=nats-server:4222"
-      - "URLS=/urls.txt"
   loki:
     container_name: loki
     image: grafana/loki:latest
@@ -90,25 +73,6 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
-  keyword-matcher-python:
-    scale: 0
-    <<: *loki
-    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
-    build:
-      <<: *build
-      context: keyword-matcher-python/.
-      cache_from:
-        - ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
-    volumes:
-      - type: bind
-        source: ./keywords.txt
-        target: /keywords.txt
-        consistency: cached
-        read_only: true
-    environment:
-      - "KEYWORDS_FILE:/keywords.txt"
-      - "NATS_SERVER=nats-server:4222"
-      - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
   keyword-matcher-go:
     deploy:
       replicas: 4

@@ -1,0 +1,50 @@
+x-loki: &loki
+  logging:
+    driver: loki # Requires loki docker driver: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+    options:
+      loki-url: "http://host.docker.internal:3100/loki/api/v1/push" # <-- MUST be this address and NOT service name, otherwise Docker crashes
+x-build: &build
+  x-bake:
+    platforms:
+      - linux/amd64
+      - linux/arm64
+
+
+services:
+  rss-article-url-feeder-python:
+    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
+    build:
+      <<: *build
+      context: rss-article-url-feeder-python/.
+      cache_from:
+        - ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python:latest
+    scale: 0
+    volumes:
+      - type: bind
+        source: ./urls.txt
+        target: /urls.txt
+        consistency: cached
+        read_only: true
+    environment:
+      - "NATS_SERVER=nats-server:4222"
+      - "URLS=/urls.txt"
+  keyword-matcher-python:
+    scale: 0
+    <<: *loki
+    image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
+    build:
+      <<: *build
+      context: keyword-matcher-python/.
+      cache_from:
+        - ghcr.io/heussd/nats-news-analysis/keyword-matcher-python:latest
+    volumes:
+      - type: bind
+        source: ./keywords.txt
+        target: /keywords.txt
+        consistency: cached
+        read_only: true
+    environment:
+      - "KEYWORDS_FILE:/keywords.txt"
+      - "NATS_SERVER=nats-server:4222"
+      - "FULLTEXTRSS_SERVER=http://loadbalancer:80"
+
