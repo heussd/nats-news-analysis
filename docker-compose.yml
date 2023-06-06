@@ -75,7 +75,7 @@ services:
       - ./loki/local-config.yaml:/etc/loki/local-config.yaml
   keyword-matcher-go:
     deploy:
-      replicas: 4
+      replicas: 8
     <<: *loki
     image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
     build:
