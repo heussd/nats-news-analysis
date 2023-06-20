@@ -9,6 +9,8 @@ import (
 var (
 	UrlsFile               = GetEnv("URLS_FILE", "urls.txt")
 	NatsServer             = GetEnv("NATS_SERVER", nats.DefaultURL)
+	NatsInputQueueName     = GetEnv("NATS_INPUT_QUEUE_NAME", "feed-urls")
+	NatsInputQueueSubject  = GetEnv("NATS_INPUT_QUEUE_NAME", "feed-url")
 	NatsOutputQueueName    = GetEnv("NATS_OUTPUT_QUEUE_NAME", "article-urls")
 	NatsOutputQueueSubject = GetEnv("NATS_OUTPUT_QUEUE_SUBJECT", "article-url")
 	NatsKeyValueBucket     = GetEnv("NATS_KV_BUCKET", "article-urls-proposed")

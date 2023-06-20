@@ -1,6 +1,8 @@
 package nats
 
 import (
+	"fmt"
+	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -23,4 +25,12 @@ func TestKV2(t *testing.T) {
 	assert.Equal(t, false, hasKV(key))
 	putKV(key)
 	assert.Equal(t, true, hasKV(key))
+}
+
+func TestPull(t *testing.T) {
+	WithFeedUrls(func(m *nats.Msg) {
+		data := string(m.Data)
+		fmt.Printf("Received from %s\n", data)
+		assert.Equal(t, "https://www.tagesschau.de/", data)
+	})
 }

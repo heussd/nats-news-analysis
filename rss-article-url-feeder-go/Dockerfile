@@ -7,7 +7,6 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-COPY pkg ./pkg
 COPY internal ./internal
 COPY cmd ./cmd
 

@@ -5,6 +5,7 @@ import (
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
 	"github.com/nats-io/nats.go"
 	"github.com/shomali11/util/xhashes"
+	"sync"
 	"time"
 )
 
@@ -86,4 +87,24 @@ func Publish(url string) {
 		js.PublishMsg(msg)
 		putKV(url)
 	}
+}
+
+func WithFeedUrls(f func(m *nats.Msg)) {
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+
+	var subscribed = false
+	for !subscribed {
+		_, err := js.QueueSubscribe(config.NatsInputQueueSubject, config.NatsInputQueueName, f)
+		if err != nil {
+			fmt.Printf("Cannot subscribe queue %s subject %s, because: ", config.NatsInputQueueName, config.NatsInputQueueSubject)
+			fmt.Println(err)
+			time.Sleep(5 * time.Second)
+		} else {
+			subscribed = true
+		}
+	}
+
+	wg.Done()
+	wg.Wait()
 }

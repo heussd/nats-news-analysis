@@ -9,21 +9,26 @@ Systematically retrieves online news articles, enriches them, scans them for key
 
 [Open In Draw.io](https://app.diagrams.net/?url=https://raw.githubusercontent.com/heussd/nats-news-analysis/main/architecture.drawio)
 
+The system has three NATS queues:
+
+1. `feed-urls` - URLs of RSS feeds.
+2. `article-urls` - URLs of individual articles of RSS feeds.
+3. `match-urls` - URLs of positive matching articles.
+
 ## Involved services
 
 All services are orchestrated and scaled with `docker-compose.yml`.
 
 ### Custom services
 
-- [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-python) - Feeds news articles from RSS feeds.
-- [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - Feeds news articles from RSS feeds (Go re-implementation).
-- [ghcr.io/heussd/nats-news-analysis/keyword-matcher-python](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-python) - Matches against keywords list.
-- [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - Matches against keywords list (Go re-implementation).
-- [ghcr.io/heussd/nats-news-analysis/pocket-integration](https://ghcr.io/heussd/nats-news-analysis/pocket-integration) - Feeds matches into getpocket.com.
-- [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
+- [ghcr.io/heussd/nats-news-analysis/rss-feed-feeder](ghcr.io/heussd/nats-news-analysis/rss-feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
+- [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - **Golang** - Feeds news articles from RSS feeds.
+- [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - **Golang** - Matches against keywords list.
+- [ghcr.io/heussd/nats-news-analysis/pocket-integration](https://ghcr.io/heussd/nats-news-analysis/pocket-integration) - **Python** - Feeds matches into getpocket.com.
 
 ### Third party services
 
+- [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
 - [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
 - [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy
 - [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus

@@ -1,554 +1,583 @@
 {
-  "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": "-- Grafana --",
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "target": {
-          "limit": 100,
-          "matchAny": false,
-          "tags": [],
-          "type": "dashboard"
-        },
-        "type": "dashboard"
-      }
-    ]
-  },
-  "editable": true,
-  "gnetId": null,
-  "graphTooltip": 0,
-  "links": [],
-  "liveNow": false,
-  "panels": [
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 5,
-        "x": 0,
-        "y": 0
-      },
-      "id": 123128,
-      "options": {
-        "reduceOptions": {
-          "calcs": ["mean"],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
-        {
-          "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (service)",
-          "refId": "A"
-        }
-      ],
-      "title": "Average Matching Time",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "keyword-matcher-go",
-            "renamePattern": "Go"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "keyword-matcher-python",
-            "renamePattern": "Python"
-          }
-        }
-      ],
-      "type": "gauge"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 14,
-        "x": 5,
-        "y": 0
-      },
-      "id": 123133,
-      "options": {
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
-        {
-          "expr": "count by (match, service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
-          "refId": "A"
-        }
-      ],
-      "title": "Processed",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "keyword-matcher-go",
-            "renamePattern": "Go"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "keyword-matcher-python",
-            "renamePattern": "Python"
-          }
-        }
-      ],
-      "type": "gauge"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 5,
-        "x": 19,
-        "y": 0
-      },
-      "id": 123135,
-      "options": {
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
-        {
-          "expr": "count by (service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1m]\n))",
-          "refId": "A"
-        }
-      ],
-      "title": "Matching / m",
-      "transformations": [
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "keyword-matcher-go",
-            "renamePattern": "Go"
-          }
-        },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "keyword-matcher-python",
-            "renamePattern": "Python"
-          }
-        }
-      ],
-      "type": "gauge"
-    },
-    {
-      "datasource": "-- Mixed --",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": "-- Grafana --",
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "target": {
+                    "limit": 100,
+                    "matchAny": false,
+                    "tags": [],
+                    "type": "dashboard"
+                },
+                "type": "dashboard"
             }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 7
-      },
-      "id": 123134,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
-        {
-          "datasource": "Loki",
-          "expr": "count by (service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
-          "refId": "A"
-        },
-        {
-          "datasource": "Prometheus",
-          "exemplar": false,
-          "expr": "jetstream_stream_total_messages{stream_name=\"article-urls\"}",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "article_urls",
-          "refId": "B"
-        },
-        {
-          "datasource": "Prometheus",
-          "exemplar": false,
-          "expr": "jetstream_stream_total_messages{stream_name=\"match-urls\"}",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "match_urls",
-          "refId": "C"
-        }
-      ],
-      "title": "Processed",
-      "type": "timeseries"
+        ]
     },
-    {
-      "datasource": "-- Mixed --",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "dark-purple",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 7,
-        "x": 0,
-        "y": 15
-      },
-      "id": 123137,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "links": [],
+    "liveNow": false,
+    "panels": [
         {
-          "datasource": "Prometheus",
-          "exemplar": false,
-          "expr": "jetstream_stream_total_messages{stream_name=\"article-urls\"}",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "article_urls",
-          "refId": "B"
-        },
-        {
-          "datasource": "Prometheus",
-          "exemplar": false,
-          "expr": "jetstream_stream_total_messages{stream_name=\"match-urls\"}",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "match_urls",
-          "refId": "C"
-        }
-      ],
-      "title": "Queue",
-      "type": "stat"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "dark-blue",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 17,
-        "x": 7,
-        "y": 15
-      },
-      "id": 123136,
-      "options": {
-        "displayMode": "gradient",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "text": {}
-      },
-      "pluginVersion": "8.2.0-33922pre",
-      "targets": [
-        {
-          "expr": "count by (container_name) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
-          "refId": "A"
-        }
-      ],
-      "title": "1h Thoughput",
-      "type": "bargauge"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+            "datasource": null,
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "gridPos": {
+                "h": 7,
+                "w": 5,
+                "x": 0,
+                "y": 0
             },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
+            "id": 123128,
+            "options": {
+                "reduceOptions": {
+                    "calcs": ["mean"],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "text": {}
             },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+            "pluginVersion": "8.2.0-33922pre",
+            "targets": [
+                {
+                    "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (service)",
+                    "refId": "A"
+                }
+            ],
+            "title": "Average Matching Time",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "keyword-matcher-go",
+                        "renamePattern": "Go"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "keyword-matcher-python",
+                        "renamePattern": "Python"
+                    }
+                }
+            ],
+            "type": "gauge"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "id": 123125,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
         {
-          "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (service)",
-          "refId": "A"
+            "datasource": null,
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 14,
+                "x": 5,
+                "y": 0
+            },
+            "id": 123133,
+            "options": {
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "text": {}
+            },
+            "pluginVersion": "8.2.0-33922pre",
+            "targets": [
+                {
+                    "expr": "count by (match, service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
+                    "refId": "A"
+                }
+            ],
+            "title": "Processed",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "keyword-matcher-go",
+                        "renamePattern": "Go"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "keyword-matcher-python",
+                        "renamePattern": "Python"
+                    }
+                }
+            ],
+            "type": "gauge"
+        },
+        {
+            "datasource": null,
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 5,
+                "x": 19,
+                "y": 0
+            },
+            "id": 123135,
+            "options": {
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "",
+                    "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "text": {}
+            },
+            "pluginVersion": "8.2.0-33922pre",
+            "targets": [
+                {
+                    "expr": "count by (service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1m]\n))",
+                    "refId": "A"
+                }
+            ],
+            "title": "Matching / m",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "keyword-matcher-go",
+                        "renamePattern": "Go"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "keyword-matcher-python",
+                        "renamePattern": "Python"
+                    }
+                }
+            ],
+            "type": "gauge"
+        },
+        {
+            "datasource": "-- Mixed --",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 7
+            },
+            "id": 123134,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom"
+                },
+                "tooltip": {
+                    "mode": "single"
+                }
+            },
+            "pluginVersion": "8.2.0-33922pre",
+            "targets": [
+                {
+                    "datasource": "Loki",
+                    "expr": "count by (service) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
+                    "refId": "A"
+                },
+                {
+                    "datasource": "Prometheus",
+                    "exemplar": false,
+                    "expr": "jetstream_stream_total_messages{stream_name=\"article-urls\"}",
+                    "hide": false,
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "article-urls",
+                    "refId": "B"
+                },
+                {
+                    "datasource": "Prometheus",
+                    "exemplar": false,
+                    "expr": "jetstream_stream_total_messages{stream_name=\"match-urls\"}",
+                    "hide": false,
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "match-urls",
+                    "refId": "C"
+                },
+                {
+                    "datasource": "Prometheus",
+                    "exemplar": false,
+                    "expr": "jetstream_stream_total_messages{stream_name=\"feed-urls\"}",
+                    "hide": false,
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "feed-urls",
+                    "refId": "D"
+                }
+            ],
+            "title": "Processed",
+            "type": "timeseries"
+        },
+        {
+            "datasource": "-- Mixed --",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "dark-purple",
+                                "value": null
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 7,
+                "x": 0,
+                "y": 15
+            },
+            "id": 123137,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "",
+                    "values": false
+                },
+                "text": {},
+                "textMode": "auto"
+            },
+            "pluginVersion": "8.2.0-33922pre",
+            "targets": [
+                {
+                    "datasource": "Prometheus",
+                    "exemplar": true,
+                    "expr": "jetstream_stream_total_messages{stream_name=\"feed-urls\"}",
+                    "hide": false,
+                    "interval": "",
+                    "legendFormat": "feed-urls",
+                    "refId": "A"
+                },
+                {
+                    "datasource": "Prometheus",
+                    "exemplar": false,
+                    "expr": "jetstream_stream_total_messages{stream_name=\"article-urls\"}",
+                    "hide": false,
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "article-urls",
+                    "refId": "B"
+                },
+                {
+                    "datasource": "Prometheus",
+                    "exemplar": false,
+                    "expr": "jetstream_stream_total_messages{stream_name=\"match-urls\"}",
+                    "hide": false,
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "match-urls",
+                    "refId": "C"
+                }
+            ],
+            "title": "Queue",
+            "type": "stat"
+        },
+        {
+            "datasource": null,
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "percentage",
+                        "steps": [
+                            {
+                                "color": "dark-blue",
+                                "value": null
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 17,
+                "x": 7,
+                "y": 15
+            },
+            "id": 123136,
+            "options": {
+                "displayMode": "gradient",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                    "calcs": ["lastNotNull"],
+                    "fields": "",
+                    "values": false
+                },
+                "showUnfilled": true,
+                "text": {}
+            },
+            "pluginVersion": "8.2.0-33922pre",
+            "targets": [
+                {
+                    "expr": "count by (container_name) (rate(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n[1h]\n))",
+                    "refId": "A"
+                }
+            ],
+            "title": "1h Thoughput",
+            "type": "bargauge"
+        },
+        {
+            "datasource": null,
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 7,
+                "w": 24,
+                "x": 0,
+                "y": 23
+            },
+            "id": 123125,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom"
+                },
+                "tooltip": {
+                    "mode": "single"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "avg_over_time(\n{compose_project=\"nats-news-analysis\"}\n| json\n| message = \"Analysis complete\"\n| unwrap keyword_matching_duration_ms\n[1s]\n) by (service)",
+                    "refId": "A"
+                }
+            ],
+            "title": "Panel Title",
+            "type": "timeseries"
         }
-      ],
-      "title": "Panel Title",
-      "type": "timeseries"
-    }
-  ],
-  "refresh": "5s",
-  "schemaVersion": 31,
-  "style": "dark",
-  "tags": [],
-  "templating": {
-    "list": []
-  },
-  "time": {
-    "from": "now-5m",
-    "to": "now"
-  },
-  "timepicker": {
-    "hidden": false,
-    "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
     ],
-    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"],
-    "type": "timepicker"
-  },
-  "timezone": "browser",
-  "title": "News Analysis",
-  "uid": "QyuE2Of4z",
-  "version": 3
+    "refresh": "5s",
+    "schemaVersion": 31,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-5m",
+        "to": "now"
+    },
+    "timepicker": {
+        "hidden": false,
+        "refresh_intervals": [
+            "5s",
+            "10s",
+            "30s",
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h",
+            "2h",
+            "1d"
+        ],
+        "time_options": [
+            "5m",
+            "15m",
+            "1h",
+            "6h",
+            "12h",
+            "24h",
+            "2d",
+            "7d",
+            "30d"
+        ],
+        "type": "timepicker"
+    },
+    "timezone": "browser",
+    "title": "News Analysis",
+    "uid": "QyuE2Of4z",
+    "version": 1
 }

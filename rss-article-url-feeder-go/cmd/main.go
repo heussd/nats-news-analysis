@@ -1,24 +1,26 @@
 package main
 
 import (
-	"fmt"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/feed"
 	queue "github.com/heussd/nats-news-keyword-matcher.go/internal/nats"
-	"github.com/heussd/nats-news-keyword-matcher.go/internal/urls"
-	"time"
+	"github.com/nats-io/nats.go"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
 
-	for {
-		for _, feedUrl := range urls.Urls {
-			for _, articleUrl := range feed.ArticleUrls(feedUrl) {
-				queue.Publish(articleUrl)
-			}
-		}
+	queue.WithFeedUrls(func(m *nats.Msg) {
+		feedUrl := string(m.Data)
 
-		fmt.Printf("Waiting %d hour to retry...\n", 1)
-		time.Sleep(1 * time.Hour)
-		urls.ReloadUrls()
-	}
+		for _, articleUrl := range feed.ArticleUrls(feedUrl) {
+			queue.Publish(articleUrl)
+		}
+	})
+
+	// https://callistaenterprise.se/blogg/teknik/2019/10/05/go-worker-cancellation/
+	termChan := make(chan os.Signal)
+	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM)
+	<-termChan // Blocks here until either SIGINT or SIGTERM is received.
 }

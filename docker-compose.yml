@@ -38,32 +38,28 @@ services:
         - fullfeedrss
     ports:
         - '80:80'
-  rss-article-url-feeder-go-1st:
+  rss-feed-feeder:
+    image: ghcr.io/heussd/nats-news-analysis/rss-feed-feeder:latest
+    build:
+      <<: *build
+      context: rss-feed-feeder/.
+    environment:
+      - NATS_SERVER=http://nats-server:4222
+    volumes:
+      - type: bind
+        source: ./urls.txt
+        target: /urls.txt
+        consistency: cached
+        read_only: true
+  rss-article-url-feeder-go:
     image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
+    deploy:
+      replicas: 6
     build:
       <<: *build
       context: rss-article-url-feeder-go/.
-    volumes:
-      - type: bind
-        source: ./urls-primary.txt
-        target: /urls.txt
-        consistency: cached
-        read_only: true
     environment:
       - "NATS_SERVER=nats-server:4222"
-      - "URLS=/urls.txt"
-    restart: always
-  rss-article-url-feeder-go-2nd:
-    image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
-    volumes:
-      - type: bind
-        source: ./urls-secondary.txt
-        target: /urls.txt
-        consistency: cached
-        read_only: true
-    environment:
-      - "NATS_SERVER=nats-server:4222"
-      - "URLS=/urls.txt"
     restart: always
   loki:
     container_name: loki
