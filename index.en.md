@@ -21,7 +21,7 @@ All services are orchestrated and scaled with `docker-compose.yml`.
 
 ### Custom services
 
-- [ghcr.io/heussd/nats-news-analysis/rss-feed-feeder](ghcr.io/heussd/nats-news-analysis/rss-feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
+- [ghcr.io/heussd/nats-news-analysis/rss-feed-feeder](https://ghcr.io/heussd/nats-news-analysis/rss-feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
 - [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - **Golang** - Feeds news articles from RSS feeds.
 - [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - **Golang** - Matches against keywords list.
 - [ghcr.io/heussd/nats-news-analysis/pocket-integration](https://ghcr.io/heussd/nats-news-analysis/pocket-integration) - **Python** - Feeds matches into getpocket.com.
