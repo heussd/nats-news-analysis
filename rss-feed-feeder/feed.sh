@@ -27,13 +27,18 @@ nats stream add feed-urls \
 nats stream info feed-urls \
     --server=$NATS_SERVER
 
-while read feed; do
-    case "$feed" in
-        \#*)
-            ;;
-        *)
-            nats pub feed-url "$feed"  \
-                --server=$NATS_SERVER \
-                --header="Nats-Msg-Id:$feed" # De-duplication works with Msg Id
-    esac
-done </urls.txt
+while true; do
+    while read feed; do
+        case "$feed" in
+            \#*)
+                ;;
+            *)
+                nats pub feed-url "$feed"  \
+                    --server=$NATS_SERVER \
+                    --header="Nats-Msg-Id:$feed" # De-duplication works with Msg Id
+        esac
+    done </urls.txt
+
+    echo "Waiting 2h..."
+    sleep 7200
+done
