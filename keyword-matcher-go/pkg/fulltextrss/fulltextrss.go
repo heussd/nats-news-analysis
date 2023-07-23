@@ -87,7 +87,7 @@ func RetrieveFullText(url string) RSSFullTextResponse {
 	var result RSSFullTextResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		fmt.Fprintf(os.Stderr, "Fivefilters service responded with invalid JSON: %s", string(body))
-		panic(err)
+		return RSSFullTextResponse{}
 	}
 
 	return result
