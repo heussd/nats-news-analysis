@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/heussd/nats-news-keyword-matcher.go/internal/feed"
-	queue "github.com/heussd/nats-news-keyword-matcher.go/internal/nats"
+	"github.com/heussd/rss-article-url-feeder.go/internal/feed"
+	queue "github.com/heussd/rss-article-url-feeder.go/internal/nats"
 	"github.com/nats-io/nats.go"
 	"os"
 	"os/signal"

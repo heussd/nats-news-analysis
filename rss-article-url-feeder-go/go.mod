@@ -1,4 +1,4 @@
-module github.com/heussd/nats-news-keyword-matcher.go
+module github.com/heussd/rss-article-url-feeder.go
 
 go 1.19
 

@@ -2,7 +2,7 @@ package nats
 
 import (
 	"fmt"
-	"github.com/heussd/nats-news-keyword-matcher.go/internal/config"
+	"github.com/heussd/rss-article-url-feeder.go/internal/config"
 	"github.com/nats-io/nats.go"
 	"github.com/shomali11/util/xhashes"
 	"sync"
