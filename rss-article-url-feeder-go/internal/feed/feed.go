@@ -3,6 +3,7 @@ package feed
 import (
 	"fmt"
 	"github.com/SlyMarbo/rss"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -21,10 +22,17 @@ func getBaseUrl(s string) string {
 	return u.String()
 }
 
+var TimeoutFetchFunc = func(url string) (resp *http.Response, err error) {
+	var client = &http.Client{
+		Timeout: time.Second * 60,
+	}
+	return client.Get(url)
+}
+
 func ArticleUrls(feedUrl string) []string {
 	var articleUrls []string
 
-	feed, err := rss.Fetch(feedUrl)
+	feed, err := rss.FetchByFunc(TimeoutFetchFunc, feedUrl)
 	if err != nil {
 		fmt.Printf("❌️ %s failed to load: %s\n", feedUrl, err)
 		return articleUrls
