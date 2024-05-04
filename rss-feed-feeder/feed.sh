@@ -6,7 +6,7 @@ set -o nounset
 sleep 5
 
 nats stream add feed-urls \
-    --server=$NATS_SERVER \
+    --server="$NATS_SERVER" \
     --subjects feed-url \
     --storage memory \
     --replicas 1 \
@@ -25,7 +25,7 @@ nats stream add feed-urls \
 
 
 nats stream info feed-urls \
-    --server=$NATS_SERVER
+    --server="$NATS_SERVER"
 
 while true; do
     while read feed; do
@@ -34,7 +34,7 @@ while true; do
                 ;;
             *)
                 nats pub feed-url "$feed"  \
-                    --server=$NATS_SERVER \
+                    --server="$NATS_SERVER" \
                     --header="Nats-Msg-Id:$feed" # De-duplication works with Msg Id
         esac
     done </urls.txt

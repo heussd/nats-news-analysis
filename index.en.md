@@ -17,26 +17,26 @@ The system has three NATS queues:
 
 ## Involved services
 
-All services are orchestrated and scaled with `docker-compose.yml`.
+All services are orchestrated and scaled with `compose.yml`.
 
 ### Custom services
 
-- [ghcr.io/heussd/nats-news-analysis/rss-feed-feeder](https://ghcr.io/heussd/nats-news-analysis/rss-feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
-- [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - **Golang** - Feeds news articles from RSS feeds.
-- [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - **Golang** - Matches against keywords list.
-- [ghcr.io/heussd/nats-news-analysis/pocket-integration](https://ghcr.io/heussd/nats-news-analysis/pocket-integration) - **Python** - Publishes matches on [getpocket.com](https://getpocket.com/).
-- [ghcr.io/heussd/nats-news-analysis/raindrop-integration](https://ghcr.io/heussd/nats-news-analysis/raindrop-integration) - **Golang** - Publishes matches on [raindrop.io](https://raindrop.io/).
+-   [ghcr.io/heussd/nats-news-analysis/rss-feed-feeder](https://ghcr.io/heussd/nats-news-analysis/rss-feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
+-   [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - **Golang** - Feeds news articles from RSS feeds.
+-   [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - **Golang** - Matches against keywords list.
+-   [ghcr.io/heussd/nats-news-analysis/pocket-integration](https://ghcr.io/heussd/nats-news-analysis/pocket-integration) - **Python** - Publishes matches on [getpocket.com](https://getpocket.com/).
+-   [ghcr.io/heussd/nats-news-analysis/raindrop-integration](https://ghcr.io/heussd/nats-news-analysis/raindrop-integration) - **Golang** - Publishes matches on [raindrop.io](https://raindrop.io/).
 
 ### Third party services
 
-- [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
-- [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
-- [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy
-- [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus
-- [Prometheus](https://prometheus.io/) - Metrics & monitoring
-- [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation
-- [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats
-- [getpocket.com API](https://getpocket.com/developer/) - "Read it later" online service.
+-   [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
+-   [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
+-   [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy
+-   [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus
+-   [Prometheus](https://prometheus.io/) - Metrics & monitoring
+-   [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation
+-   [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats
+-   [getpocket.com API](https://getpocket.com/developer/) - "Read it later" online service.
 
 ## Message queue for scaling
 

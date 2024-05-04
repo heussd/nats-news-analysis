@@ -10,7 +10,7 @@ start:
 
 
 logs:
-	docker-compose logs -f keyword-matcher-go
+	docker compose logs -f keyword-matcher-go
 
 
 stop:

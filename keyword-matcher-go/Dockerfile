@@ -1,4 +1,4 @@
-FROM golang:1.19-bullseye as builder
+FROM golang:1.22-bullseye as builder
 
 ENV GO111MODULE=on
 

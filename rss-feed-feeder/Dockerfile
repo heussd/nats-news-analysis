@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.22
 
 RUN go install github.com/nats-io/natscli/nats@latest
 

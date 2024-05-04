@@ -11,4 +11,4 @@ watch-matches:
 
 
 stream:
-	nats stream add article-urls --subjects article_url --storage memory --replicas 1 --retention work --discard old --max-msgs=-1 --max-msgs-per-subject=-1 --max-bytes=-1 --max-age=-1  --allow-rollup --allow-direct
+	nats stream add article-urls --subjects article-url --storage memory --replicas 1 --retention work --discard old --max-msgs=-1 --max-msgs-per-subject=-1 --max-bytes=-1 --max-age=-1  --allow-rollup --allow-direct

@@ -11,7 +11,7 @@ x-build: &build
 
 services:
     nats-server:
-        image: docker.io/nats:2.9
+        image: docker.io/nats:2.10
         ports:
             - '4222:4222' # 4222 is for clients.
             - '8222:8222' # 8222 is an HTTP management port for information reporting.

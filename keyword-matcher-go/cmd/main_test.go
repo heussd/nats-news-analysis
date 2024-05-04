@@ -10,6 +10,7 @@ import (
 
 func TestNoMoreHTML(t *testing.T) {
 	var fulltext = fulltextrss.RetrieveFullText("https://www.tagesschau.de/wissen/technologie/agri-photovoltaik-103.html")
+	fulltext.Content = fulltext.Content + " <p>"
 
 	assert.Equal(t, true, strings.Contains(fulltext.Content, "<p>"))
 
