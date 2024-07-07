@@ -1,0 +1,43 @@
+x-disabled: &disabled
+    image: ubuntu:latest
+    deploy:
+        replicas: 0
+    ports: !reset []
+
+services:
+    go-services:
+        build:
+            dockerfile: go-services/Dockerfile
+            target: base
+        environment:
+            - 'KEYWORDS_FILE:/keywords.txt'
+            - 'NATS_SERVER=nats-server:4222'
+            - 'NATS_URL=nats-server:4222' # nats cli, TODO unify
+            - 'FULLTEXTRSS_SERVER=http://fullfeedrss:80'
+
+        volumes:
+            - ./:/workspace/nats-news-analysis/
+        command: sleep infinity
+    fullfeedrss:
+        deploy:
+            replicas: 1
+    loadbalancer:
+        <<: *disabled
+    rss-feed-feeder:
+        <<: *disabled
+    rss-article-url-feeder-go:
+        <<: *disabled
+    loki:
+        <<: *disabled
+    keyword-matcher-go:
+        <<: *disabled
+    pocket-integration:
+        <<: *disabled
+    raindrop-integration:
+        <<: *disabled
+    grafana:
+        <<: *disabled
+    prometheus:
+        <<: *disabled
+    natsexporter:
+        <<: *disabled

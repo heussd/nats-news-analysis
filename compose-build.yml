@@ -1,0 +1,31 @@
+x-build: &build
+    x-bake:
+        platforms:
+            - linux/amd64
+            - linux/arm64
+
+services:
+    rss-feed-feeder:
+        build:
+            <<: *build
+            context: rss-feed-feeder/.
+    rss-article-url-feeder-go:
+        build:
+            <<: *build
+            context: rss-article-url-feeder-go/.
+    keyword-matcher-go:
+        build:
+            <<: *build
+            context: keyword-matcher-go/.
+    pocket-integration:
+        build:
+            <<: *build
+            context: pocket-integration/.
+            cache_from:
+                - ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
+    raindrop-integration:
+        build:
+            <<: *build
+            context: raindrop-integration/.
+            cache_from:
+                - ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest

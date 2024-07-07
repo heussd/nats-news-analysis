@@ -31,5 +31,6 @@ jobs:
               uses: docker/bake-action@v2
               with:
                   files: |
-                      "compose.yml"
+                      compose.yml
+                      compose-dev.yml
                   push: true

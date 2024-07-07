@@ -3,11 +3,6 @@ x-loki: &loki
         driver: loki # Requires loki docker driver: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
         options:
             loki-url: 'http://host.docker.internal:3100/loki/api/v1/push' # <-- MUST be this address and NOT service name, otherwise Docker crashes
-x-build: &build
-    x-bake:
-        platforms:
-            - linux/amd64
-            - linux/arm64
 
 services:
     nats-server:
@@ -39,9 +34,6 @@ services:
             - '80:80'
     rss-feed-feeder:
         image: ghcr.io/heussd/nats-news-analysis/rss-feed-feeder:latest
-        build:
-            <<: *build
-            context: rss-feed-feeder/.
         environment:
             - NATS_SERVER=http://nats-server:4222
         volumes:
@@ -54,9 +46,6 @@ services:
         image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
         deploy:
             replicas: 6
-        build:
-            <<: *build
-            context: rss-article-url-feeder-go/.
         environment:
             - 'NATS_SERVER=nats-server:4222'
         restart: always
@@ -73,9 +62,6 @@ services:
             replicas: 8
         <<: *loki
         image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
-        build:
-            <<: *build
-            context: keyword-matcher-go/.
         volumes:
             - type: bind
               source: ./keywords.txt
@@ -88,11 +74,6 @@ services:
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
     pocket-integration:
         image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
-        build:
-            <<: *build
-            context: pocket-integration/.
-            cache_from:
-                - ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
         secrets:
@@ -100,11 +81,6 @@ services:
             - POCKET_CONSUMER_KEY
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
-        build:
-            <<: *build
-            context: raindrop-integration/.
-            cache_from:
-                - ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
         env_file:

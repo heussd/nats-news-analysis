@@ -1,0 +1,26 @@
+{
+    "name": "Go",
+    "dockerComposeFile": ["../compose.yml", "compose.yml"],
+    "service": "go-services",
+    "workspaceFolder": "/workspace/nats-news-analysis/",
+
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {}
+    },
+    "postCreateCommand": "bash ./.devcontainer/postCreate.sh",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "dotfiles.repository": "https://github.com/heussd/dotfiles",
+                "dotfiles.targetPath": "~/.dotfiles",
+                "dotfiles.installCommand": ".install.sh",
+                "editor.defaultFormatter": "golang.go"
+            },
+            "extensions": [
+                "NeonXP.gotools",
+                "colton1989.golang-group-imports",
+                "golang.Go"
+            ]
+        }
+    }
+}
