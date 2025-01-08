@@ -8,7 +8,7 @@ sleep 5
 nats stream add feed-urls \
     --server="$NATS_SERVER" \
     --subjects feed-url \
-    --storage memory \
+    --storage file \
     --replicas 1 \
     --retention work \
     --discard old \
