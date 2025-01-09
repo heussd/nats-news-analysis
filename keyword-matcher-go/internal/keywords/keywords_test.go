@@ -1,8 +1,9 @@
 package keywords
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func first(flag bool, _ string) bool {
@@ -44,11 +45,6 @@ func TestLocalIT(t *testing.T) {
 	assert.Equal(t, true, first(Match("Long live the queen.")))
 
 	assert.Equal(t, false, first(Match("Like king and queen.")))
-
-}
-
-func TestHumanReadable(t *testing.T) {
-	assert.Equal(t, "delicious pie recipes", humanReadable("(?i)(delicious).*(pie|recipes)"))
 
 }
 

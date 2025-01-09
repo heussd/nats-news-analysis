@@ -2,12 +2,13 @@ package config
 
 import (
 	"fmt"
-	"github.com/nats-io/nats.go"
 	"os"
+
+	"github.com/nats-io/nats.go"
 )
 
 var (
-	KeywordsFile           = GetEnv("KEYWORDS_FILE", "keywords.txt")
+	KeywordsFileUrl        = GetEnv("KEYWORDS_FILE_URL", "https://raw.githubusercontent.com/heussd/nats-news-analysis/refs/heads/main/keyword-matcher-go/internal/keywords/keywords.txt")
 	FullTextRssServer      = GetEnv("FULLTEXTRSS_SERVER", "http://localhost:80")
 	NatsServer             = GetEnv("NATS_SERVER", nats.DefaultURL)
 	NatsInputQueueName     = GetEnv("NATS_INPUT_QUEUE_NAME", "article-urls")
