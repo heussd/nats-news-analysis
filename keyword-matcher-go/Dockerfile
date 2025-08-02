@@ -1,4 +1,4 @@
-FROM golang:1.22-bullseye as builder
+FROM golang:1.22-bullseye AS builder
 
 ENV GO111MODULE=on
 
@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 go build -a -ldflags '-s' -o goapp.bin ./cmd
 
 
 # https://github.com/drone/ca-certs/blob/master/Dockerfile
-FROM alpine:3.6 as alpine
+FROM alpine:3.6 AS alpine
 RUN apk add -U --no-cache ca-certificates
 
 

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"strings"
+	"time"
+
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/keywords"
 	"github.com/heussd/nats-news-keyword-matcher.go/internal/model"
 	queue "github.com/heussd/nats-news-keyword-matcher.go/internal/nats"
@@ -9,11 +12,6 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"os"
-	"os/signal"
-	"strings"
-	"syscall"
-	"time"
 )
 
 var bm = bluemonday.StrictPolicy()
@@ -65,10 +63,5 @@ func main() {
 			Msg("Analysis complete")
 
 	})
-	logger.Info().Msg("🚀Keyword Matcher is ready to perform 🚀")
 
-	// https://callistaenterprise.se/blogg/teknik/2019/10/05/go-worker-cancellation/
-	termChan := make(chan os.Signal)
-	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM)
-	<-termChan // Blocks here until either SIGINT or SIGTERM is received.
 }

@@ -2,16 +2,12 @@ services:
     nats-news-keyword-matcher-go:
         image: ghcr.io/heussd/nats-news-keyword-matcher-go:main
         build: .
-        volumes:
-            - type: bind
-              source: ./internal/keywords/keywords.txt
-              target: /keywords.txt
-              consistency: cached
-              read_only: true
         environment:
-            - 'KEYWORDS_FILE:/keywords.txt'
             - 'NATS_SERVER=nats-server:4222'
             - 'FULLTEXTRSS_SERVER=http://fullfeedrss:80'
+            - 'NEWS_STREAM_CONSUMER=default'
+        deploy:
+            replicas: 2
     nats-server:
         image: nats:2.10
         ports:
