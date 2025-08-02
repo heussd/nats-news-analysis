@@ -86,18 +86,6 @@ services:
             - 'KEYWORDS_FILE:/keywords.txt'
             - 'NATS_SERVER=nats-server:4222'
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
-    pocket-integration:
-        image: ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
-        build:
-            <<: *build
-            context: pocket-integration/.
-            cache_from:
-                - ghcr.io/heussd/nats-news-analysis/pocket-integration:latest
-        environment:
-            - 'NATS_SERVER=nats-server:4222'
-        secrets:
-            - POCKET_ACCESS_TOKEN
-            - POCKET_CONSUMER_KEY
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
         build:
@@ -145,9 +133,3 @@ services:
 
 volumes:
     rss-cache:
-
-secrets:
-    POCKET_ACCESS_TOKEN:
-        file: ./POCKET_ACCESS_TOKEN.txt
-    POCKET_CONSUMER_KEY:
-        file: ./POCKET_CONSUMER_KEY.txt

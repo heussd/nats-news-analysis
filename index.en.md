@@ -3,7 +3,7 @@ Title: Personal News Analysis
 summary: Automatically find relevant news from the Web.
 ---
 
-Systematically retrieves online news articles, enriches them, scans them for keywords and sends hits to [raindrop.io](https://raindrop.io/) / [GetPocket.com](https://getpocket.com/). All analysis components are loosely-coupled with [NATS.io](https://nats.io/) work queues, which also allows scaling single-core-CPU-intensive components easily.
+Systematically retrieves online news articles, enriches them, scans them for keywords and sends hits to [raindrop.io](https://raindrop.io/). All analysis components are loosely-coupled with [NATS.io](https://nats.io/) work queues, which also allows scaling single-core-CPU-intensive components easily.
 
 ![](architecture.drawio.svg)
 
@@ -24,7 +24,6 @@ All services are orchestrated and scaled with `compose.yml`.
 -   [ghcr.io/heussd/nats-news-analysis/rss-feed-feeder](https://ghcr.io/heussd/nats-news-analysis/rss-feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
 -   [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - **Golang** - Feeds news articles from RSS feeds.
 -   [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - **Golang** - Matches against keywords list.
--   [ghcr.io/heussd/nats-news-analysis/pocket-integration](https://ghcr.io/heussd/nats-news-analysis/pocket-integration) - **Python** - Publishes matches on [getpocket.com](https://getpocket.com/).
 -   [ghcr.io/heussd/nats-news-analysis/raindrop-integration](https://ghcr.io/heussd/nats-news-analysis/raindrop-integration) - **Golang** - Publishes matches on [raindrop.io](https://raindrop.io/).
 
 ### Third party services
@@ -36,7 +35,6 @@ All services are orchestrated and scaled with `compose.yml`.
 -   [Prometheus](https://prometheus.io/) - Metrics & monitoring
 -   [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation
 -   [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats
--   [getpocket.com API](https://getpocket.com/developer/) - "Read it later" online service.
 
 ## Message queue for scaling
 

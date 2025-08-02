@@ -1,2 +1,0 @@
-nats-py==2.1.4
-pocket-api==0.1.5
