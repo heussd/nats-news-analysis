@@ -32,4 +32,5 @@ jobs:
               with:
                   files: |
                       "compose.yml"
+                      "compose.override.yml"
                   push: true

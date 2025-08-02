@@ -1,0 +1,50 @@
+x-loki: &loki
+    logging:
+        driver: loki # Requires loki docker driver: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+        options:
+            loki-url: 'http://host.docker.internal:3100/loki/api/v1/push' # <-- MUST be this address and NOT service name, otherwise Docker crashes
+
+services:
+    loki:
+        container_name: loki
+        image: grafana/loki:latest
+        ports:
+            - '3100:3100'
+        command: -config.file=/etc/loki/local-config.yaml
+        volumes:
+            - ./loki/local-config.yaml:/etc/loki/local-config.yaml
+    keyword-matcher-go:
+        <<: *loki
+    grafana:
+        image: grafana/grafana:master
+        volumes:
+            - ./grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+            - ./grafana/dashboard-provider.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+            - ./grafana/dashboards:/var/lib/grafana/dashboards
+        environment:
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+            - GF_AUTH_DISABLE_LOGIN_FORM=true
+        ports:
+            - '3000:3000'
+    prometheus:
+        image: prom/prometheus:latest
+        volumes:
+            - ./prometheus/:/etc/prometheus/
+            - ./prom-storage:/usr/local/share/prometheus
+        command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/share/prometheus
+    natsexporter:
+        image: natsio/prometheus-nats-exporter
+        ports:
+            - '7777:7777'
+        command:
+            [
+                '-varz',
+                '-subz',
+                '-serverz',
+                '-connz',
+                '-channelz',
+                '-jsz',
+                'all',
+                'http://nats-server:8222',
+            ]

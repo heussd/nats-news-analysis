@@ -1,14 +1,3 @@
-x-loki: &loki
-    logging:
-        driver: loki # Requires loki docker driver: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
-        options:
-            loki-url: 'http://host.docker.internal:3100/loki/api/v1/push' # <-- MUST be this address and NOT service name, otherwise Docker crashes
-x-build: &build
-    x-bake:
-        platforms:
-            - linux/amd64
-            - linux/arm64
-
 services:
     nats-server:
         image: docker.io/nats:2.10
@@ -39,9 +28,6 @@ services:
             - '80:80'
     rss-feed-feeder:
         image: ghcr.io/heussd/nats-news-analysis/rss-feed-feeder:latest
-        build:
-            <<: *build
-            context: rss-feed-feeder/.
         environment:
             - NATS_SERVER=http://nats-server:4222
         volumes:
@@ -54,28 +40,13 @@ services:
         image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
         deploy:
             replicas: 6
-        build:
-            <<: *build
-            context: rss-article-url-feeder-go/.
         environment:
             - 'NATS_SERVER=nats-server:4222'
         restart: always
-    loki:
-        container_name: loki
-        image: grafana/loki:latest
-        ports:
-            - '3100:3100'
-        command: -config.file=/etc/loki/local-config.yaml
-        volumes:
-            - ./loki/local-config.yaml:/etc/loki/local-config.yaml
     keyword-matcher-go:
         deploy:
             replicas: 8
-        <<: *loki
         image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
-        build:
-            <<: *build
-            context: keyword-matcher-go/.
         volumes:
             - type: bind
               source: ./keywords.txt
@@ -88,48 +59,10 @@ services:
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
-        build:
-            <<: *build
-            context: raindrop-integration/.
-            cache_from:
-                - ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
         env_file:
             - .env
-    grafana:
-        image: grafana/grafana:master
-        volumes:
-            - ./grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
-            - ./grafana/dashboard-provider.yaml:/etc/grafana/provisioning/dashboards/main.yaml
-            - ./grafana/dashboards:/var/lib/grafana/dashboards
-        environment:
-            - GF_AUTH_ANONYMOUS_ENABLED=true
-            - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-            - GF_AUTH_DISABLE_LOGIN_FORM=true
-        ports:
-            - '3000:3000'
-    prometheus:
-        image: prom/prometheus:latest
-        volumes:
-            - ./prometheus/:/etc/prometheus/
-            - ./prom-storage:/usr/local/share/prometheus
-        command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/usr/local/share/prometheus
-    natsexporter:
-        image: natsio/prometheus-nats-exporter
-        ports:
-            - '7777:7777'
-        command:
-            [
-                '-varz',
-                '-subz',
-                '-serverz',
-                '-connz',
-                '-channelz',
-                '-jsz',
-                'all',
-                'http://nats-server:8222',
-            ]
 
 volumes:
     rss-cache:
