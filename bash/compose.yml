@@ -1,0 +1,16 @@
+services:
+    nats-server:
+        image: nats:2.10
+        ports:
+            - '4222:4222' # 4222 is for clients.
+            - '8222:8222' # 8222 is an HTTP management port for information reporting.
+            - '6222:6222' # 6222 is a routing port for clustering.
+        command: '--jetstream'
+
+    feed-feeder:
+        image: feed-feeder
+        build: .
+        environment:
+            - NATS_SERVER=http://nats-server:4222
+        volumes:
+            - ./urls.txt:/urls.txt

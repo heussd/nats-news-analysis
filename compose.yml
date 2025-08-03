@@ -26,8 +26,8 @@ services:
             - fullfeedrss
         ports:
             - '80:80'
-    rss-feed-feeder:
-        image: ghcr.io/heussd/nats-news-analysis/rss-feed-feeder:latest
+    feed-feeder:
+        image: ghcr.io/heussd/nats-news-analysis/feed-feeder:latest
         environment:
             - NATS_SERVER=http://nats-server:4222
         volumes:
@@ -36,25 +36,18 @@ services:
               target: /urls.txt
               consistency: cached
               read_only: true
-    rss-article-url-feeder-go:
-        image: ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go:latest
+    article-url-feeder:
+        image: ghcr.io/heussd/nats-news-analysis/article-url-feeder:latest
         deploy:
-            replicas: 6
+            replicas: 1
         environment:
             - 'NATS_SERVER=nats-server:4222'
         restart: always
-    keyword-matcher-go:
+    keyword-matcher:
         deploy:
-            replicas: 8
-        image: ghcr.io/heussd/nats-news-analysis/keyword-matcher-go:latest
-        volumes:
-            - type: bind
-              source: ./keywords.txt
-              target: /keywords.txt
-              consistency: cached
-              read_only: true
+            replicas: 9
+        image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
         environment:
-            - 'KEYWORDS_FILE:/keywords.txt'
             - 'NATS_SERVER=nats-server:4222'
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
     raindrop-integration:
