@@ -2,11 +2,12 @@ package nats
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/heussd/rss-article-url-feeder.go/internal/config"
 	"github.com/nats-io/nats.go"
 	"github.com/shomali11/util/xhashes"
-	"sync"
-	"time"
 )
 
 var nc *nats.Conn
@@ -30,11 +31,10 @@ func init() {
 	}
 
 	if _, err = js.AddStream(&nats.StreamConfig{
-		Name: config.NatsOutputQueueName,
-		Subjects: []string{
-			config.NatsOutputQueueSubject,
-		},
-		Retention:  nats.WorkQueuePolicy,
+		Name:       config.NatsOutputQueueName,
+		Subjects:   []string{config.NatsOutputQueueSubject},
+		Retention:  nats.LimitsPolicy,
+		MaxAge:     time.Hour * 24 * 90,
 		Duplicates: time.Hour * 24 * 30,
 	}); err != nil {
 
