@@ -163,7 +163,7 @@ func AddConsumer(streamName, consumerName string) (consumer *nats.ConsumerInfo, 
 		streamName,
 		&nats.ConsumerConfig{
 			Durable:       consumerName,
-			DeliverPolicy: nats.DeliverAllPolicy,
+			DeliverPolicy: nats.DeliverNewPolicy,
 			AckPolicy:     nats.AckExplicitPolicy,
 		}); err != nil {
 		if err == nats.ErrConsumerNameAlreadyInUse {
