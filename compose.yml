@@ -39,21 +39,24 @@ services:
     article-feeder:
         image: ghcr.io/heussd/nats-news-analysis/article-feeder:latest
         deploy:
-            replicas: 1
+            replicas: 3
         environment:
             - 'NATS_SERVER=nats-server:4222'
         restart: always
     keyword-matcher:
         deploy:
-            replicas: 9
+            replicas: 1
         image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
+        env_file:
+            - .env
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
+            - NATS_CONSUMER=lala
         env_file:
             - .env
 

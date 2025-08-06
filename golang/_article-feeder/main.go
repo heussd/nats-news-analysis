@@ -27,7 +27,7 @@ func main() {
 				return
 			}
 
-			fmt.Printf("Found %d articles in %s", len(articleUrls), feedUrl)
+			fmt.Printf("Found %d articles in %s\n", len(articleUrls), feedUrl)
 			for _, articleUrl := range articleUrls {
 				queue.Publish(output,
 					model.Article{

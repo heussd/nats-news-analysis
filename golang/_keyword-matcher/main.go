@@ -40,7 +40,7 @@ func main() {
 		Str("service", "keyword-matcher-go").
 		Logger()
 
-	queue.Subscribe(input, consumer,
+	var err = queue.Subscribe(input, consumer,
 		func(article *model.Article) {
 			var url = article.Url
 
@@ -77,4 +77,8 @@ func main() {
 				Msg("Analysis complete")
 
 		}, true)
+
+	if err != nil {
+		panic(err)
+	}
 }

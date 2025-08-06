@@ -15,8 +15,9 @@ func main() {
 		consumer = queue.AddConsumerOrDie(stream, utils.GetEnv("NATS_CONSUMER", "default"))
 	)
 
-	queue.Subscribe(stream, consumer,
+	var err = queue.Subscribe(stream, consumer,
 		func(match *model.Match) {
+			fmt.Printf("Received match from queue %s\n", match.Url)
 
 			if err := raindrop.Add(match.Url); err != nil {
 				fmt.Printf("received error from raindrop: %w", err)
@@ -26,4 +27,8 @@ func main() {
 		},
 		true,
 	)
+
+	if err != nil {
+		panic(err)
+	}
 }
