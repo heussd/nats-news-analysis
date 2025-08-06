@@ -9,12 +9,12 @@ services:
         build:
             <<: *build
             context: bash/.
-    article-url-feeder:
+    article-feeder:
         build:
             <<: *build
             context: golang/.
             args:
-                - MAIN=article-url-feeder
+                - MAIN=article-feeder
     keyword-matcher:
         build:
             <<: *build

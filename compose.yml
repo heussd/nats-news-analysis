@@ -36,8 +36,8 @@ services:
               target: /urls.txt
               consistency: cached
               read_only: true
-    article-url-feeder:
-        image: ghcr.io/heussd/nats-news-analysis/article-url-feeder:latest
+    article-feeder:
+        image: ghcr.io/heussd/nats-news-analysis/article-feeder:latest
         deploy:
             replicas: 1
         environment:
