@@ -5,21 +5,25 @@ x-build: &build
             - linux/arm64
 
 services:
-    rss-feed-feeder:
+    feed-feeder:
         build:
             <<: *build
-            context: rss-feed-feeder/.
-    rss-article-url-feeder-go:
+            context: bash/.
+    article-feeder:
         build:
             <<: *build
-            context: rss-article-url-feeder-go/.
-    keyword-matcher-go:
+            context: golang/.
+            args:
+                - MAIN=article-feeder
+    keyword-matcher:
         build:
             <<: *build
-            context: keyword-matcher-go/.
+            context: golang/.
+            args:
+                - MAIN=keyword-matcher
     raindrop-integration:
         build:
             <<: *build
-            context: raindrop-integration/.
-            cache_from:
-                - ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
+            context: golang/.
+            args:
+                - MAIN=raindrop-integration

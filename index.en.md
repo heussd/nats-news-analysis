@@ -3,9 +3,9 @@ Title: Personal News Analysis
 summary: Automatically find relevant news from the Web.
 ---
 
-Systematically retrieves online news articles, enriches them, scans them for keywords and sends hits to [raindrop.io](https://raindrop.io/). All analysis components are loosely-coupled with [NATS.io](https://nats.io/) work queues, which also allows scaling single-core-CPU-intensive components easily.
+Systematically retrieves online news articles, enriches them, scans them for keywords and sends hits to [raindrop.io](https://raindrop.io/). All analysis components are loosely-coupled with [NATS.io](https://nats.io/) queues, which also allows scaling single-core-CPU-intensive components easily.
 
-![](architecture.drawio.svg)
+![](architecture.svg)
 
 [Open In Draw.io](https://app.diagrams.net/?url=https://raw.githubusercontent.com/heussd/nats-news-analysis/main/architecture.drawio)
 
@@ -21,9 +21,9 @@ All services are orchestrated and scaled with `compose.yml`.
 
 ### Custom services
 
--   [ghcr.io/heussd/nats-news-analysis/rss-feed-feeder](https://ghcr.io/heussd/nats-news-analysis/rss-feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
--   [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go) - **Golang** - Feeds news articles from RSS feeds.
--   [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher-go) - **Golang** - Matches against keywords list.
+-   [ghcr.io/heussd/nats-news-analysis/feed-feeder](https://ghcr.io/heussd/nats-news-analysis/feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
+-   [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/article-feeder) - **Golang** - Feeds news articles from RSS feeds.
+-   [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher) - **Golang** - Matches against keywords list.
 -   [ghcr.io/heussd/nats-news-analysis/raindrop-integration](https://ghcr.io/heussd/nats-news-analysis/raindrop-integration) - **Golang** - Publishes matches on [raindrop.io](https://raindrop.io/).
 
 ### Third party services
