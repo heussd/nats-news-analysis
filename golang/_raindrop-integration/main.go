@@ -11,7 +11,7 @@ import (
 
 func main() {
 	var (
-		stream   = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "match-urls"))
+		stream   = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "match-urls"), queue.DefaultDupeWindow)
 		consumer = queue.AddConsumerOrDie(stream, utils.GetEnv("NATS_CONSUMER", "default"))
 	)
 

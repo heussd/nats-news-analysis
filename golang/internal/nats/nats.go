@@ -24,6 +24,7 @@ var (
 	NatsPullConsumerBatchSize       = utils.GetEnv("NATS_CONSUMER_BATCH_SIZE", "5")
 	NatsPullConsumerBatchSizeInt, _ = strconv.Atoi(NatsPullConsumerBatchSize)
 	NatsKeyValueBucket              = utils.GetEnv("NATS_KV_BUCKET", "article-urls-proposed")
+	DefaultDupeWindow               = time.Hour * 24 * 30
 )
 
 func init() {
@@ -138,7 +139,7 @@ func Publish[T model.PayloadTypes](
 	return pubAck, nil
 }
 
-func AddStream(name string) (str *nats.StreamInfo, err error) {
+func AddStream(name string, dupe_window time.Duration) (str *nats.StreamInfo, err error) {
 	if str, err = js.AddStream(&nats.StreamConfig{
 		Name: name,
 		Subjects: []string{
@@ -146,7 +147,7 @@ func AddStream(name string) (str *nats.StreamInfo, err error) {
 		},
 		Retention:  nats.LimitsPolicy,
 		MaxAge:     time.Hour * 24 * 90,
-		Duplicates: time.Hour * 24 * 30,
+		Duplicates: dupe_window,
 	}); err != nil {
 		if err == nats.ErrStreamNameAlreadyInUse {
 			fmt.Printf("Stream %s already exists with different config\n", name)
@@ -177,9 +178,9 @@ func AddConsumer(streamName, consumerName string) (consumer *nats.ConsumerInfo, 
 	return consumer, nil
 }
 
-func AddStreamOrDie(streamName string) (stream *nats.StreamInfo) {
+func AddStreamOrDie(streamName string, dupe_window time.Duration) (stream *nats.StreamInfo) {
 	var err error
-	if stream, err = AddStream(streamName); err != nil {
+	if stream, err = AddStream(streamName, dupe_window); err != nil {
 		panic(fmt.Errorf("failed to add stream %s: %w", streamName, err))
 	}
 	return stream

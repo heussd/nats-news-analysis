@@ -16,7 +16,7 @@ var (
 	cachedKeywords  []model.Keyword
 	lastGenerated   time.Time
 	cacheDuration   = 20 * time.Minute
-	keywordsFileUrl = utils.GetEnv("KEYWORDS_FILE_URL", "https://raw.githubusercontent.com/heussd/nats-news-analysis/refs/heads/main/keyword-matcher-go/internal/keywords/keywords.txt")
+	keywordsFileUrl = utils.GetEnv("KEYWORDS_FILE_URL", "https://raw.githubusercontent.com/heussd/nats-news-analysis/refs/heads/main/golang/internal/keywords/keywords.txt")
 )
 
 func RetrieveKeywordsFile() (keywords []string, err error) {

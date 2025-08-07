@@ -14,7 +14,7 @@ import (
 func TestPushAndPull(t *testing.T) {
 	stream := "test-stream3"
 
-	s, _ := AddStream(stream)
+	s, _ := AddStream(stream, DefaultDupeWindow)
 	c, _ := AddConsumer(stream, "consumer")
 
 	url := "https://www.tagesschau.de/"
@@ -50,12 +50,12 @@ func TestAddStream(t *testing.T) {
 		}
 	}()
 
-	s, err := AddStream(testStreamName)
+	s, err := AddStream(testStreamName, DefaultDupeWindow)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 	assert.Equal(t, testStreamName, s.Config.Name)
 
-	s, err = AddStream(testStreamName)
+	s, err = AddStream(testStreamName, DefaultDupeWindow)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 	assert.Equal(t, testStreamName, s.Config.Name)

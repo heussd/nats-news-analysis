@@ -11,7 +11,7 @@
     "storage": "file",
     "discard": "old",
     "num_replicas": 1,
-    "duplicate_window": 2592000000000000,
+    "duplicate_window": 60000000000,
     "sealed": false,
     "deny_delete": false,
     "deny_purge": false,

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/feed"
 	"github.com/heussd/nats-news-analysis/internal/model"
@@ -11,8 +12,8 @@ import (
 
 func main() {
 	var (
-		input    = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "feed-urls"))
-		output   = queue.AddStreamOrDie(utils.GetEnv("NATS_OUTPUT_STREAM", "article-urls"))
+		input    = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "feed-urls"), time.Minute)
+		output   = queue.AddStreamOrDie(utils.GetEnv("NATS_OUTPUT_STREAM", "article-urls"), queue.DefaultDupeWindow)
 		consumer = queue.AddConsumerOrDie(input, utils.GetEnv("NATS_CONSUMER", "default"))
 	)
 

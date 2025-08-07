@@ -29,8 +29,8 @@ func prepareAndCleanString(fulltext fulltextrss.RSSFullTextResponse) string {
 
 func main() {
 	var (
-		input    = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "article-urls"))
-		output   = queue.AddStreamOrDie(utils.GetEnv("NATS_OUTPUT_STREAM", "match-urls"))
+		input    = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "article-urls"), queue.DefaultDupeWindow)
+		output   = queue.AddStreamOrDie(utils.GetEnv("NATS_OUTPUT_STREAM", "match-urls"), queue.DefaultDupeWindow)
 		consumer = queue.AddConsumerOrDie(input, utils.GetEnv("NATS_CONSUMER", "default"))
 	)
 
