@@ -59,6 +59,10 @@ services:
             - NATS_CONSUMER=lala
         env_file:
             - .env
-
+    watchtower:
+        image: containrrr/watchtower
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        command: --interval 7200
 volumes:
     rss-cache:
