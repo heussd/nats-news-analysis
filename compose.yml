@@ -50,15 +50,13 @@ services:
         environment:
             - 'NATS_SERVER=nats-server:4222'
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
-        env_file:
-            - .env
+            - KEYWORDS_FILE_URL=${KEYWORDS_FILE_URL}
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
-            - NATS_CONSUMER=lala
-        env_file:
-            - .env
+            - 'RAINDROP_COLLECTION=${RAINDROP_COLLECTION}'
+            - 'RAINDROP_ACCESS_TOKEN=${RAINDROP_ACCESS_TOKEN}'
     watchtower:
         image: containrrr/watchtower
         volumes:
