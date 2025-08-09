@@ -11,9 +11,8 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load(filepath.Join("../..", ".env")); err != nil {
-		fmt.Println(err)
-	}
+	godotenv.Load(filepath.Join(".env"))
+	// Ignore potential errors
 }
 
 func Unmarshal(obj any, filename string) (err error) {

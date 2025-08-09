@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/heussd/nats-news-analysis/pkg/utils"
 )
 
@@ -21,14 +22,20 @@ func init() {
 	utils.RequireNotEmpty(RaindropAccessToken, "RAINDROP_ACCESS_TOKEN")
 }
 
-func Add(url string) (err error) {
+func Add(match *model.Match) (err error) {
+
+	var keywords []string
+	for _, v := range match.Keywords {
+		keywords = append(keywords, fmt.Sprintf("· %s", v.Text))
+	}
 
 	payload := postPayload{
 		PleaseParse: pleaseParse{},
 		Collection: collection{
 			Id: RaindropCollectionId,
 		},
-		Link: url,
+		Link: match.Url,
+		Tags: keywords,
 	}
 
 	var jsonBytes []byte

@@ -19,7 +19,7 @@ func main() {
 		func(match *model.Match) {
 			fmt.Printf("Received match from queue %s\n", match.Url)
 
-			if err := raindrop.Add(match.Url); err != nil {
+			if err := raindrop.Add(match); err != nil {
 				fmt.Printf("received error from raindrop: %w", err)
 			} else {
 				fmt.Printf("added to Raindrop: %s\n	", match.Url)

@@ -9,4 +9,5 @@ type postPayload struct {
 	PleaseParse pleaseParse `json:"pleaseParse"`
 	Collection  collection  `json:"collection"`
 	Link        string      `json:"link"`
+	Tags        []string    `json:"tags"`
 }
