@@ -26,7 +26,7 @@ func Add(match *model.Match) (err error) {
 
 	var keywords []string
 	for _, v := range match.Keywords {
-		keywords = append(keywords, fmt.Sprintf("· %s", v.Text))
+		keywords = append(keywords, fmt.Sprintf("ˢᵖᵒⁱˡᵉʳ %s", v.Text))
 	}
 
 	payload := postPayload{
