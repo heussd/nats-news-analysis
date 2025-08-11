@@ -1,0 +1,64 @@
+{
+    "name": "ⁿⁿᵃ",
+    "dockerComposeFile": [
+        "../compose.yml", // First file determines root
+        "./compose.yml"
+    ],
+    "service": "devcontainer",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "dotfiles.repository": "https://github.com/heussd/dotfiles",
+                "dotfiles.targetPath": "~/.dotfiles",
+                "dotfiles.installCommand": ".install.sh",
+                "files.eol": "\n",
+                "editor.formatOnSave": true,
+                "go.buildTags": "",
+                "go.toolsEnvVars": {
+                    "CGO_ENABLED": "0"
+                },
+                "go.useLanguageServer": true,
+                "go.testEnvVars": {
+                    "CGO_ENABLED": "1"
+                },
+                "go.testFlags": ["-v", "-race"],
+                "go.testTimeout": "10s",
+                "go.coverOnSingleTest": true,
+                "go.coverOnSingleTestFile": true,
+                "go.coverOnTestPackage": true,
+                "go.lintTool": "golangci-lint",
+                "go.lintOnSave": "package",
+                "[go]": {
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": "always"
+                    }
+                },
+                "gopls": {
+                    "usePlaceholders": false,
+                    "staticcheck": true,
+                    "formatting.gofumpt": true
+                },
+                "remote.extensionKind": {
+                    "ms-azuretools.vscode-docker": "workspace"
+                }
+            },
+            "extensions": [
+                "golang.go",
+                "davidanson.vscode-markdownlint",
+                "ms-azuretools.vscode-docker", // Docker integration and linting
+                "shardulm94.trailing-spaces", // Show trailing spaces
+                "Gruntfuggly.todo-tree", // Highlights TODO comments
+                "stkb.rewrap", // rewrap comments after n characters on one line
+                "github.vscode-pull-request-github", // Github interaction
+                "bajdzis.vscode-database", // Supports connections to mysql or postgres, over SSL, socked
+                "IBM.output-colorizer", // Colorize your output/test logs
+                "github.copilot" // AI code completion
+            ]
+        }
+    },
+    "containerEnv": {
+        "GOROOT2": "./golang"
+    },
+    "shutdownAction": "stopCompose"
+}

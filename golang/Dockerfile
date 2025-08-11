@@ -1,4 +1,4 @@
-FROM golang:1.22-bullseye AS builder
+FROM golang:1.24.2-bullseye AS base
 
 ENV GO111MODULE=on
 
@@ -7,17 +7,28 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
+
+# https://github.com/drone/ca-certs/blob/master/Dockerfile
+FROM alpine:3.6 AS alpine
+RUN apk add -U --no-cache ca-certificates
+
+
+FROM base as devcontainer
+
+RUN go install -v golang.org/x/tools/gopls@latest
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+RUN go install github.com/nats-io/natscli/nats@latest
+
+COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+FROM base as builder
+
 COPY pkg ./pkg
 COPY internal ./internal
 
 ARG MAIN="_keyword-matcher"
 COPY _${MAIN} ./_${MAIN}
 RUN CGO_ENABLED=0 go build -a -ldflags '-s' -o goapp.bin /app/_${MAIN}
-
-
-# https://github.com/drone/ca-certs/blob/master/Dockerfile
-FROM alpine:3.6 AS alpine
-RUN apk add -U --no-cache ca-certificates
 
 
 FROM scratch
