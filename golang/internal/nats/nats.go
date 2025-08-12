@@ -15,12 +15,14 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-var nc *nats.Conn
-var js nats.JetStreamContext
-var kv nats.KeyValue
+var (
+	nc *nats.Conn
+	js nats.JetStreamContext
+	kv nats.KeyValue
+)
 
 var (
-	NatsServer                      = utils.GetEnv("NATS_SERVER", nats.DefaultURL)
+	NatsServer                      = utils.GetEnv("NATS_URL", nats.DefaultURL)
 	NatsPullConsumerBatchSize       = utils.GetEnv("NATS_CONSUMER_BATCH_SIZE", "5")
 	NatsPullConsumerBatchSizeInt, _ = strconv.Atoi(NatsPullConsumerBatchSize)
 	NatsKeyValueBucket              = utils.GetEnv("NATS_KV_BUCKET", "article-urls-proposed")
@@ -50,7 +52,6 @@ func init() {
 			panic(err)
 		}
 	}
-
 }
 
 func Subscribe[T model.PayloadTypes](
@@ -102,7 +103,6 @@ func Publish[T model.PayloadTypes](
 	natsMessageId string, // Meaningful ID to make use of NATS's deduplication feature
 	persistDeduplication bool,
 ) (*nats.PubAck, error) {
-
 	// Workaround for https://github.com/nats-io/nats-server/issues/3272
 	// Use KV storage for remembering what we already put on the queue.
 	if persistDeduplication && hasKV(message.GetUrl()) {

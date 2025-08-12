@@ -13,7 +13,7 @@ FROM alpine:3.6 AS alpine
 RUN apk add -U --no-cache ca-certificates
 
 
-FROM base as devcontainer
+FROM base AS devcontainer
 
 RUN go install -v golang.org/x/tools/gopls@latest
 RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -21,7 +21,7 @@ RUN go install github.com/nats-io/natscli/nats@latest
 
 COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-FROM base as builder
+FROM base AS builder
 
 COPY pkg ./pkg
 COPY internal ./internal
