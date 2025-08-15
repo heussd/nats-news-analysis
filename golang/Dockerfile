@@ -25,10 +25,10 @@ FROM base AS builder
 
 COPY pkg ./pkg
 COPY internal ./internal
+COPY cmd ./cmd
 
-ARG MAIN="_keyword-matcher"
-COPY _${MAIN} ./_${MAIN}
-RUN CGO_ENABLED=0 go build -a -ldflags '-s' -o goapp.bin /app/_${MAIN}
+ARG MAIN="keyword-matcher"
+RUN CGO_ENABLED=0 go build -a -ldflags '-s' -o goapp.bin /app/cmd/${MAIN}
 
 
 FROM scratch
