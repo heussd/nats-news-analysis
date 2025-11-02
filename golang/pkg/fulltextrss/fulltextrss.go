@@ -43,17 +43,19 @@ func RetrieveFullText(url string) RSSFullTextResponse {
 	var response *http.Response
 	for {
 		var err error
-		if response, err = client.Do(req); err != nil {
-			panic(err)
+		status := 0 // If not overwritten indicates failure
+
+		if response, err = client.Do(req); err == nil {
+			status = response.StatusCode
+			defer response.Body.Close()
+			if status == 200 {
+				break
+			}
 		}
-		if status := response.StatusCode; status != 200 {
-			fmt.Printf("HTTP request failed with status code %d, retrying...\n", status)
-			time.Sleep(2 * time.Second)
-		} else {
-			break
-		}
+
+		fmt.Printf("HTTP request failed with status code %d, retrying...\n", status)
+		time.Sleep(2 * time.Second)
 	}
-	defer response.Body.Close()
 
 	var body []byte
 	if body, err = io.ReadAll(response.Body); err != nil {

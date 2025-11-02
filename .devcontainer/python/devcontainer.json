@@ -1,0 +1,43 @@
+{
+    "name": "Python",
+    "dockerComposeFile": [
+        "../../compose.yml", // First file determines root
+        "./compose.yml"
+    ],
+    "service": "devcontainer",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "dotfiles.repository": "https://github.com/heussd/dotfiles",
+                "dotfiles.targetPath": "~/.dotfiles",
+                "dotfiles.installCommand": ".install.sh",
+                "files.eol": "\n",
+                "editor.formatOnSave": true,
+                "remote.extensionKind": {
+                    "ms-azuretools.vscode-docker": "workspace"
+                }
+            },
+            "extensions": [
+                "davidanson.vscode-markdownlint",
+                "ms-azuretools.vscode-docker",
+                "shardulm94.trailing-spaces",
+                "Gruntfuggly.todo-tree",
+                "stkb.rewrap",
+                "github.vscode-pull-request-github",
+                "bajdzis.vscode-database",
+                "IBM.output-colorizer",
+                "github.copilot",
+                "anweber.vscode-httpyac",
+                "ms-python.debugpy",
+                "ms-python.python",
+                "usernamehw.errorlens",
+                "RooVeterinaryInc.roo-cline"
+            ]
+        }
+    },
+    "containerEnv": {
+        "GOROOT2": "./python"
+    },
+    "shutdownAction": "stopCompose"
+}

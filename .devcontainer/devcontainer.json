@@ -22,7 +22,10 @@
                 "go.testEnvVars": {
                     "CGO_ENABLED": "1"
                 },
-                "go.testFlags": ["-v", "-race"],
+                "go.testFlags": [
+                    "-v",
+                    "-race"
+                ],
                 "go.testTimeout": "10s",
                 "go.coverOnSingleTest": true,
                 "go.coverOnSingleTestFile": true,
@@ -58,7 +61,8 @@
         }
     },
     "containerEnv": {
-        "GOROOT2": "./golang"
+        "GOROOT2": "./golang",
+        "FULLTEXTRSS_SERVER": "http://fullfeedrss:80"
     },
     "shutdownAction": "stopCompose"
 }
