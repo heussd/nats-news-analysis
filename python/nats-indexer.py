@@ -22,7 +22,6 @@ async def process(msg):
     ))
 
     add(prepared_search_docs)
-    await msg.ack()
 
 
 async def run():
@@ -31,8 +30,10 @@ async def run():
 
     await js.subscribe(
         config.NATS_STREAM_NAME,
-        config=nats.js.api.ConsumerConfig(durable_name=config.NATS_CONSUMER_NAME),
+        config=nats.js.api.ConsumerConfig(durable_name=config.NATS_CONSUMER_NAME,
+                                          ack_policy=nats.js.api.AckPolicy.NONE),
         cb=process,
+        manual_ack=False
     )
 
 
