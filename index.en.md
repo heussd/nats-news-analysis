@@ -5,7 +5,7 @@ summary: Automatically find relevant news from the Web.
 
 Systematically retrieves online news articles, enriches them, scans them for keywords and sends hits to [raindrop.io](https://raindrop.io/). All analysis components are loosely-coupled with [NATS.io](https://nats.io/) queues, which also allows scaling single-core-CPU-intensive components easily.
 
-![](architecture.svg)
+![](architecture.drawio.svg)
 
 [Open In Draw.io](https://app.diagrams.net/?url=https://raw.githubusercontent.com/heussd/nats-news-analysis/main/architecture.drawio)
 
