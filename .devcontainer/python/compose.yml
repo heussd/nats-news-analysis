@@ -3,6 +3,9 @@ services:
     article-feeder: !reset ""
     raindrop-integration: !reset ""
     watchtower: !reset ""
+    news-feeder:
+        environment:
+            - 'FULLTEXTRSS_SERVER=http://fullfeedrss:80'
     devcontainer:
         build:
             context: ./python/
