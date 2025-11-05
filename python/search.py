@@ -4,5 +4,5 @@ from ai_search import search
 
 
 if __name__ == "__main__":
-    query = "space"
+    query = "deutsch"
     print(json.dumps(search(query), indent=2))

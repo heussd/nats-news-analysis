@@ -1,7 +1,10 @@
 services:
   service:
-    build: .
+    build:
+      context: .
+      target: search-mcp-server
     env_file:
       - ../.env
     ports:
       - "8000:8000"
+

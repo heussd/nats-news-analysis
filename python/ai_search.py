@@ -7,6 +7,10 @@ import requests
 
 
 def add(searchDocs: List[dict]):
+    if len(searchDocs) == 0:
+        print("No documents to add.")
+        return
+
     data = {"value": [searchDoc for searchDoc in searchDocs]}
 
     res = requests.post(
@@ -27,8 +31,8 @@ def search(query: str):
     data = json.dumps(
         {
             "search": query,
-            "select": "title, content, url, author, language, date, excerpt, baseUrl",
-            "facets": ["date", "language", "author", "baseUrl"],
+            "top": 10,
+            "select": "title, content, url, author, language, date, baseUrl",
             "vectorQueries": [
                 {
                     "kind": "vector",

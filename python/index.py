@@ -5,6 +5,7 @@ from model import SearchDoc
 
 import config
 from ai_search import add
+import base64
 
 
 def prepare(searchDoc: Union[SearchDoc, List[SearchDoc]]):
@@ -13,24 +14,29 @@ def prepare(searchDoc: Union[SearchDoc, List[SearchDoc]]):
     else:
         documents = searchDoc
 
-    embeddings_list = list(config.model.embed([doc.content for doc in documents]))
+    embeddings_list = list(config.model.embed([f"{doc.title} {doc.excerpt} {doc.content}" for doc in documents]))
 
-    jsonDocs = [
-        {
+    jsonDocs = []
+
+    for idx, searchDoc in enumerate(documents):
+        if not searchDoc.url:
+            continue
+
+        jsonDocs.append(
+            {
             "@search.action": "mergeOrUpload",
-            "id": searchDoc.id,
+            "id": base64.b64encode(searchDoc.url.encode()).decode(),
             "title": searchDoc.title,
             "excerpt": searchDoc.excerpt,
             "author": searchDoc.author,
             "language": searchDoc.language,
-            "url": searchDoc.url or "",
+            "url": searchDoc.url,
             "baseUrl": "/".join(searchDoc.url.split("/")[:3]) if searchDoc.url else "",
             "content": searchDoc.content,
-            "vector": embeddings_list[documents.index(searchDoc)],
+            "vector": embeddings_list[idx],
             "date": searchDoc.date or str(datetime.now().astimezone().isoformat()),
-        }
-        for searchDoc in documents
-    ]
+            }
+        )
 
     return jsonDocs
 
@@ -43,6 +49,7 @@ if __name__ == "__main__":
             author="John Doe",
             language="en",
             content="Gday this is an important Australian message.",
+            url="https://example.com/doc1",
         ),
         SearchDoc(
             title="Example Document",
@@ -50,6 +57,7 @@ if __name__ == "__main__":
             author="John Doe",
             language="de",
             content="Guten Tag das ist eine wichtige deutsche Nachricht.",
+            url="https://example.com/doc2",
         ),
     ]
 
