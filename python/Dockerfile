@@ -40,7 +40,7 @@ ENV PATH="/root/go/bin:${PATH}"
 
 FROM base as build
 
-COPY .py ./
+COPY *.py ./
 
 # Sync the project
 RUN --mount=type=cache,target=/root/.cache/uv \
