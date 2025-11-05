@@ -1,13 +1,11 @@
 services:
-    feed-feeder: !reset
-    article-feeder: !reset
-    news-feeder: !reset
-    keyword-matcher: !reset
-    raindrop-integration: !reset
-    watchtower: !reset
+    feed-feeder: !reset ""
+    article-feeder: !reset ""
+    raindrop-integration: !reset ""
+    watchtower: !reset ""
     devcontainer:
         build:
-            context: ./golang/
+            context: ./python/
             dockerfile: Dockerfile
             target: devcontainer
         environment:

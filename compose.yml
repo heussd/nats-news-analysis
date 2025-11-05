@@ -27,7 +27,7 @@ services:
         depends_on:
             - fullfeedrss
         ports:
-            - '80:80'
+            - '8080:80'
     feed-feeder:
         image: ghcr.io/heussd/nats-news-analysis/feed-feeder:latest
         environment:
@@ -45,13 +45,19 @@ services:
         environment:
             - 'NATS_SERVER=nats-server:4222'
         restart: always
-    keyword-matcher:
+    news-feeder:
         deploy:
-            replicas: 1
-        image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
+            replicas: 2
+        image: ghcr.io/heussd/nats-news-analysis/news-feeder:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
+    keyword-matcher:
+        deploy:
+            replicas: 6
+        image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
+        environment:
+            - 'NATS_SERVER=nats-server:4222'
             - KEYWORDS_FILE_URL=${KEYWORDS_FILE_URL}
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
@@ -59,6 +65,25 @@ services:
             - 'NATS_SERVER=nats-server:4222'
             - 'RAINDROP_COLLECTION=${RAINDROP_COLLECTION}'
             - 'RAINDROP_ACCESS_TOKEN=${RAINDROP_ACCESS_TOKEN}'
+    nats-indexer:
+        deploy:
+            replicas: 2
+        image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
+        environment:
+            - 'NATS_SERVER=nats-server:4222'
+            - 'AI_SEARCH_ENDPOINT=${AI_SEARCH_ENDPOINT}'
+            - 'AI_SEARCH_API_KEY=${AI_SEARCH_API_KEY}'
+            - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
+    search-mcp-server:
+        deploy:
+            replicas: 0
+        image: ghcr.io/heussd/nats-news-analysis/search-mcp-server:latest
+        ports:
+            - '8000:8000'
+        environment:
+            - 'AI_SEARCH_ENDPOINT=${AI_SEARCH_ENDPOINT}'
+            - 'AI_SEARCH_API_KEY=${AI_SEARCH_API_KEY}'
+            - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
     watchtower:
         image: containrrr/watchtower
         volumes:

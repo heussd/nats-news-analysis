@@ -1,0 +1,8 @@
+{
+    "mcpServers": {
+        "news-search": {
+            "type": "streamable-http",
+            "url": "http://localhost:8000/mcp"
+        }
+    }
+}
