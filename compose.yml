@@ -47,14 +47,14 @@ services:
         restart: always
     news-feeder:
         deploy:
-            replicas: 1
+            replicas: 2
         image: ghcr.io/heussd/nats-news-analysis/news-feeder:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
             - 'FULLTEXTRSS_SERVER=http://loadbalancer:80'
     keyword-matcher:
         deploy:
-            replicas: 1
+            replicas: 6
         image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'
@@ -67,7 +67,7 @@ services:
             - 'RAINDROP_ACCESS_TOKEN=${RAINDROP_ACCESS_TOKEN}'
     nats-indexer:
         deploy:
-            replicas: 1
+            replicas: 2
         image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
         environment:
             - 'NATS_SERVER=nats-server:4222'

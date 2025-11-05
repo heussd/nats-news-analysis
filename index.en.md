@@ -7,13 +7,14 @@ Systematically retrieves online news articles, enriches them, scans them for key
 
 ![](architecture.drawio.svg)
 
-[Open In Draw.io](https://app.diagrams.net/?url=https://raw.githubusercontent.com/heussd/nats-news-analysis/main/architecture.drawio)
+[Open In Draw.io](https://app.diagrams.net/?url=https://raw.githubusercontent.com/heussd/nats-news-analysis/main/architecture.drawio.svg)
 
-The system has three NATS queues:
+The system has the following NATS queues:
 
 1. `feed-urls` - URLs of RSS feeds.
-2. `article-urls` - URLs of individual articles of RSS feeds.
-3. `match-urls` - URLs of positive matching articles.
+1. `article-urls` - URLs of individual articles of RSS feeds.
+1. `news` - News texts and their metadata.
+1. `match-urls` - URLs of positive matching articles.
 
 ## Involved services
 
@@ -22,8 +23,10 @@ All services are orchestrated and scaled with `compose.yml`.
 ### Custom services
 
 -   [ghcr.io/heussd/nats-news-analysis/feed-feeder](https://ghcr.io/heussd/nats-news-analysis/feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
--   [ghcr.io/heussd/nats-news-analysis/rss-article-url-feeder-go](https://ghcr.io/heussd/nats-news-analysis/article-feeder) - **Golang** - Feeds news articles from RSS feeds.
--   [ghcr.io/heussd/nats-news-analysis/keyword-matcher-go](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher) - **Golang** - Matches against keywords list.
+-   [ghcr.io/heussd/nats-news-analysis/article-feeder](https://ghcr.io/heussd/nats-news-analysis/article-feeder) - **Golang** - Feeds news article URLs from RSS feeds.
+-   [ghcr.io/heussd/nats-news-analysis/news-feeder](https://ghcr.io/heussd/nats-news-analysis/news-feeder) - **Golang** - Retrieves news and feeds article content plus metadata.
+-   [ghcr.io/heussd/nats-news-analysis/keyword-matcher](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher) - **Golang** - Matches against keywords list.
+-   [ghcr.io/heussd/nats-news-analysis/nats-indexer](https://ghcr.io/heussd/nats-news-analysis/nats-indexer) - **Python** - Indexes news and their metadata.
 -   [ghcr.io/heussd/nats-news-analysis/raindrop-integration](https://ghcr.io/heussd/nats-news-analysis/raindrop-integration) - **Golang** - Publishes matches on [raindrop.io](https://raindrop.io/).
 
 ### Third party services
@@ -35,6 +38,7 @@ All services are orchestrated and scaled with `compose.yml`.
 -   [Prometheus](https://prometheus.io/) - Metrics & monitoring
 -   [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation
 -   [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats
+-   [Watchtower](https://github.com/containrrr/watchtower) - Keep containers updated.
 
 ## Message queue for scaling
 
