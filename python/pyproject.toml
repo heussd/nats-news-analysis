@@ -11,5 +11,6 @@ dependencies = [
     "nats-py>=2.11.0",
     "numpyencoder>=0.3.2",
     "pydantic>=2.12.3",
+    "readabilipy>=0.3.0",
     "requests>=2.32.5",
 ]

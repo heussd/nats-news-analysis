@@ -11,3 +11,4 @@ urls-primary.txt
 urls-secondary.txt
 prom-storage
 __debug_*
+.env

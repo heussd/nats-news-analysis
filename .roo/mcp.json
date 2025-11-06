@@ -2,7 +2,27 @@
     "mcpServers": {
         "news-search": {
             "type": "streamable-http",
-            "url": "http://localhost:8000/mcp"
+            "url": "http://search-mcp-server:8000/mcp",
+            "alwaysAllow": [
+                "search",
+                "retrieve_article_full_text",
+                "news_start_page"
+            ]
+        },
+        "youtube-transcript": {
+            "command": "uvx",
+            "args": [
+                "--from",
+                "git+https://github.com/jkawamoto/mcp-youtube-transcript",
+                "mcp-youtube-transcript"
+            ],
+            "alwaysAllow": [
+                "get_transcript",
+                "get_video_info"
+            ],
+            "disabledTools": [
+                "get_timed_transcript"
+            ]
         }
     }
 }

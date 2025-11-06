@@ -16,6 +16,15 @@ The system has the following NATS queues:
 1. `news` - News texts and their metadata.
 1. `match-urls` - URLs of positive matching articles.
 
+
+The outcomes of this system are:
+
+1. A Raindrop.io collection with articles matching to keywords.
+1. An Azure AI Search index prepared for hybrid search on news.
+1. A Grafana dashboard with metrics.
+1. An MCP-Server that allows consuming 1 and 2 with an agentic LLM (such as [Roo Code](https://roocode.com)).
+
+
 ## Involved services
 
 All services are orchestrated and scaled with `compose.yml`.
@@ -33,11 +42,11 @@ All services are orchestrated and scaled with `compose.yml`.
 
 -   [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
 -   [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
--   [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy
--   [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus
--   [Prometheus](https://prometheus.io/) - Metrics & monitoring
--   [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation
--   [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats
+-   [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy.
+-   [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus.
+-   [Prometheus](https://prometheus.io/) - Metrics & monitoring.
+-   [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation.
+-   [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats.
 -   [Watchtower](https://github.com/containrrr/watchtower) - Keep containers updated.
 
 ## Message queue for scaling

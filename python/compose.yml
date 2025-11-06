@@ -1,5 +1,6 @@
 services:
   service:
+    image: ghcr.io/heussd/nats-news-analysis/search-mcp-server:latest
     build:
       context: .
       target: search-mcp-server

@@ -1,0 +1,29 @@
+services:
+    feed-feeder: !reset ""
+    article-feeder: !reset ""
+    raindrop-integration: !reset ""
+    watchtower: !reset ""
+    news-feeder: !reset ""
+    nats-server: !reset ""
+    keyword-matcher: !reset ""
+    nats-indexer: !reset ""
+    loadbalancer: !reset ""
+    search-mcp-server:
+        deploy:
+            replicas: 1
+    devcontainer:
+        build:
+            context: .devcontainer/mcp-news-desk/
+        volumes:
+            # Mounts the project folder to '/workspace'. While this file is in .devcontainer,
+            # mounts are relative to the first file in the list, which is a level up.
+            - .:/workspace:cached
+
+        # [Optional] Required for ptrace-based debuggers like C++, Go, and Rust
+        cap_add:
+            - SYS_PTRACE
+        security_opt:
+            - seccomp:unconfined
+
+        # Overrides default command so things don't shut down after the process ends.
+        command: /bin/sh -c "while sleep 1000; do :; done"

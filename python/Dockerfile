@@ -25,7 +25,7 @@ ENV HF_HUB_OFFLINE=1 \
     ORT_DISABLE_ALL_LOGS=1
 
 
-FROM base as devcontainer
+FROM base AS devcontainer
 
 RUN apt update && apt install -y --no-install-recommends \
     golang \
@@ -38,7 +38,7 @@ RUN go install github.com/nats-io/natscli/nats@latest
 ENV PATH="/root/go/bin:${PATH}"
 
 
-FROM base as build
+FROM base AS build
 
 COPY *.py ./
 
@@ -51,12 +51,12 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
 
-FROM build as search-mcp-server
+FROM build AS search-mcp-server
 
-CMD ["uv", "run", "search-mcp-server.py"]
+CMD ["uv", "run", "mcp-server.py"]
 
 
-FROM build as nats-indexer
+FROM build AS nats-indexer
 
 CMD ["uv", "run", "nats-indexer.py"]
 
