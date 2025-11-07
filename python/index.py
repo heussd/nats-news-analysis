@@ -25,7 +25,7 @@ def prepare(searchDoc: Union[SearchDoc, List[SearchDoc]]):
         jsonDocs.append(
             {
             "@search.action": "mergeOrUpload",
-            "id": base64.b64encode(searchDoc.url.encode()).decode(),
+            "id": base64.urlsafe_b64encode(searchDoc.url.encode()).decode().rstrip("="),
             "title": searchDoc.title,
             "excerpt": searchDoc.excerpt,
             "author": searchDoc.author,
