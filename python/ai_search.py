@@ -6,7 +6,7 @@ import config
 import requests
 
 
-def add(searchDocs: List[dict]):
+def add(searchDocs: List[dict]) -> bool:
     if len(searchDocs) == 0:
         print("No documents to add.")
         return
@@ -22,9 +22,12 @@ def add(searchDocs: List[dict]):
         data=json.dumps(data, cls=NumpyEncoder),
     )
 
-    res.raise_for_status()
     if res.status_code == 200:
         print(f"{len(searchDocs)} documents added to the search index successfully.")
+        return True
+    else:
+        print(f"Failed to add documents to the search index. Status code: {res.status_code}, Status text: {res.text}")
+        return False
 
 
 def search(query: str):

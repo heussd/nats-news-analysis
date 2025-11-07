@@ -68,7 +68,6 @@ services:
     nats-indexer:
         deploy:
             replicas: 1
-        restart: always
         image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
         environment:
             - 'NATS_URL=nats-server:4222'

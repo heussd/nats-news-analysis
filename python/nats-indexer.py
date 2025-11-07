@@ -22,7 +22,8 @@ async def process(msgs: List[nats.aio.msg.Msg]):
             url=json_data["url"],
         ))
     prepared_search_docs = prepare(jsonmsgs)
-    add(prepared_search_docs)
+    if not add(prepared_search_docs):
+        raise Exception("Failed to add documents to AI search index")
 
 
 async def run():
