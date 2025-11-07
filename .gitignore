@@ -12,3 +12,4 @@ urls-secondary.txt
 prom-storage
 __debug_*
 .env
+*.pyc

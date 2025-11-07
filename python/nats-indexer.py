@@ -44,7 +44,8 @@ async def run():
             for msg in msgs:
                 await msg.ack()
         except asyncio.TimeoutError:
-            print("No new messages, waiting...")
+            print("No new messages, waiting 10 secs...")
+            await asyncio.sleep(10)
             continue
 
 

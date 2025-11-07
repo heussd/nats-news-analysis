@@ -37,7 +37,7 @@
         }
     },
     "containerEnv": {
-        "NATS_URL": "http://nats-server:4222"
+        "NATS_URL": "nats://nats-server:4222"
     },
     "shutdownAction": "stopCompose"
 }
