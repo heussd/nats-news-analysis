@@ -36,7 +36,7 @@ api-key: {{AI_SEARCH_API_KEY}}
     test.status(201)
 }}
 {
-    "name": "index",  
+    "name": "index",
     "fields": [
         {"name": "id", "type": "Edm.String", "key": true, "filterable": true},
         {"name": "title", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": true, "facetable": true},
@@ -46,7 +46,7 @@ api-key: {{AI_SEARCH_API_KEY}}
         {"name": "language", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": true, "facetable": true},
         {"name": "url", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": true, "facetable": true},
         {"name": "baseUrl", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": true, "facetable": true},
-        {"name": "content", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": true, "facetable": true},
+        {"name": "content", "type": "Edm.String", "searchable": true, "filterable": false, "retrievable": true, "sortable": false, "facetable": false},
         {
             "name": "vector",
             "type": "Collection(Edm.Single)",
