@@ -1,0 +1,28 @@
+{
+    "name": "MCP News Desk",
+    "dockerComposeFile": [
+        "../../compose.yml", // First file determines root
+        "./compose.yml"
+    ],
+    "service": "devcontainer",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "dotfiles.repository": "https://github.com/heussd/dotfiles",
+                "dotfiles.targetPath": "~/.dotfiles",
+                "dotfiles.installCommand": ".install.sh",
+                "files.eol": "\n",
+                "editor.formatOnSave": true,
+                "remote.extensionKind": {
+                    "ms-azuretools.vscode-docker": "workspace"
+                }
+            },
+            "extensions": [
+                "usernamehw.errorlens",
+                "RooVeterinaryInc.roo-cline"
+            ]
+        }
+    },
+    "shutdownAction": "stopCompose"
+}

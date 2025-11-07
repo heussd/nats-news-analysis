@@ -67,7 +67,7 @@ services:
             - 'RAINDROP_ACCESS_TOKEN=${RAINDROP_ACCESS_TOKEN}'
     nats-indexer:
         deploy:
-            replicas: 2
+            replicas: 1
         image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
         environment:
             - 'NATS_URL=nats-server:4222'
@@ -84,6 +84,7 @@ services:
             - 'AI_SEARCH_ENDPOINT=${AI_SEARCH_ENDPOINT}'
             - 'AI_SEARCH_API_KEY=${AI_SEARCH_API_KEY}'
             - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
+            - 'RAINDROP_RSS_FEED=${RAINDROP_RSS_FEED}'
     watchtower:
         image: containrrr/watchtower
         volumes:

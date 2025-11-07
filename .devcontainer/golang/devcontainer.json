@@ -1,7 +1,7 @@
 {
-    "name": "ⁿⁿᵃ",
+    "name": "Golang",
     "dockerComposeFile": [
-        "../compose.yml", // First file determines root
+        "../../compose.yml", // First file determines root
         "./compose.yml"
     ],
     "service": "devcontainer",
