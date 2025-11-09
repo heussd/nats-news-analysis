@@ -1,0 +1,17 @@
+POST {{AI_SEARCH_ENDPOINT}}/indexes('{{AI_SEARCH_INDEX_NAME}}')
+    /docs
+    /search.post.search
+    ?api-version={{AI_SEARCH_API_VERSION}}
+Content-Type: application/json
+api-key: {{AI_SEARCH_API_KEY}}
+?? status == 200
+?? duration < 500
+{{
+    test.status(200);
+    test.totalTime(500);
+}}
+{
+    "search": "space",
+    "select": "title",
+    "facets": ["date", "language", "author", "baseUrl"]
+}

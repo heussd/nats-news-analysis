@@ -1,0 +1,8 @@
+# @note Are you sure to delete the index?
+# @no-response-view
+DELETE {{AI_SEARCH_ENDPOINT}}/indexes
+    /index
+    ?api-version={{AI_SEARCH_API_VERSION}}
+Content-Type: application/json
+api-key: {{AI_SEARCH_API_KEY}}
+?? status == 204

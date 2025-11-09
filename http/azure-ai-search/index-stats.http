@@ -1,0 +1,6 @@
+GET {{AI_SEARCH_ENDPOINT}}/indexes('{{AI_SEARCH_INDEX_NAME}}')
+    /search.stats
+    ?api-version={{AI_SEARCH_API_VERSION}}
+Content-Type: application/json
+api-key: {{AI_SEARCH_API_KEY}}
+?? status == 200

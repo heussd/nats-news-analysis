@@ -1,42 +1,10 @@
-## Search
-POST {{AI_SEARCH_ENDPOINT}}/indexes('index')/docs/search.post.search?api-version={{AI_SEARCH_API_VERSION}}   HTTP/1.1
+POST {{AI_SEARCH_ENDPOINT}}/indexes
+    ?api-version={{AI_SEARCH_API_VERSION}}
 Content-Type: application/json
 api-key: {{AI_SEARCH_API_KEY}}
+?? status == 201
 {
-    "search": "schneller",
-    "select": "title",
-    "facets": ["date", "language", "author", "baseUrl"]
-}
-?? status == 200
-
-### Add
-POST {{AI_SEARCH_ENDPOINT}}/indexes('index')/docs/search.index?api-version={{AI_SEARCH_API_VERSION}}
-Content-Type: application/json
-api-key: {{AI_SEARCH_API_KEY}}
-{
-  "value": [
-    {
-      "@search.action": "mergeOrUpload",
-      "docId": "12",
-      "name": "test"
-    },
-    {
-      "@search.action": "mergeOrUpload",
-      "docId": "13",
-      "name": "test"
-    }
-  ]
-}
-
-### Create index
-POST {{AI_SEARCH_ENDPOINT}}/indexes?api-version={{AI_SEARCH_API_VERSION}}  HTTP/1.1
-Content-Type: application/json
-api-key: {{AI_SEARCH_API_KEY}}
-{{
-    test.status(201)
-}}
-{
-    "name": "index",
+    "name": "{{AI_SEARCH_INDEX_NAME}}",
     "fields": [
         {"name": "id", "type": "Edm.String", "key": true, "filterable": true},
         {"name": "title", "type": "Edm.String", "searchable": true, "filterable": true, "retrievable": true, "sortable": true, "facetable": true},
@@ -78,17 +46,3 @@ api-key: {{AI_SEARCH_API_KEY}}
         ]
     }
 }
-
-
-## Delete an index
-DELETE {{AI_SEARCH_ENDPOINT}}/indexes/index?api-version={{AI_SEARCH_API_VERSION}}
-    Content-Type: application/json
-    api-key: {{AI_SEARCH_API_KEY}}
-    ?? status == 204
-
-
-## List Indexes
-GET {{AI_SEARCH_ENDPOINT}}/indexes?api-version=2025-09-01  HTTP/1.1
-  Content-Type: application/json
-  api-key: {{AI_SEARCH_API_KEY}}
-    ?? status == 200

@@ -1,0 +1,5 @@
+GET {{AI_SEARCH_ENDPOINT}}/indexes
+    ?api-version={{AI_SEARCH_API_VERSION}}
+Content-Type: application/json
+api-key: {{AI_SEARCH_API_KEY}}
+?? status == 200

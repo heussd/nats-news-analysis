@@ -9,7 +9,7 @@ on:
             - 'architecture.drawio'
             - 'architecture.drawio.svg'
             - '**.png'
-            - '**.http'
+            - '**/*.http'
 jobs:
     bake:
         runs-on: ubuntu-latest

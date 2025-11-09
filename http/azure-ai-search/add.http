@@ -1,0 +1,18 @@
+POST {{AI_SEARCH_ENDPOINT}}/indexes('{{AI_SEARCH_INDEX_NAME}}')
+  /docs
+  /search.index
+  ?api-version={{AI_SEARCH_API_VERSION}}
+Content-Type: application/json
+api-key: {{AI_SEARCH_API_KEY}}
+{
+  "value": [
+    {
+      "@search.action": "mergeOrUpload",
+      "name": "test"
+    },
+    {
+      "@search.action": "mergeOrUpload",
+      "name": "test"
+    }
+  ]
+}
