@@ -8,4 +8,17 @@ services:
       - ../.env
     ports:
       - "8000:8000"
+  fullfeedrss:
+    image: docker.io/heussd/fivefilters-full-text-rss:latest
+    mem_limit: 2G
+    restart: always
+    deploy:
+        replicas: 2
+    environment:
+        # Leave empty to disable admin section
+        - FTR_ADMIN_PASSWORD=
+    volumes:
+        - 'rss-cache:/var/www/html/cache'
 
+volumes:
+    rss-cache:

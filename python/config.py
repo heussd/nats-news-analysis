@@ -14,12 +14,12 @@ AI_SEARCH_API_KEY = os.getenv("AI_SEARCH_API_KEY", None)
 
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", None)
 
-if not all([AI_SEARCH_ENDPOINT, AI_SEARCH_API_VERSION, AI_SEARCH_API_KEY, EMBEDDING_MODEL_NAME]):
+if not all(
+    [AI_SEARCH_ENDPOINT, AI_SEARCH_API_VERSION, AI_SEARCH_API_KEY, EMBEDDING_MODEL_NAME]
+):
     raise ValueError("Missing required environment variable")
 
 
 model = TextEmbedding(
-    model_name=EMBEDDING_MODEL_NAME,
-    cache_folder="/.cache/",
-    local_files_only=True
+    model_name=EMBEDDING_MODEL_NAME, cache_folder="/.cache/", local_files_only=True
 )

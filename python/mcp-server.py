@@ -19,7 +19,9 @@ async def news_start_page() -> str:
     Args:
         None
     """
-    url = os.getenv("RAINDROP_RSS_FEED", "https://www.abc.net.au/news/feed/2942460/rss.xml")
+    url = os.getenv(
+        "RAINDROP_RSS_FEED", "https://www.abc.net.au/news/feed/2942460/rss.xml"
+    )
     spoiler = requests.get(url, verify=False)
     spoiler.raise_for_status()
     data = spoiler.text
@@ -27,14 +29,28 @@ async def news_start_page() -> str:
 
 
 @mcp.tool
-def search(query: str) -> str:
+def search(query: str, top: int = 10, baseUrl: str = None) -> str:
     """
     Find related news to a query with a multi-language, semantic search. Do not search for generic terms such as "latest technology trends 2025", but search for specific technologies, keywords, names, events, etc.
 
     Args:
         query (str): The search query. Can be in any language. Search will be keyword- and embedding-based.
+        top (int): The number of top results to return (default 10).
     """
-    return json.dumps(ai_search.search(query), indent=0)
+    return json.dumps(ai_search.search(query, top=top), indent=0)
+
+
+@mcp.tool
+def latest_on(query: str, top: int = 200, baseUrl: str = None) -> str:
+    """
+    Find the latest things related to a query, based on a baseUrl such as github.com. Do not search for generic terms such as "latest technology trends 2025", but search for specific technologies, keywords, names, events, etc.
+
+    Args:
+        query (str): The search query. Can be in any language. Search will be keyword- and embedding-based.
+        top (int): The number of top results to return (default 200).
+        baseUrl (str): The base URL to filter the search results.
+    """
+    return json.dumps(ai_search.search(query, top=top, baseUrl=baseUrl), indent=0)
 
 
 @mcp.tool()

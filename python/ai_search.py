@@ -26,16 +26,18 @@ def add(searchDocs: List[dict]) -> bool:
         print(f"{len(searchDocs)} documents added to the search index successfully.")
         return True
     else:
-        print(f"Failed to add documents to the search index. Status code: {res.status_code}, Status text: {res.text}")
+        print(
+            f"Failed to add documents to the search index. Status code: {res.status_code}, Status text: {res.text}"
+        )
         return False
 
 
-def search(query: str):
+def search(query: str, top: int = 10, baseUrl: str = None) -> dict:
     data = json.dumps(
         {
             "search": query,
-            "top": 10,
-            "select": "title, content, url, author, language, date, baseUrl",
+            "top": top,
+            "select": "title, excerpt, date, url",
             "vectorQueries": [
                 {
                     "kind": "vector",
@@ -44,6 +46,8 @@ def search(query: str):
                     "fields": "vector",
                 },
             ],
+            "filter": f"search.ismatch('*{baseUrl}', 'baseUrl')" if baseUrl else None,
+            "orderby": "date desc" if baseUrl else None,
         },
         cls=NumpyEncoder,
     )
