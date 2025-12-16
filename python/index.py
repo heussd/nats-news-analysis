@@ -5,7 +5,7 @@ from model import SearchDoc
 
 import config
 from ai_search import add
-import base64
+import hashlib
 
 
 def prepare(searchDoc: Union[SearchDoc, List[SearchDoc]]):
@@ -22,10 +22,12 @@ def prepare(searchDoc: Union[SearchDoc, List[SearchDoc]]):
         if not searchDoc.url:
             continue
 
+        encoded_id = "sha256-" + hashlib.sha256(searchDoc.url.encode()).hexdigest()
+
         jsonDocs.append(
             {
             "@search.action": "mergeOrUpload",
-            "id": base64.urlsafe_b64encode(searchDoc.url.encode()).decode().rstrip("="),
+            "id": encoded_id,
             "title": searchDoc.title,
             "excerpt": searchDoc.excerpt,
             "author": searchDoc.author,
