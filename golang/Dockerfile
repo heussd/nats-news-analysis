@@ -1,4 +1,4 @@
-FROM golang:1.24.2-bullseye AS base
+FROM golang:1.25-bookworm AS base
 
 ENV GO111MODULE=on
 

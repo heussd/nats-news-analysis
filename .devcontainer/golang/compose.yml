@@ -5,6 +5,9 @@ services:
     keyword-matcher: !reset
     raindrop-integration: !reset
     watchtower: !reset
+    fullfeedrss:
+        ports:
+            - '55800:80'
     devcontainer:
         build:
             context: ./golang/
