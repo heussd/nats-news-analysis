@@ -9,13 +9,10 @@ import (
 	"github.com/heussd/nats-news-analysis/pkg/utils"
 )
 
-func main() {
-	var (
-		stream   = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "match-urls"), queue.DefaultDupeWindow)
-		consumer = queue.AddConsumerOrDie(stream, utils.GetEnv("NATS_CONSUMER", "default"))
-	)
+var subject = utils.GetEnv("NATS_SUBJECT", "match-urls")
 
-	var err = queue.Subscribe(stream, consumer,
+func main() {
+	if err := queue.Subscribe(
 		func(match *model.Match) {
 			fmt.Printf("Received match from queue %s\n", match.Url)
 
@@ -25,10 +22,9 @@ func main() {
 				fmt.Printf("added to Raindrop: %s\n	", match.Url)
 			}
 		},
-		true,
-	)
-
-	if err != nil {
+		queue.SubscribeSubject(subject),
+		queue.StreamNameIsSubjectName(),
+	); err != nil {
 		panic(err)
 	}
 }

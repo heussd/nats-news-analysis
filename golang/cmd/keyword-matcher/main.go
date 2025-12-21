@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -26,20 +25,20 @@ func prepareAndCleanString(news *model.News) string {
 	return text
 }
 
-func main() {
-	var (
-		input    = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "news"), queue.DefaultDupeWindow)
-		output   = queue.AddStreamOrDie(utils.GetEnv("NATS_OUTPUT_STREAM", "match-urls"), queue.DefaultDupeWindow)
-		consumer = queue.AddConsumerOrDie(input, utils.GetEnv("NATS_CONSUMER", "default"))
-	)
+var (
+	subscribeSubject = utils.GetEnv("NATS_SUBSCRIBE_SUBJECT", "news.*")
+	consumerName     = utils.GetEnv("NATS_CONSUMER", "default")
+	publishSubject   = utils.GetEnv("NATS_PUBLISH_SUBJECT", "match-urls")
+)
 
+func main() {
 	// UNIX Time is faster and smaller than most timestamps
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	logger := log.With().
 		Str("service", "keyword-matcher-go").
 		Logger()
 
-	err := queue.Subscribe(input, consumer,
+	err := queue.Subscribe(
 		func(news *model.News) {
 			text := prepareAndCleanString(news)
 
@@ -47,18 +46,22 @@ func main() {
 			var matched []model.Keyword
 			var err error
 			if matched, err = keywords.Match(text); err != nil {
-				fmt.Printf("error matching: %w", err)
+				logger.Error().Err(err).Msg("Failed to match keywords")
+				return
 			}
 			matchingTime := time.Since(matchingStart)
 
 			if len(matched) > 0 {
-				queue.Publish(output,
+				_, err := queue.Publish(
 					model.Match{
 						Url:      news.URL,
 						Keywords: matched,
 					},
-					"", false,
+					queue.PublishSubject(publishSubject),
 				)
+				if err != nil {
+					logger.Error().Err(err).Msg("Failed to publish match")
+				}
 			}
 
 			logger.Info().
@@ -66,7 +69,11 @@ func main() {
 				Int("fulltext-length", len(text)).
 				Int64("keyword-matching-duration-ms", matchingTime.Milliseconds()).
 				Msg("Analysis complete")
-		}, true)
+		},
+		queue.SubscribeSubject(subscribeSubject),
+		queue.WithStreamName("news"),
+		queue.WithConsumerName(consumerName),
+	)
 	if err != nil {
 		panic(err)
 	}

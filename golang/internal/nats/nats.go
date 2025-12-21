@@ -1,3 +1,4 @@
+// Package nats provides abstractions for interacting with NATS messaging service.
 package nats
 
 import (
@@ -26,7 +27,6 @@ var (
 	NatsPullConsumerBatchSize       = utils.GetEnv("NATS_CONSUMER_BATCH_SIZE", "5")
 	NatsPullConsumerBatchSizeInt, _ = strconv.Atoi(NatsPullConsumerBatchSize)
 	NatsKeyValueBucket              = utils.GetEnv("NATS_KV_BUCKET", "article-urls-proposed")
-	DefaultDupeWindow               = time.Hour * 24 * 30
 )
 
 func init() {
@@ -55,14 +55,27 @@ func init() {
 }
 
 func Subscribe[T model.PayloadTypes](
-	stream *nats.StreamInfo,
-	consumer *nats.ConsumerInfo,
 	f func(m *T),
-	loopForever bool,
+	opts ...func(*NatsSubscribeOpts),
 ) (err error) {
+	props := defaultNatsSubscribeOpts
+	for _, opt := range opts {
+		opt(props)
+	}
+
+	fmt.Printf("Setting up NATS subscription with %+v\n", props)
+
+	if _, err = addStream(*props); err != nil {
+		return fmt.Errorf("failed to add stream: %w", err)
+	}
+
+	if _, err = addConsumer(*props); err != nil {
+		return fmt.Errorf("failed to add consumer: %w", err)
+	}
+
 	var sub *nats.Subscription
-	if sub, err = js.PullSubscribe(stream.Config.Name, consumer.Config.Durable); err != nil {
-		return fmt.Errorf("error doing request: %w", err)
+	if sub, err = js.PullSubscribe(props.SubjectName, props.ConsumerName); err != nil {
+		return fmt.Errorf("failed to pull subscribe: %w", err)
 	}
 
 	for {
@@ -89,7 +102,7 @@ func Subscribe[T model.PayloadTypes](
 			f(obj)
 		}
 
-		if !loopForever {
+		if props.TerminateAfterOneMessage {
 			break
 		}
 	}
@@ -98,21 +111,24 @@ func Subscribe[T model.PayloadTypes](
 }
 
 func Publish[T model.PayloadTypes](
-	stream *nats.StreamInfo,
 	message T,
-	natsMessageId string, // Meaningful ID to make use of NATS's deduplication feature
-	persistDeduplication bool,
+	opts ...func(*NatsPublishOptions),
 ) (*nats.PubAck, error) {
+	props := defaultNatsPublishOptions
+	for _, opt := range opts {
+		opt(props)
+	}
+
 	// Workaround for https://github.com/nats-io/nats-server/issues/3272
 	// Use KV storage for remembering what we already put on the queue.
-	if persistDeduplication && hasKV(message.GetUrl()) {
+	if props.PersistDeduplication && hasKV(message.GetUrl()) {
 		return nil, nil
 	}
 
 	headers := nats.Header{}
 
-	if natsMessageId != "" {
-		headers.Add(nats.MsgIdHdr, natsMessageId)
+	if props.NatsMessageID != "" {
+		headers.Add(nats.MsgIdHdr, props.NatsMessageID)
 	}
 
 	var data []byte
@@ -123,7 +139,7 @@ func Publish[T model.PayloadTypes](
 
 	msg := &nats.Msg{
 		Header:  headers,
-		Subject: stream.Config.Name,
+		Subject: props.Subject,
 		Data:    data,
 	}
 
@@ -132,74 +148,56 @@ func Publish[T model.PayloadTypes](
 		return nil, fmt.Errorf("publish failed: %w", err)
 	}
 
-	if persistDeduplication && err == nil {
+	if props.PersistDeduplication {
 		putKV(message.GetUrl())
 	}
 
 	return pubAck, nil
 }
 
-func AddStream(name string, dupe_window time.Duration) (str *nats.StreamInfo, err error) {
+func addStream(props NatsSubscribeOpts) (str *nats.StreamInfo, err error) {
 	if str, err = js.AddStream(&nats.StreamConfig{
-		Name: name,
-		Subjects: []string{
-			name,
-		},
+		Name:       props.StreamName,
+		Subjects:   []string{props.SubjectName},
 		Retention:  nats.LimitsPolicy,
 		MaxAge:     time.Hour * 24 * 90,
-		Duplicates: dupe_window,
+		Duplicates: props.DupeWindow,
 	}); err != nil {
 		if err == nats.ErrStreamNameAlreadyInUse {
-			fmt.Printf("Stream %s already exists with different config\n", name)
+			fmt.Printf("Stream %s already exists with different config\n", props.StreamName)
 			return nil, err
 		}
 		return nil, err
 	}
-	fmt.Printf("Stream %s configured successfully\n", name)
+	fmt.Printf("Stream %s configured successfully\n", props.StreamName)
 	return str, nil
 }
 
-func AddConsumer(streamName, consumerName string) (consumer *nats.ConsumerInfo, err error) {
+func addConsumer(props NatsSubscribeOpts) (consumer *nats.ConsumerInfo, err error) {
 	if consumer, err = js.AddConsumer(
-		streamName,
+		props.StreamName,
 		&nats.ConsumerConfig{
-			Durable:       consumerName,
+			Durable:       props.ConsumerName,
 			DeliverPolicy: nats.DeliverNewPolicy,
 			AckPolicy:     nats.AckExplicitPolicy,
 		}); err != nil {
 		if err == nats.ErrConsumerNameAlreadyInUse {
-			fmt.Printf("Consumer %s already exists with different config\n", consumerName)
+			fmt.Printf("Consumer %s already exists with different config\n", props.ConsumerName)
 			return nil, err
 		}
 		return nil, err
 	}
-	fmt.Printf("Consumer %s configured successfully for stream %s\n", consumerName, streamName)
+	fmt.Printf("Consumer %s configured successfully for stream %s\n", props.ConsumerName, props.StreamName)
 
 	return consumer, nil
 }
 
-func AddStreamOrDie(streamName string, dupe_window time.Duration) (stream *nats.StreamInfo) {
-	var err error
-	if stream, err = AddStream(streamName, dupe_window); err != nil {
-		panic(fmt.Errorf("failed to add stream %s: %w", streamName, err))
-	}
-	return stream
-}
-
-func AddConsumerOrDie(stream *nats.StreamInfo, consumerName string) (consumer *nats.ConsumerInfo) {
-	var err error
-	if consumer, err = AddConsumer(stream.Config.Name, consumerName); err != nil {
-		panic(fmt.Errorf("failed to add consumer %s for stream %s: %v", consumerName, stream.Config.Name, err))
-	}
-	return consumer
-}
-
 func generateMessageId(prefix string, match model.Match) string {
 	hash := sha1.New()
-	io.WriteString(hash, match.Url)
+	_, _ = io.WriteString(hash, match.Url)
 
 	for _, entry := range match.Keywords {
-		io.WriteString(hash, entry.Text)
+		_, _ = io.WriteString(hash, entry.Text)
 	}
 	hexHash := hex.EncodeToString(hash.Sum(nil))
 
@@ -208,7 +206,7 @@ func generateMessageId(prefix string, match model.Match) string {
 
 func workaroundNatsGoKVClientKeyBug(key string) string {
 	hash := sha1.New()
-	io.WriteString(hash, key)
+	_, _ = io.WriteString(hash, key)
 
 	return hex.EncodeToString(hash.Sum(nil))
 }

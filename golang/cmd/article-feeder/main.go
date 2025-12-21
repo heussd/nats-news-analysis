@@ -2,46 +2,43 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/feed"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
-	"github.com/heussd/nats-news-analysis/pkg/utils"
 )
 
 func main() {
-	var (
-		input    = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "feed-urls"), time.Minute)
-		output   = queue.AddStreamOrDie(utils.GetEnv("NATS_OUTPUT_STREAM", "article-urls"), queue.DefaultDupeWindow)
-		consumer = queue.AddConsumerOrDie(input, utils.GetEnv("NATS_CONSUMER", "default"))
-	)
-
-	var err = queue.Subscribe(input, consumer,
+	if err := queue.Subscribe(
 		func(f *model.Feed) {
-			feedUrl := f.Url
+			feedURL := f.Url
 
 			var articleUrls []string
 			var err error
-			if articleUrls, err = feed.FetchFeedAndExtractArticleUrls(feedUrl); err != nil {
-				fmt.Printf("error fetching %s: %w", feedUrl, err)
+			if articleUrls, err = feed.FetchFeedAndExtractArticleUrls(feedURL); err != nil {
+				fmt.Printf("error fetching %s: %v", feedURL, err)
 				return
 			}
 
-			fmt.Printf("Found %d articles in %s\n", len(articleUrls), feedUrl)
-			for _, articleUrl := range articleUrls {
-				queue.Publish(output,
+			fmt.Printf("Found %d articles in %s\n", len(articleUrls), feedURL)
+			for _, articleURL := range articleUrls {
+				if _, err := queue.Publish(
 					model.Article{
-						Url: articleUrl,
+						Url: articleURL,
 					},
-					articleUrl,
-					true,
-				)
+					func(npo *queue.NatsPublishOptions) {
+						npo.Subject = "article-urls"
+						npo.NatsMessageID = articleURL
+						npo.PersistDeduplication = true
+					},
+				); err != nil {
+					fmt.Printf("Failed to publish article URL %s: %v", articleURL, err)
+				}
 			}
-		}, true,
-	)
-
-	if err != nil {
+		},
+		queue.SubscribeSubject("feed-urls"),
+		queue.StreamNameIsSubjectName(),
+	); err != nil {
 		panic(err)
 	}
 }

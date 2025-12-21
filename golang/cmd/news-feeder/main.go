@@ -1,30 +1,25 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/heussd/nats-news-analysis/internal/langdetect"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
 	"github.com/heussd/nats-news-analysis/pkg/fulltextrss"
-	"github.com/heussd/nats-news-analysis/pkg/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
-	var (
-		input    = queue.AddStreamOrDie(utils.GetEnv("NATS_INPUT_STREAM", "article-urls"), queue.DefaultDupeWindow)
-		output   = queue.AddStreamOrDie(utils.GetEnv("NATS_OUTPUT_STREAM", "news"), queue.DefaultDupeWindow)
-		consumer = queue.AddConsumerOrDie(input, utils.GetEnv("NATS_CONSUMER", "default"))
-	)
-
 	// UNIX Time is faster and smaller than most timestamps
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	logger := log.With().
 		Str("service", "news-feeder-go").
 		Logger()
 
-	err := queue.Subscribe(input, consumer,
+	if err := queue.Subscribe(
 		func(article *model.Article) {
 			url := article.Url
 
@@ -32,26 +27,29 @@ func main() {
 			fulltext := fulltextrss.RetrieveFullText(url)
 			retrievalTime := time.Since(retrievalStart)
 
-			queue.Publish(output,
-				model.News{
-					Title:    fulltext.Title,
-					Excerpt:  fulltext.Excerpt,
-					Author:   fulltext.Author,
-					Language: fulltext.Language,
-					URL:      fulltext.Url,
-					Content:  fulltext.Content,
-					Date:     fulltext.Date,
-				},
-				"", false,
+			news := model.MakeNews(fulltext)
+			langPostfix := langdetect.AssignSubjectPostfixBasedOnLanguage(
+				fmt.Sprintf("%s %s", fulltext.Title, fulltext.Content),
 			)
+			news.Language = string(langPostfix)
+
+			if _, err := queue.Publish(
+				news,
+				queue.PublishSubject(
+					fmt.Sprintf("news.%s", langPostfix)),
+			); err != nil {
+				logger.Error().Err(err).Msg("Failed to publish news")
+			}
 
 			logger.Info().
 				Str("domain", fulltext.Domain).
 				Int("fulltext-length", len(fulltext.Content)).
 				Int64("retrieval-duration-ms", retrievalTime.Milliseconds()).
 				Msg("Full text retrieval complete")
-		}, true)
-	if err != nil {
+		},
+		queue.SubscribeSubject("article-urls"),
+		queue.StreamNameIsSubjectName(),
+	); err != nil {
 		panic(err)
 	}
 }
