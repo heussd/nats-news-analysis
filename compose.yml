@@ -56,6 +56,7 @@ services:
         restart: always
         environment:
             - NATS_URL=nats-server:4222
+            - NATS_SUBJECT=match-urls
             - RAINDROP_COLLECTION=${RAINDROP_COLLECTION}
             - RAINDROP_ACCESS_TOKEN=${RAINDROP_ACCESS_TOKEN}
     nats-indexer:

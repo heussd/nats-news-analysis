@@ -1,9 +1,9 @@
-package model
+package fulltextrss
 
-import "github.com/heussd/nats-news-analysis/pkg/fulltextrss"
+import "github.com/heussd/nats-news-analysis/internal/model"
 
-func MakeNews(fulltext fulltextrss.RSSFullTextResponse) News {
-	return News{
+func MakeNews(fulltext RSSFullTextResponse) model.News {
+	return model.News{
 		Title:    fulltext.Title,
 		Excerpt:  fulltext.Excerpt,
 		Author:   fulltext.Author,

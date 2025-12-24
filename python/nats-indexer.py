@@ -30,7 +30,7 @@ async def run():
     nc = await nats.connect(config.NATS_URL)
     js = nc.jetstream()
 
-    psub = await js.pull_subscribe("*",
+    psub = await js.pull_subscribe("news.*",
                                    stream=config.NATS_STREAM_NAME,
                                    durable=config.NATS_CONSUMER_NAME,
                                    config=nats.js.api.ConsumerConfig(

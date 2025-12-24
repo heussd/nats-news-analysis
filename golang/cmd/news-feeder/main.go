@@ -27,7 +27,7 @@ func main() {
 			fulltext := fulltextrss.RetrieveFullText(url)
 			retrievalTime := time.Since(retrievalStart)
 
-			news := model.MakeNews(fulltext)
+			news := fulltextrss.MakeNews(fulltext)
 			langPostfix := langdetect.AssignSubjectPostfixBasedOnLanguage(
 				fmt.Sprintf("%s %s", fulltext.Title, fulltext.Content),
 			)
