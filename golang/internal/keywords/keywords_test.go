@@ -10,6 +10,7 @@ import (
 func hasMatch(matched []model.Keyword, err error) bool {
 	return len(matched) > 0 && err == nil
 }
+
 func firstMatch(matched []model.Keyword, err error) string {
 	if hasMatch(matched, err) {
 		return matched[0].Text
@@ -52,7 +53,6 @@ func TestLocalIT(t *testing.T) {
 	assert.Equal(t, true, hasMatch(Match("Long live the queen.")))
 
 	assert.Equal(t, false, hasMatch(Match("Like king and queen.")))
-
 }
 
 func TestStringMatchReturn(t *testing.T) {
@@ -64,5 +64,8 @@ func TestStringMatchReturn(t *testing.T) {
 
 	text = firstMatch(Match("Long live the queen. Something else"))
 	assert.Equal(t, "(?i)^(?=.*(king|queen))(?=.*long).*", text)
+}
 
+func TestHumanReadable(t *testing.T) {
+	assert.Equal(t, "delicious pie recipes", humanReadable("(?i)(delicious).*(pie|recipes)"))
 }

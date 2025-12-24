@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/feed"
 	"github.com/heussd/nats-news-analysis/internal/model"
@@ -38,6 +39,7 @@ func main() {
 		},
 		queue.SubscribeSubject("feed-urls"),
 		queue.StreamNameIsSubjectName(),
+		queue.WithDeduplicationWindow(time.Hour*2),
 	); err != nil {
 		panic(err)
 	}

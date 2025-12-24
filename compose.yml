@@ -32,12 +32,7 @@ services:
         image: ghcr.io/heussd/nats-news-analysis/feed-feeder:latest
         environment:
             - NATS_URL=http://nats-server:4222
-        volumes:
-            - type: bind
-              source: ./urls.txt
-              target: /urls.txt
-              consistency: cached
-              read_only: true
+            - URLS_URL=${URLS_URL}
     article-feeder:
         image: ghcr.io/heussd/nats-news-analysis/article-feeder:latest
         deploy:

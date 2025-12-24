@@ -8,7 +8,9 @@ services:
     feed-feeder:
         build:
             <<: *build
-            context: bash/.
+            context: golang/.
+            args:
+                - MAIN=feed-feeder
     article-feeder:
         build:
             <<: *build

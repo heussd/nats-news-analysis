@@ -44,6 +44,12 @@ func With10MinuteDuplicationWindowSubscribe() func(*NatsSubscribeOpts) {
 	}
 }
 
+func WithDeduplicationWindow(t time.Duration) func(*NatsSubscribeOpts) {
+	return func(s *NatsSubscribeOpts) {
+		s.DupeWindow = t
+	}
+}
+
 func WithStreamName(streamName string) func(*NatsSubscribeOpts) {
 	return func(s *NatsSubscribeOpts) {
 		s.StreamName = streamName
