@@ -103,3 +103,7 @@ func TestGenerateMessageId(t *testing.T) {
 	id3 := generateMessageId("test-prefix", match3)
 	assert.NotEqual(t, id, id3, "Message IDs should be different for different URLs")
 }
+
+func TestWaiting(t *testing.T) {
+	WaitFor("news.*")
+}

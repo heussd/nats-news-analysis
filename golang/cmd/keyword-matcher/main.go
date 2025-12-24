@@ -73,6 +73,7 @@ func main() {
 		queue.SubscribeSubject(subscribeSubject),
 		queue.WithStreamName("news"),
 		queue.WithConsumerName(consumerName),
+		queue.WaitTillSomeoneWants(publishSubject),
 	)
 	if err != nil {
 		panic(err)

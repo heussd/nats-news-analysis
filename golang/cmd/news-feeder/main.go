@@ -49,6 +49,9 @@ func main() {
 		},
 		queue.SubscribeSubject("article-urls"),
 		queue.StreamNameIsSubjectName(),
+		queue.WaitTillSomeoneWants("news.undetermined"),
+		queue.WaitTillSomeoneWants("news.de"),
+		queue.WaitTillSomeoneWants("news.en"),
 	); err != nil {
 		panic(err)
 	}

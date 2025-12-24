@@ -9,6 +9,8 @@ import (
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
 )
 
+var publishSubject = "article-urls"
+
 func main() {
 	if err := queue.Subscribe(
 		func(f *model.Feed) {
@@ -28,7 +30,7 @@ func main() {
 						Url: articleURL,
 					},
 					func(npo *queue.NatsPublishOptions) {
-						npo.Subject = "article-urls"
+						npo.Subject = publishSubject
 						npo.NatsMessageID = articleURL
 						npo.PersistDeduplication = true
 					},
@@ -40,6 +42,7 @@ func main() {
 		queue.SubscribeSubject("feed-urls"),
 		queue.StreamNameIsSubjectName(),
 		queue.WithDeduplicationWindow(time.Hour*2),
+		queue.WaitTillSomeoneWants(publishSubject),
 	); err != nil {
 		panic(err)
 	}

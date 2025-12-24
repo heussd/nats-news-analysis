@@ -17,7 +17,11 @@ var (
 	waitTime = time.Hour * 2
 )
 
+var publishSubject = "feed-urls"
+
 func main() {
+	nats.WaitFor(publishSubject)
+
 	for {
 		lines, _, err := cloudtextfile.CachedCloudTextFile(urls)
 		if err != nil {
@@ -43,7 +47,7 @@ func main() {
 					Url: u.String(),
 				},
 				func(npo *nats.NatsPublishOptions) {
-					npo.Subject = "feed-urls"
+					npo.Subject = publishSubject
 					npo.NatsMessageID = u.String()
 				},
 			); err != nil {

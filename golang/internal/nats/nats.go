@@ -73,6 +73,10 @@ func Subscribe[T model.PayloadTypes](
 		return fmt.Errorf("failed to add consumer: %w", err)
 	}
 
+	for _, subject := range props.WaitForSubjects {
+		WaitFor(subject)
+	}
+
 	var sub *nats.Subscription
 	if sub, err = js.PullSubscribe(props.SubjectName, props.ConsumerName); err != nil {
 		return fmt.Errorf("failed to pull subscribe: %w", err)
@@ -223,4 +227,15 @@ func hasKV(key string) bool {
 		}
 	}
 	return false
+}
+
+func WaitFor(subject string) {
+	var s string
+	for {
+		if s, _ = js.StreamNameBySubject(subject); s != "" {
+			break
+		}
+		fmt.Printf("Waiting for a stream to accept subject \"%s\"\n", subject)
+		time.Sleep(time.Second * 2)
+	}
 }

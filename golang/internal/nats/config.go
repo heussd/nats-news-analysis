@@ -10,6 +10,7 @@ type NatsSubscribeOpts struct {
 	ConsumerName             string
 	TerminateAfterOneMessage bool
 	DupeWindow               time.Duration
+	WaitForSubjects          []string
 }
 
 var defaultNatsSubscribeOpts = &NatsSubscribeOpts{
@@ -18,6 +19,7 @@ var defaultNatsSubscribeOpts = &NatsSubscribeOpts{
 	ConsumerName:             "default",
 	TerminateAfterOneMessage: false,
 	DupeWindow:               time.Hour * 24 * 90,
+	WaitForSubjects:          []string{},
 }
 
 type NatsPublishOptions struct {
@@ -77,5 +79,11 @@ func WithConsumerName(consumerName string) func(*NatsSubscribeOpts) {
 func StreamNameIsSubjectName() func(*NatsSubscribeOpts) {
 	return func(s *NatsSubscribeOpts) {
 		s.StreamName = s.SubjectName
+	}
+}
+
+func WaitTillSomeoneWants(subject string) func(*NatsSubscribeOpts) {
+	return func(s *NatsSubscribeOpts) {
+		s.WaitForSubjects = append(s.WaitForSubjects, subject)
 	}
 }
