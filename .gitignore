@@ -11,3 +11,5 @@ prom-storage
 __debug_*
 .env
 *.pyc
+
+compose.guests.yml

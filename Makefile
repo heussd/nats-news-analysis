@@ -24,3 +24,11 @@ watch:
 # https://yuriktech.com/2020/03/21/Collecting-Docker-Logs-With-Loki/
 install-loki-driver:
 	docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+
+
+up:
+	docker compose -f compose.yml -f compose.guests.yml up -d
+
+
+ldocker:
+	lazydocker -f compose.yml -f compose.guests.yml
