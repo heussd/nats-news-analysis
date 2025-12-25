@@ -1,6 +1,8 @@
 package fulltextrss
 
-import "github.com/heussd/nats-news-analysis/internal/model"
+import (
+	"github.com/heussd/nats-news-analysis/internal/model"
+)
 
 func MakeNews(fulltext RSSFullTextResponse) model.News {
 	return model.News{

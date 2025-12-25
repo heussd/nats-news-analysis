@@ -2,65 +2,71 @@ package nats
 
 import (
 	"time"
+
+	"github.com/heussd/nats-news-analysis/internal/model"
 )
 
+type NatsStreamOpts struct {
+	StreamName  string
+	SubjectName string
+	DupeWindow  time.Duration
+}
+
+var defaultDupeWindow = time.Hour * 24 * 90
+
+type StreamName string
+
+const (
+	StreamNameFeedUrls    StreamName = "feed-urls"    // Feeds urls
+	StreamNameArticleUrls StreamName = "article-urls" // Articles urls from feeds
+	StreamNameNews        StreamName = "news"         // News articles extracted from article urls
+	StreamNameMatchUrls   StreamName = "match-urls"   // Urls that are matching interests
+)
+
+var StreamConfigs = map[StreamName]NatsStreamOpts{
+	StreamNameFeedUrls: {
+		StreamName:  string(StreamNameFeedUrls),
+		SubjectName: string(StreamNameFeedUrls),
+		DupeWindow:  time.Hour * 2,
+	},
+	StreamNameArticleUrls: {
+		StreamName:  string(StreamNameArticleUrls),
+		SubjectName: string(StreamNameArticleUrls),
+		DupeWindow:  defaultDupeWindow,
+	},
+	StreamNameNews: {
+		StreamName:  string(StreamNameNews),
+		SubjectName: "news.*",
+		DupeWindow:  defaultDupeWindow,
+	},
+	StreamNameMatchUrls: {
+		StreamName:  string(StreamNameMatchUrls),
+		SubjectName: string(StreamNameMatchUrls),
+		DupeWindow:  defaultDupeWindow,
+	},
+}
+
 type NatsSubscribeOpts struct {
-	StreamName               string
-	SubjectName              string
+	NatsStreamOpts
 	ConsumerName             string
 	TerminateAfterOneMessage bool
-	DupeWindow               time.Duration
-	WaitForSubjects          []string
 }
 
-var defaultNatsSubscribeOpts = &NatsSubscribeOpts{
-	StreamName:               "default",
-	SubjectName:              "default",
-	ConsumerName:             "default",
-	TerminateAfterOneMessage: false,
-	DupeWindow:               time.Hour * 24 * 90,
-	WaitForSubjects:          []string{},
-}
-
-type NatsPublishOptions struct {
+type NatsPublishOpts struct {
 	NatsMessageID        string // Meaningful ID to make use of NATS's deduplication feature
 	PersistDeduplication bool
 	Subject              string
 }
 
-var defaultNatsPublishOptions = &NatsPublishOptions{
+var defaultNatsPublishOpts = &NatsPublishOpts{
 	NatsMessageID:        "",
 	PersistDeduplication: false,
 	Subject:              "",
 }
 
-func PublishSubject(subject string) func(*NatsPublishOptions) {
-	return func(c *NatsPublishOptions) {
+func PublishSubject(subject string) func(*NatsPublishOpts) {
+	return func(c *NatsPublishOpts) {
 		c.Subject = subject
-	}
-}
-
-func With10MinuteDuplicationWindowSubscribe() func(*NatsSubscribeOpts) {
-	return func(s *NatsSubscribeOpts) {
-		s.DupeWindow = time.Minute * 10
-	}
-}
-
-func WithDeduplicationWindow(t time.Duration) func(*NatsSubscribeOpts) {
-	return func(s *NatsSubscribeOpts) {
-		s.DupeWindow = t
-	}
-}
-
-func WithStreamName(streamName string) func(*NatsSubscribeOpts) {
-	return func(s *NatsSubscribeOpts) {
-		s.StreamName = streamName
-	}
-}
-
-func SubscribeSubject(subject string) func(*NatsSubscribeOpts) {
-	return func(s *NatsSubscribeOpts) {
-		s.SubjectName = subject
 	}
 }
 
@@ -70,20 +76,41 @@ func StopAfterOneMessage() func(*NatsSubscribeOpts) {
 	}
 }
 
-func WithConsumerName(consumerName string) func(*NatsSubscribeOpts) {
+func SubscribeConsumer(consumerName string) func(*NatsSubscribeOpts) {
 	return func(s *NatsSubscribeOpts) {
 		s.ConsumerName = consumerName
 	}
 }
 
-func StreamNameIsSubjectName() func(*NatsSubscribeOpts) {
+func SubscribeSubject(subjectName string) func(*NatsSubscribeOpts) {
 	return func(s *NatsSubscribeOpts) {
-		s.StreamName = s.SubjectName
+		s.SubjectName = subjectName
 	}
 }
 
-func WaitTillSomeoneWants(subject string) func(*NatsSubscribeOpts) {
+func SubscribeStream(streamName string) func(*NatsSubscribeOpts) {
 	return func(s *NatsSubscribeOpts) {
-		s.WaitForSubjects = append(s.WaitForSubjects, subject)
+		s.NatsStreamOpts.StreamName = streamName
+	}
+}
+
+func GetDefaultStreamConfig[T model.PayloadTypes]() *NatsSubscribeOpts {
+	stream := NatsStreamOpts{}
+	var v any = new(T)
+	switch v.(type) {
+	case model.Article:
+		stream = StreamConfigs[StreamNameArticleUrls]
+	case model.Feed:
+		stream = StreamConfigs[StreamNameFeedUrls]
+	case model.News:
+		stream = StreamConfigs[StreamNameNews]
+	case model.Match:
+		stream = StreamConfigs[StreamNameMatchUrls]
+	}
+
+	return &NatsSubscribeOpts{
+		NatsStreamOpts:           stream,
+		ConsumerName:             "default",
+		TerminateAfterOneMessage: false,
 	}
 }

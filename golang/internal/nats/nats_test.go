@@ -11,10 +11,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var testStreamOpts = &NatsStreamOpts{
+	StreamName:  "test-stream1",
+	SubjectName: "test.*",
+}
+
+var testSubscribeOpts = &NatsSubscribeOpts{
+	NatsStreamOpts:           *testStreamOpts,
+	ConsumerName:             "default",
+	TerminateAfterOneMessage: true,
+}
+
 func TestPushAndPull(t *testing.T) {
-	props := defaultNatsSubscribeOpts
-	props.StreamName = "test-stream3"
-	props.SubjectName = "test.*"
+	props := testStreamOpts
+	consumer := testSubscribeOpts
 
 	_ = js.DeleteStream(props.StreamName)
 	defer func() {
@@ -25,7 +35,7 @@ func TestPushAndPull(t *testing.T) {
 	_, err := addStream(*props)
 
 	assert.NoError(t, err)
-	_, err = addConsumer(*props)
+	_, err = addConsumer(*consumer)
 	assert.NoError(t, err)
 
 	url := "https://www.tagesschau.de/"
@@ -48,13 +58,15 @@ func TestPushAndPull(t *testing.T) {
 			fmt.Printf("%+v\n", m)
 			assert.Equal(t, url, m.Url)
 		},
+		SubscribeStream(testStreamOpts.StreamName),
+		SubscribeSubject(testStreamOpts.SubjectName),
 		StopAfterOneMessage(),
 	)
 	assert.NoError(t, err)
 }
 
 func TestAddStream(t *testing.T) {
-	opts := defaultNatsSubscribeOpts
+	opts := testStreamOpts
 	opts.StreamName = "test-stream"
 
 	defer func() {

@@ -1,29 +1,16 @@
 package main
 
 import (
-	"strings"
 	"time"
 
+	"github.com/heussd/nats-news-analysis/internal/htmlsanitise"
 	"github.com/heussd/nats-news-analysis/internal/keywords"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
 	"github.com/heussd/nats-news-analysis/pkg/utils"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
-
-var bm = bluemonday.StrictPolicy()
-
-func prepareAndCleanString(news *model.News) string {
-	text := strings.Join([]string{
-		news.Title,
-		news.Excerpt,
-		bm.Sanitize(news.Content),
-	}, " ")
-
-	return text
-}
 
 var (
 	subscribeSubject = utils.GetEnv("NATS_SUBSCRIBE_SUBJECT", "news.*")
@@ -40,7 +27,7 @@ func main() {
 
 	err := queue.Subscribe(
 		func(news *model.News) {
-			text := prepareAndCleanString(news)
+			text := htmlsanitise.PrepareAndCleanString(news)
 
 			matchingStart := time.Now()
 			var matched []model.Keyword
@@ -71,9 +58,7 @@ func main() {
 				Msg("Analysis complete")
 		},
 		queue.SubscribeSubject(subscribeSubject),
-		queue.WithStreamName("news"),
-		queue.WithConsumerName(consumerName),
-		queue.WaitTillSomeoneWants(publishSubject),
+		queue.SubscribeConsumer(consumerName),
 	)
 	if err != nil {
 		panic(err)

@@ -23,7 +23,7 @@ func main() {
 			}
 		},
 		queue.SubscribeSubject(subject),
-		queue.StreamNameIsSubjectName(),
+		queue.SubscribeStream(subject),
 	); err != nil {
 		panic(err)
 	}

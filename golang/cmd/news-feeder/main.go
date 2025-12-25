@@ -47,11 +47,6 @@ func main() {
 				Int64("retrieval-duration-ms", retrievalTime.Milliseconds()).
 				Msg("Full text retrieval complete")
 		},
-		queue.SubscribeSubject("article-urls"),
-		queue.StreamNameIsSubjectName(),
-		queue.WaitTillSomeoneWants("news.undetermined"),
-		queue.WaitTillSomeoneWants("news.de"),
-		queue.WaitTillSomeoneWants("news.en"),
 	); err != nil {
 		panic(err)
 	}

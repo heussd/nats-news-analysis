@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/feed"
 	"github.com/heussd/nats-news-analysis/internal/model"
@@ -29,7 +28,7 @@ func main() {
 					model.Article{
 						Url: articleURL,
 					},
-					func(npo *queue.NatsPublishOptions) {
+					func(npo *queue.NatsPublishOpts) {
 						npo.Subject = publishSubject
 						npo.NatsMessageID = articleURL
 						npo.PersistDeduplication = true
@@ -39,10 +38,6 @@ func main() {
 				}
 			}
 		},
-		queue.SubscribeSubject("feed-urls"),
-		queue.StreamNameIsSubjectName(),
-		queue.WithDeduplicationWindow(time.Hour*2),
-		queue.WaitTillSomeoneWants(publishSubject),
 	); err != nil {
 		panic(err)
 	}

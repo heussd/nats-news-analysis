@@ -46,7 +46,7 @@ func main() {
 				model.Feed{
 					Url: u.String(),
 				},
-				func(npo *nats.NatsPublishOptions) {
+				func(npo *nats.NatsPublishOpts) {
 					npo.Subject = publishSubject
 					npo.NatsMessageID = u.String()
 				},

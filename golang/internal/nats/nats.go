@@ -52,29 +52,28 @@ func init() {
 			panic(err)
 		}
 	}
+
+	for key, value := range StreamConfigs {
+		fmt.Printf("Init stream %s with %+v\n", key, value)
+		if _, err := addStream(value); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func Subscribe[T model.PayloadTypes](
 	f func(m *T),
 	opts ...func(*NatsSubscribeOpts),
 ) (err error) {
-	props := defaultNatsSubscribeOpts
+	props := GetDefaultStreamConfig[T]()
 	for _, opt := range opts {
 		opt(props)
 	}
 
-	fmt.Printf("Setting up NATS subscription with %+v\n", props)
-
-	if _, err = addStream(*props); err != nil {
-		return fmt.Errorf("failed to add stream: %w", err)
-	}
+	fmt.Printf("Setting up NATS consumer with %+v\n", props)
 
 	if _, err = addConsumer(*props); err != nil {
 		return fmt.Errorf("failed to add consumer: %w", err)
-	}
-
-	for _, subject := range props.WaitForSubjects {
-		WaitFor(subject)
 	}
 
 	var sub *nats.Subscription
@@ -116,9 +115,9 @@ func Subscribe[T model.PayloadTypes](
 
 func Publish[T model.PayloadTypes](
 	message T,
-	opts ...func(*NatsPublishOptions),
+	opts ...func(*NatsPublishOpts),
 ) (*nats.PubAck, error) {
-	props := defaultNatsPublishOptions
+	props := defaultNatsPublishOpts
 	for _, opt := range opts {
 		opt(props)
 	}
@@ -159,21 +158,26 @@ func Publish[T model.PayloadTypes](
 	return pubAck, nil
 }
 
-func addStream(props NatsSubscribeOpts) (str *nats.StreamInfo, err error) {
-	if str, err = js.AddStream(&nats.StreamConfig{
+func addStream(props NatsStreamOpts) (str *nats.StreamInfo, err error) {
+	cfg := &nats.StreamConfig{
 		Name:       props.StreamName,
 		Subjects:   []string{props.SubjectName},
 		Retention:  nats.LimitsPolicy,
 		MaxAge:     time.Hour * 24 * 90,
 		Duplicates: props.DupeWindow,
-	}); err != nil {
+	}
+	if str, err = js.AddStream(cfg); err != nil {
 		if err == nats.ErrStreamNameAlreadyInUse {
-			fmt.Printf("Stream %s already exists with different config\n", props.StreamName)
-			return nil, err
+			fmt.Printf("Stream %s already exists with different config, reconfiguring...\n", props.StreamName)
+			if str, err = js.UpdateStream(cfg); err != nil {
+				fmt.Printf("Stream reconfiguration failed: %s", err)
+				return nil, err
+			}
+			return str, nil
 		}
 		return nil, err
 	}
-	fmt.Printf("Stream %s configured successfully\n", props.StreamName)
+	fmt.Printf("✅ Stream %s configured successfully\n", props.StreamName)
 	return str, nil
 }
 
