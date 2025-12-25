@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/model"
@@ -68,6 +69,10 @@ func Subscribe[T model.PayloadTypes](
 	props := GetDefaultStreamConfig[T]()
 	for _, opt := range opts {
 		opt(props)
+	}
+
+	if strings.TrimSpace(props.StreamName) == "" {
+		return fmt.Errorf("configuration error: empty stream name in %+v", props)
 	}
 
 	fmt.Printf("Setting up NATS consumer with %+v\n", props)

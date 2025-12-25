@@ -95,17 +95,19 @@ func SubscribeStream(streamName string) func(*NatsSubscribeOpts) {
 }
 
 func GetDefaultStreamConfig[T model.PayloadTypes]() *NatsSubscribeOpts {
-	stream := NatsStreamOpts{}
+	var stream NatsStreamOpts
 	var v any = new(T)
 	switch v.(type) {
-	case model.Article:
+	case *model.Article:
 		stream = StreamConfigs[StreamNameArticleUrls]
-	case model.Feed:
+	case *model.Feed:
 		stream = StreamConfigs[StreamNameFeedUrls]
-	case model.News:
+	case *model.News:
 		stream = StreamConfigs[StreamNameNews]
-	case model.Match:
+	case *model.Match:
 		stream = StreamConfigs[StreamNameMatchUrls]
+	default:
+		panic("No stream configuration found for model type")
 	}
 
 	return &NatsSubscribeOpts{
