@@ -1,6 +1,7 @@
 services:
     nats-server:
         image: docker.io/nats:2.12
+        restart: always
         ports:
             - '4222:4222' # 4222 is for clients.
             - '8222:8222' # 8222 is an HTTP management port for information reporting.
@@ -10,8 +11,8 @@ services:
         command: '--jetstream --http_port 8222 --store_dir /data'
     fullfeedrss:
         image: docker.io/heussd/fivefilters-full-text-rss:latest
-        mem_limit: 3G
         restart: always
+        mem_limit: 3G
         deploy:
             replicas: 2
         environment:
@@ -27,24 +28,24 @@ services:
             - URLS_URL=${URLS_URL}
     article-feeder:
         image: ghcr.io/heussd/nats-news-analysis/article-feeder:latest
+        restart: always
         deploy:
             replicas: 3
         environment:
             - NATS_URL=nats-server:4222
-        restart: always
     news-feeder:
+        image: ghcr.io/heussd/nats-news-analysis/news-feeder:latest
+        restart: always
         deploy:
             replicas: 2
-        restart: always
-        image: ghcr.io/heussd/nats-news-analysis/news-feeder:latest
         environment:
             - NATS_URL=nats-server:4222
             - FULLTEXTRSS_SERVER=http://fullfeedrss:80
     keyword-matcher:
+        image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
+        restart: always
         deploy:
             replicas: 6
-        restart: always
-        image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
         environment:
             - NATS_URL=nats-server:4222
             - KEYWORDS_FILE_URL=${KEYWORDS_FILE_URL}
@@ -60,19 +61,19 @@ services:
             - RAINDROP_COLLECTION=${RAINDROP_COLLECTION}
             - RAINDROP_ACCESS_TOKEN=${RAINDROP_ACCESS_TOKEN}
     nats-indexer:
+        image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
+        restart: always
         deploy:
             replicas: 1
-        restart: always
-        image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
         environment:
             - 'NATS_URL=nats-server:4222'
             - 'AI_SEARCH_ENDPOINT=${AI_SEARCH_ENDPOINT}'
             - 'AI_SEARCH_API_KEY=${AI_SEARCH_API_KEY}'
             - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
     search-mcp-server:
+        image: ghcr.io/heussd/nats-news-analysis/search-mcp-server:latest
         deploy:
             replicas: 0
-        image: ghcr.io/heussd/nats-news-analysis/search-mcp-server:latest
         ports:
             - '8000:8000'
         environment:
