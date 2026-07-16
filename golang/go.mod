@@ -6,6 +6,7 @@ require (
 	github.com/SlyMarbo/rss v1.0.5
 	github.com/dlclark/regexp2 v1.11.0
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.12.3
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/nats-io/nats.go v1.34.1
 	github.com/pemistahl/lingua-go v1.4.0
