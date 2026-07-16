@@ -72,7 +72,7 @@ services:
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_DATABASE=${POSTGRES_DATABASE}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - POSTGRES_SSLMODE=${POSTGRES_SSLMODE}
+            - PGSSLMODE=${PGSSLMODE}
     nats-indexer:
         image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
         restart: always

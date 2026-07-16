@@ -94,19 +94,47 @@ func init() {
 	}
 }
 
+// AddTimeSeriesData bulk-loads n-grams using PostgreSQL's COPY protocol, which
+// is the fastest way to insert large volumes of rows. All rows are streamed
+// inside a single transaction, so the load is atomic: either every row is
+// committed or none are.
 func AddTimeSeriesData(data []ngrams.NGram) error {
-	sqlStatement := `
-		INSERT INTO ngrams (words, count, n_gram, source, language, timestamp)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id
-		`
+	if len(data) == 0 {
+		return nil
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback() // no-op once Commit succeeds
+
+	stmt, err := tx.Prepare("COPY ngrams (words, count, n_gram, source, language, timestamp) FROM STDIN")
+	if err != nil {
+		return err
+	}
 
 	for _, ngram := range data {
-		id := 0
-		err := db.QueryRow(sqlStatement, ngram.Words, ngram.Count, ngram.NGram, ngram.Source, ngram.Language, ngram.Timestamp).Scan(&id)
-		if err != nil {
+		if _, err := stmt.Exec(
+			ngram.Words,
+			ngram.Count,
+			ngram.NGram,
+			ngram.Source,
+			ngram.Language,
+			ngram.Timestamp,
+		); err != nil {
 			return err
 		}
 	}
-	return nil
+
+	// A final Exec with no arguments flushes the buffered COPY data.
+	if _, err := stmt.Exec(); err != nil {
+		return err
+	}
+
+	if err := stmt.Close(); err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }

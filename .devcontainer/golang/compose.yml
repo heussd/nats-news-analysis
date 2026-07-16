@@ -1,11 +1,11 @@
 services:
-  feed-feeder: !reset 
-  n-gram-analysis: !reset 
-  article-feeder: !reset 
-  news-feeder: !reset 
-  keyword-matcher: !reset 
-  raindrop-integration: !reset 
-  watchtower: !reset 
+  feed-feeder: !reset
+  n-gram-analysis: !reset
+  article-feeder: !reset
+  news-feeder: !reset
+  keyword-matcher: !reset
+  raindrop-integration: !reset
+  watchtower: !reset
   fullfeedrss:
     ports:
       - "55800:80"
@@ -16,6 +16,8 @@ services:
       target: devcontainer
     environment:
       - NATS_URL=nats-server
+    env_file:
+      - ./.env
     volumes:
       # Mounts the project folder to '/workspace'. While this file is in .devcontainer,
       # mounts are relative to the first file in the list, which is a level up.
