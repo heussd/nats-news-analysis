@@ -1,0 +1,3 @@
+# Strip Jupyter notebook outputs/metadata before committing (see nbstripout).
+# Outputs stay in your local working copy but are never stored in git.
+*.ipynb filter=nbstripout diff=ipynb

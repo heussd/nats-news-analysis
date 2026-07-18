@@ -1,0 +1,15 @@
+[project]
+name = "notebook"
+version = "0.1.0"
+description = "Ad-hoc notebooks for visualising query results (kept separate from python/ services)"
+requires-python = ">=3.12"
+dependencies = [
+    "ipykernel>=6.29.0",
+    "pandas>=2.2.0",
+    "plotly>=5.22.0",
+    "psycopg[binary]>=3.2.0",
+    "python-dotenv>=1.0.0",
+    "nbformat>=4.2.0",
+    "nbstripout>=0.9.1",
+]
+
