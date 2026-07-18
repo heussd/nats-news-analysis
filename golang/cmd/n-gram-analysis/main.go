@@ -29,6 +29,10 @@ func main() {
 
 	err := queue.Subscribe(
 		func(news *model.News) {
+			if !strings.HasPrefix(news.Language, "en") {
+				return
+			}
+
 			var text string
 			text = htmlsanitise.PrepareAndCleanString(news)
 			text = strings.ToLower(text)
