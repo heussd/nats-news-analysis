@@ -9,8 +9,8 @@ import (
 func TestAddTimeSeriesData(t *testing.T) {
 	// Test case 1: Add valid time series data
 	data := []ngrams.NGram{
-		{Words: "example", Count: 5, NGram: 1, Source: "test", Language: "en", Timestamp: "2024-06-01T00:00:00Z"},
-		{Words: "test", Count: 3, NGram: 1, Source: "test", Language: "en", Timestamp: "2024-06-01T00:00:00Z"},
+		{Words: "example", NGram: 1, Source: "test", Language: "en", Timestamp: "2024-06-01T00:00:00Z"},
+		{Words: "test", NGram: 1, Source: "test", Language: "en", Timestamp: "2024-06-01T00:00:00Z"},
 	}
 	err := AddTimeSeriesData(data)
 	if err != nil {

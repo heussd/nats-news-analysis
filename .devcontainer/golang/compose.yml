@@ -1,11 +1,12 @@
 services:
-  feed-feeder: !reset
-  n-gram-analysis: !reset
-  article-feeder: !reset
-  news-feeder: !reset
-  keyword-matcher: !reset
-  raindrop-integration: !reset
-  watchtower: !reset
+  feed-feeder: !reset 
+  n-gram-analysis: !reset 
+  article-feeder: !reset 
+  news-feeder: !reset 
+  keyword-matcher: !reset 
+  raindrop-integration: !reset 
+  watchtower: !reset 
+  nats-indexer: !reset 
   fullfeedrss:
     ports:
       - "55800:80"

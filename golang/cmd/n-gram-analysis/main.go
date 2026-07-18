@@ -33,7 +33,7 @@ func main() {
 			text = htmlsanitise.PrepareAndCleanString(news)
 			text = strings.ToLower(text)
 
-			ngrams, err := ngrams.GenerateNGramStatistics(text, minimumNGramSize, maximumNGramSize)
+			ngrams, err := ngrams.ParseAndGenerateStatistics(text, minimumNGramSize, maximumNGramSize)
 			if err != nil {
 				logger.Error().Err(err).Msg("Failed to generate n-gram statistics")
 				return

@@ -14,7 +14,7 @@ var (
 	port     = 5432
 	user     = utils.GetEnv("POSTGRES_USER", "postgres")
 	password = utils.GetEnv("POSTGRES_PASSWORD", "mysecretpassword")
-	dbname   = utils.GetEnv("POSTGRES_DB", "ngrams")
+	dbname   = utils.GetEnv("POSTGRES_DB", "ngrams2")
 	sslmode  = utils.GetEnv("PGSSLMODE", "disable")
 )
 
@@ -72,7 +72,6 @@ func init() {
 		id SERIAL PRIMARY KEY,
 		words TEXT NOT NULL,
 		source TEXT NOT NULL,
-		count INTEGER NOT NULL,
 		language TEXT NOT NULL,
 		n_gram INTEGER NOT NULL,
 		timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -109,7 +108,7 @@ func AddTimeSeriesData(data []ngrams.NGram) error {
 	}
 	defer tx.Rollback() // no-op once Commit succeeds
 
-	stmt, err := tx.Prepare("COPY ngrams (words, count, n_gram, source, language, timestamp) FROM STDIN")
+	stmt, err := tx.Prepare("COPY ngrams (words, n_gram, source, language, timestamp) FROM STDIN")
 	if err != nil {
 		return err
 	}
@@ -117,7 +116,6 @@ func AddTimeSeriesData(data []ngrams.NGram) error {
 	for _, ngram := range data {
 		if _, err := stmt.Exec(
 			ngram.Words,
-			ngram.Count,
 			ngram.NGram,
 			ngram.Source,
 			ngram.Language,

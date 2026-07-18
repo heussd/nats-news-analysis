@@ -16,13 +16,12 @@ func TestGenerate1Grams(t *testing.T) {
 	assert.Equal(t, 9, len(ngrams))
 	first := ngrams[0]
 	assert.Equal(t, "This", first.Words)
-	assert.Equal(t, 1, first.Count)
+
 	fourth := ngrams[3]
 	assert.Equal(t, "test", fourth.Words)
-	assert.Equal(t, 2, fourth.Count)
+
 	fiveth := ngrams[4]
 	assert.Equal(t, "string", fiveth.Words)
-	assert.Equal(t, 1, fiveth.Count)
 }
 
 func TestGenerate2Grams(t *testing.T) {
@@ -35,10 +34,9 @@ func TestGenerate2Grams(t *testing.T) {
 	assert.Equal(t, 9, len(ngrams))
 	first := ngrams[0]
 	assert.Equal(t, "This is", first.Words)
-	assert.Equal(t, 1, first.Count)
+
 	fourth := ngrams[3]
 	assert.Equal(t, "test test", fourth.Words)
-	assert.Equal(t, 1, fourth.Count)
 }
 
 func TestGenerate3Grams(t *testing.T) {
@@ -51,10 +49,9 @@ func TestGenerate3Grams(t *testing.T) {
 	assert.Equal(t, 8, len(ngrams))
 	first := ngrams[0]
 	assert.Equal(t, "This is a", first.Words)
-	assert.Equal(t, 1, first.Count)
+
 	fourth := ngrams[3]
 	assert.Equal(t, "test test string", fourth.Words)
-	assert.Equal(t, 1, fourth.Count)
 }
 
 func TestGenerate4Grams(t *testing.T) {
@@ -67,8 +64,71 @@ func TestGenerate4Grams(t *testing.T) {
 	assert.Equal(t, 7, len(ngrams))
 	first := ngrams[0]
 	assert.Equal(t, "This is a test", first.Words)
-	assert.Equal(t, 1, first.Count)
+
 	fourth := ngrams[4]
 	assert.Equal(t, "test string for generating", fourth.Words)
-	assert.Equal(t, 1, fourth.Count)
+}
+
+func TestParseAndGenerateStatisticsFilterOut(t *testing.T) {
+	ngrams, err := ParseAndGenerateStatistics("This", 1, 3)
+	assert.NoError(t, err)
+	assert.Empty(t, ngrams)
+}
+
+func TestParseAndGenerateStatisticsSample1(t *testing.T) {
+	ngrams, err := ParseAndGenerateStatistics("This is macOS Tahoe Beta", 1, 4)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, ngrams)
+
+	expected := []NGram{
+		{Words: "macos", NGram: 1},
+		{Words: "tahoe", NGram: 1},
+		{Words: "beta", NGram: 1},
+		{Words: "macos tahoe", NGram: 2},
+		{Words: "tahoe beta", NGram: 2},
+		{Words: "macos tahoe beta", NGram: 3},
+	}
+	assert.Equal(t, expected, ngrams)
+}
+
+func TestParseAndGenerateStatistics(t *testing.T) {
+	ngrams, err := ParseAndGenerateStatistics("Go is an open-source programming language created at Google. Windows 11 is an Operating System! RETRIEVAL-Augmented Generation. RAG is so 2023, just as GPT 3.5.", 1, 4)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, ngrams)
+
+	expected := []NGram{
+		{Words: "go", NGram: 1},
+		{Words: "open", NGram: 1},
+		{Words: "source", NGram: 1},
+		{Words: "programming", NGram: 1},
+		{Words: "language", NGram: 1},
+		{Words: "open source", NGram: 2},
+		{Words: "source programming", NGram: 2},
+		{Words: "programming language", NGram: 2},
+		{Words: "open source programming", NGram: 3},
+		{Words: "source programming language", NGram: 3},
+		{Words: "open source programming language", NGram: 4},
+		{Words: "google", NGram: 1},
+		{Words: "windows", NGram: 1},
+		{Words: "11", NGram: 1},
+		{Words: "windows 11", NGram: 2},
+		{Words: "operating", NGram: 1},
+		{Words: "system", NGram: 1},
+		{Words: "operating system", NGram: 2},
+		{Words: "retrieval", NGram: 1},
+		{Words: "augmented", NGram: 1},
+		{Words: "generation", NGram: 1},
+		{Words: "retrieval augmented", NGram: 2},
+		{Words: "augmented generation", NGram: 2},
+		{Words: "retrieval augmented generation", NGram: 3},
+		{Words: "rag", NGram: 1},
+		{Words: "2023", NGram: 1},
+		{Words: "gpt", NGram: 1},
+		{Words: "3", NGram: 1},
+		{Words: "5", NGram: 1},
+		{Words: "gpt 3", NGram: 2},
+		{Words: "3 5", NGram: 2},
+		{Words: "gpt 3 5", NGram: 3},
+	}
+	assert.Equal(t, expected, ngrams)
 }
