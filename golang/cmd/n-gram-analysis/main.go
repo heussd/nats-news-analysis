@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/htmlsanitise"
 	"github.com/heussd/nats-news-analysis/internal/model"
@@ -45,8 +46,13 @@ func main() {
 
 			for i := range ngrams {
 				ngrams[i].Source = news.URL
-				ngrams[i].Timestamp = news.Date
 				ngrams[i].Language = news.Language
+				ngrams[i].Timestamp = news.Date
+
+				if ngrams[i].Timestamp == "" || timeseries.ValidateTimestamp(ngrams[i].Timestamp) != nil {
+					// Fallback directly in the n-gram field when timestamp is missing or invalid.
+					ngrams[i].Timestamp = time.Now().UTC().Format("2006-01-02 15:04:05-07")
+				}
 			}
 
 			if err := timeseries.AddTimeSeriesData(ngrams); err != nil {

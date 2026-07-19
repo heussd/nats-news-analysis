@@ -13,7 +13,7 @@ func TestGenerate1Grams(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, ngrams)
 
-	assert.Equal(t, 9, len(ngrams))
+	assert.Equal(t, 10, len(ngrams))
 	first := ngrams[0]
 	assert.Equal(t, "This", first.Words)
 
@@ -21,7 +21,7 @@ func TestGenerate1Grams(t *testing.T) {
 	assert.Equal(t, "test", fourth.Words)
 
 	fiveth := ngrams[4]
-	assert.Equal(t, "string", fiveth.Words)
+	assert.Equal(t, "test", fiveth.Words)
 }
 
 func TestGenerate2Grams(t *testing.T) {

@@ -3,6 +3,7 @@ package timeseries
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/ngrams"
 	"github.com/heussd/nats-news-analysis/pkg/utils"
@@ -135,4 +136,21 @@ func AddTimeSeriesData(data []ngrams.NGram) error {
 	}
 
 	return tx.Commit()
+}
+
+func ValidateTimestamp(timestamp string) error {
+	// Accept both legacy RFC3339 values and PostgreSQL-style offsets like
+	// "2026-07-17 15:51:17+00".
+	layouts := []string{
+		"2006-01-02 15:04:05-07",
+		time.RFC3339,
+	}
+
+	for _, layout := range layouts {
+		if _, err := time.Parse(layout, timestamp); err == nil {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("invalid timestamp format: %q", timestamp)
 }
