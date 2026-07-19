@@ -30,19 +30,18 @@
         "davidanson.vscode-markdownlint",
         "ms-azuretools.vscode-docker",
         "shardulm94.trailing-spaces",
-        "Gruntfuggly.todo-tree",
         "stkb.rewrap",
         "github.vscode-pull-request-github",
         "bajdzis.vscode-database",
         "IBM.output-colorizer",
         "github.copilot",
         "github.copilot-chat",
-        "anweber.vscode-httpyac",
         "ms-python.debugpy",
         "ms-python.python",
         "usernamehw.errorlens",
         "ms-toolsai.jupyter-keymap",
-        "ms-ossdata.vscode-pgsql"
+        "ms-ossdata.vscode-pgsql",
+        "ms-toolsai.jupyter"
       ]
     }
   },
