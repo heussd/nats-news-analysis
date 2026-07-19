@@ -14,6 +14,7 @@ RUN apk add -U --no-cache ca-certificates
 
 
 FROM base AS devcontainer
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 RUN go install -v golang.org/x/tools/gopls@latest
 RUN go install -v github.com/go-delve/delve/cmd/dlv@latest
