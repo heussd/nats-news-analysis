@@ -64,7 +64,7 @@ services:
         image: ghcr.io/heussd/nats-news-analysis/n-gram-analysis:latest
         restart: always
         deploy:
-            replicas: 1
+            replicas: 6
         environment:
             - NATS_URL=nats-server:4222
             - NATS_SUBSCRIBE_SUBJECT=news.*
