@@ -70,7 +70,6 @@ services:
             - NATS_SUBSCRIBE_SUBJECT=news.*
             - POSTGRES_HOST=${POSTGRES_HOST}
             - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_DATABASE=${POSTGRES_DATABASE}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - PGSSLMODE=${PGSSLMODE}
     nats-indexer:
