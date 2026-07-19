@@ -95,10 +95,10 @@ services:
             - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
             - 'RAINDROP_RSS_FEED=${RAINDROP_RSS_FEED}'
     watchtower:
-        image: containrrr/watchtower
+        image: nickfedor/watchtower
         restart: always
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-        command: --interval 7200
+
 volumes:
     rss-cache:
