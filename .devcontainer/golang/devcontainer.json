@@ -49,14 +49,15 @@
             "extensions": [
                 "golang.go",
                 "davidanson.vscode-markdownlint",
-                "ms-azuretools.vscode-docker", // Docker integration and linting
-                "shardulm94.trailing-spaces", // Show trailing spaces
-                "Gruntfuggly.todo-tree", // Highlights TODO comments
-                "stkb.rewrap", // rewrap comments after n characters on one line
-                "github.vscode-pull-request-github", // Github interaction
-                "bajdzis.vscode-database", // Supports connections to mysql or postgres, over SSL, socked
-                "IBM.output-colorizer", // Colorize your output/test logs
-                "github.copilot" // AI code completion
+                "ms-azuretools.vscode-docker",
+                "shardulm94.trailing-spaces",
+                "Gruntfuggly.todo-tree",
+                "stkb.rewrap",
+                "github.vscode-pull-request-github",
+                "bajdzis.vscode-database",
+                "IBM.output-colorizer",
+                "github.copilot",
+                "ms-ossdata.vscode-pgsql"
             ]
         }
     },

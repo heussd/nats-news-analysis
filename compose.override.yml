@@ -23,6 +23,12 @@ services:
             context: golang/.
             args:
                 - MAIN=news-feeder
+    n-gram-analysis:
+        build:
+            <<: *build
+            context: golang/.
+            args:
+                - MAIN=n-gram-analysis
     keyword-matcher:
         build:
             <<: *build

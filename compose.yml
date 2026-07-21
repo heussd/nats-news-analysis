@@ -60,6 +60,18 @@ services:
             - NATS_SUBJECT=match-urls
             - RAINDROP_COLLECTION=${RAINDROP_COLLECTION}
             - RAINDROP_ACCESS_TOKEN=${RAINDROP_ACCESS_TOKEN}
+    n-gram-analysis:
+        image: ghcr.io/heussd/nats-news-analysis/n-gram-analysis:latest
+        restart: always
+        deploy:
+            replicas: 6
+        environment:
+            - NATS_URL=nats-server:4222
+            - NATS_SUBSCRIBE_SUBJECT=news.*
+            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - PGSSLMODE=${PGSSLMODE}
     nats-indexer:
         image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
         restart: always
@@ -82,10 +94,10 @@ services:
             - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
             - 'RAINDROP_RSS_FEED=${RAINDROP_RSS_FEED}'
     watchtower:
-        image: containrrr/watchtower
+        image: nickfedor/watchtower
         restart: always
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-        command: --interval 7200
+
 volumes:
     rss-cache:
