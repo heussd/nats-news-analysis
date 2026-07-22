@@ -21,6 +21,7 @@
 --   * The '7 days' / '30 days' recent/baseline windows (keep *_days in sync).
 --   * The n_gram filter (set = 1 for single words).
 --   * min_recent / min_recent_new noise thresholds.
+--   * min_recent_sources to require cross-source corroboration.
 --   * Uncomment the language / source filters for per-language/source trends.
 WITH params AS
     (SELECT
@@ -31,14 +32,31 @@ WITH params AS
             7.0::numeric AS recent_days, -- keep in sync with recent_window
  30.0::numeric AS baseline_days, -- keep in sync with baseline_window
  2 AS min_recent, -- min occurrences for known phrases
- 3 AS min_recent_new -- min occurrences for brand-new phrases
+ 15 AS min_recent_new, -- stricter min occurrences for brand-new phrases
+ 2 AS min_recent_sources, -- require at least this many distinct sources
+ 8 AS min_recent_sources_new -- stricter source corroboration for brand-new phrases
 ),
+    filtered_ngrams AS
+    (SELECT words,
+          n_gram,
+          source,
+          "timestamp"
+    FROM public.ngrams,
+        params
+    WHERE words IS NOT NULL
+        AND words ~ '[[:alpha:]]' -- keep phrases that contain letters
+        AND words !~ '^[0-9]+([[:space:]]+[0-9]+)*$' -- remove purely numeric phrases
+        AND lower(words) !~ '(^|[[:space:]])(39|34|gt|lt)([[:space:]]|$)' -- remove common HTML/entity leftovers
+        AND lower(words) !~ '(^|[[:space:]])(parser|navbox|hlist|reflist|liststyle|mw|cs1)([[:space:]]|$)' -- remove parser/wiki template artifacts
+        AND lower(words) !~ '(font size|font weight|background color|output div|references list|list style|style type|not skin)' -- remove style/template boilerplate
+        AND lower(words) !~ '(none none|padding 0|first child|last child|child before|child after|html skin|skin theme|theme clientpref|output [a-z0-9_]+|doi [0-9]+|id lock)'
+ ),
      recent AS
     (SELECT words,
             n_gram,
             COUNT(*) AS recent_count,
             COUNT(DISTINCT source) AS recent_sources
-     FROM public.ngrams,
+    FROM filtered_ngrams,
           params
      WHERE "timestamp" > ref_ts - recent_window -- AND language = 'en'
  -- AND source = '...'
@@ -49,7 +67,7 @@ WITH params AS
     (SELECT words,
             n_gram,
             COUNT(*) AS baseline_count
-     FROM public.ngrams,
+    FROM filtered_ngrams,
           params
      WHERE "timestamp" <= ref_ts - recent_window
          AND "timestamp" > ref_ts - recent_window - baseline_window -- AND language = 'en'
@@ -73,6 +91,11 @@ WITH params AS
      CROSS JOIN params p
      WHERE r.n_gram >= 2 -- phrases; change to = 1 for single words
 
+         AND r.recent_sources >= CASE
+                                     WHEN b.baseline_count IS NULL THEN p.min_recent_sources_new
+                                     ELSE p.min_recent_sources
+                                 END
+
          AND r.recent_count >= CASE
                                    WHEN b.baseline_count IS NULL THEN p.min_recent_new
                                    ELSE p.min_recent
@@ -88,9 +111,9 @@ SELECT words,
  ROUND((recent_rate + (1.0 / 7)) / (baseline_rate + (1.0 / 30)), 2) AS growth_ratio, -- Poisson z-score vs. the count expected from the baseline rate
  ROUND((recent_count - expected_recent) / SQRT(GREATEST(expected_recent, 1.0)), 2) AS z_score
 FROM joined
-ORDER BY is_new DESC, -- brand-new phrases first
+ORDER BY is_new ASC, -- established phrases first
  z_score DESC, -- then most statistically surprising
  recent_sources DESC, -- prefer phrases corroborated across many distinct sources
  growth_ratio DESC,
  absolute_growth DESC
-LIMIT 500;
+LIMIT 1500;
