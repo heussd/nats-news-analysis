@@ -21,6 +21,8 @@ var (
 	reStyleBoilerplate = regexp.MustCompile(`font size|font weight|background color|output div|references list|list style|style type|not skin`)
 	// remove CSS/DOM noise
 	reCSSNoise = regexp.MustCompile(`none none|padding 0|first child|last child|child before|child after|html skin|skin theme|theme clientpref|output [a-z0-9_]+|doi [0-9]+|id lock`)
+
+	reHttp = regexp.MustCompile(`\b(https?|www|com|org|net|gov|edu|io|co|us|uk|de|fr|jp|cn|ru|br|in|au|ca)\b`)
 )
 
 func isNoise(words string) bool {
@@ -29,7 +31,8 @@ func isNoise(words string) bool {
 		reHTMLEntities.MatchString(w) ||
 		reWikiArtifacts.MatchString(w) ||
 		reStyleBoilerplate.MatchString(w) ||
-		reCSSNoise.MatchString(w)
+		reCSSNoise.MatchString(w) ||
+		reHttp.MatchString(w)
 }
 
 func generateNGrams(text string, n int) (ngram []NGram, err error) {

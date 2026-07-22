@@ -134,3 +134,11 @@ func TestParseAndGenerateStatistics(t *testing.T) {
 	}
 	assert.Equal(t, expected, ngrams)
 }
+
+func TestParseAndGenerateStatisticsFilterOutHttps(t *testing.T) {
+	var news model.News
+	news.Content = "https://example.com https://example.com/test https://example.com/test/test https://example.com/test/test/test"
+	ngrams, err := ParseAndGenerateStatistics(&news, 1, 3)
+	assert.NoError(t, err)
+	assert.Equal(t, 14, len(ngrams))
+}
