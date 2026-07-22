@@ -27,7 +27,8 @@ func main() {
 
 	err := queue.Subscribe(
 		func(news *model.News) {
-			text := htmlsanitise.PrepareAndCleanString(news)
+			text := htmlsanitise.ExtractFields(news)
+			text = htmlsanitise.Sanitize(text)
 
 			matchingStart := time.Now()
 			var matched []model.Keyword

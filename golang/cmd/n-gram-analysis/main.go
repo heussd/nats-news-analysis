@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heussd/nats-news-analysis/internal/htmlsanitise"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
 	"github.com/heussd/nats-news-analysis/internal/ngrams"
@@ -34,11 +33,7 @@ func main() {
 				return
 			}
 
-			var text string
-			text = htmlsanitise.PrepareAndCleanString(news)
-			text = strings.ToLower(text)
-
-			ngrams, err := ngrams.ParseAndGenerateStatistics(text, minimumNGramSize, maximumNGramSize)
+			ngrams, err := ngrams.ParseAndGenerateStatistics(news, minimumNGramSize, maximumNGramSize)
 			if err != nil {
 				logger.Error().Err(err).Msg("Failed to generate n-gram statistics")
 				return

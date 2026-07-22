@@ -1,11 +1,36 @@
 package ngrams
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 
+	"github.com/heussd/nats-news-analysis/internal/htmlsanitise"
+	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/tsawler/prose/v3"
 )
+
+var (
+	// remove purely numeric phrases (digits and spaces only)
+	reOnlyNumbers = regexp.MustCompile(`^[0-9]+(\s+[0-9]+)*$`)
+	// remove common HTML entity leftovers (e.g. "39", "34", "gt", "lt")
+	reHTMLEntities = regexp.MustCompile(`(^|\s)(39|34|gt|lt)(\s|$)`)
+	// remove parser/wiki template artifacts
+	reWikiArtifacts = regexp.MustCompile(`(^|\s)(parser|navbox|hlist|reflist|liststyle|mw|cs1)(\s|$)`)
+	// remove style/template boilerplate
+	reStyleBoilerplate = regexp.MustCompile(`font size|font weight|background color|output div|references list|list style|style type|not skin`)
+	// remove CSS/DOM noise
+	reCSSNoise = regexp.MustCompile(`none none|padding 0|first child|last child|child before|child after|html skin|skin theme|theme clientpref|output [a-z0-9_]+|doi [0-9]+|id lock`)
+)
+
+func isNoise(words string) bool {
+	w := strings.ToLower(words)
+	return reOnlyNumbers.MatchString(words) ||
+		reHTMLEntities.MatchString(w) ||
+		reWikiArtifacts.MatchString(w) ||
+		reStyleBoilerplate.MatchString(w) ||
+		reCSSNoise.MatchString(w)
+}
 
 func generateNGrams(text string, n int) (ngram []NGram, err error) {
 	if n < 1 {
@@ -40,7 +65,11 @@ func GenerateNGramStatistics(text string, minimumNGramSize int, maximumNGramSize
 	return ngrams, nil
 }
 
-func ParseAndGenerateStatistics(text string, minimumNGramSize int, maximumNGramSize int) (ngrams []NGram, err error) {
+func ParseAndGenerateStatistics(news *model.News, minimumNGramSize int, maximumNGramSize int) (ngrams []NGram, err error) {
+	var text string
+	text = news.Content
+	text = htmlsanitise.Sanitize(text)
+
 	doc, err := prose.NewDocument(text, prose.WithExtraction(false))
 	if err != nil {
 		return nil, err
@@ -74,6 +103,16 @@ func ParseAndGenerateStatistics(text string, minimumNGramSize int, maximumNGramS
 		}
 		ngrams = append(ngrams, newNGrams...)
 	}
+
+	// Filter out noise: purely numeric phrases, HTML entity leftovers,
+	// wiki/parser artifacts, style boilerplate, and CSS/DOM noise.
+	filtered := ngrams[:0]
+	for _, ng := range ngrams {
+		if !isNoise(ng.Words) {
+			filtered = append(filtered, ng)
+		}
+	}
+	ngrams = filtered
 
 	return ngrams, nil
 }

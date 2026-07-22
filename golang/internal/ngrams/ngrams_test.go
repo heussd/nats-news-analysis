@@ -3,6 +3,7 @@ package ngrams
 import (
 	"testing"
 
+	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -70,13 +71,17 @@ func TestGenerate4Grams(t *testing.T) {
 }
 
 func TestParseAndGenerateStatisticsFilterOut(t *testing.T) {
-	ngrams, err := ParseAndGenerateStatistics("This", 1, 3)
+	var news model.News
+	news.Content = "This"
+	ngrams, err := ParseAndGenerateStatistics(&news, 1, 3)
 	assert.NoError(t, err)
 	assert.Empty(t, ngrams)
 }
 
 func TestParseAndGenerateStatisticsSample1(t *testing.T) {
-	ngrams, err := ParseAndGenerateStatistics("This is macOS Tahoe Beta", 1, 4)
+	var news model.News
+	news.Content = "This is macOS Tahoe Beta"
+	ngrams, err := ParseAndGenerateStatistics(&news, 1, 4)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, ngrams)
 
@@ -92,7 +97,9 @@ func TestParseAndGenerateStatisticsSample1(t *testing.T) {
 }
 
 func TestParseAndGenerateStatistics(t *testing.T) {
-	ngrams, err := ParseAndGenerateStatistics("Go is an open-source programming language created at Google. Windows 11 is an Operating System! RETRIEVAL-Augmented Generation. RAG is so 2023, just as GPT 3.5.", 1, 4)
+	var news model.News
+	news.Content = "Go is an open-source programming language created at Google. Windows 11 is an Operating System! RETRIEVAL-Augmented Generation. RAG is so 2023, just as GPT 3.5."
+	ngrams, err := ParseAndGenerateStatistics(&news, 1, 4)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, ngrams)
 
@@ -110,7 +117,6 @@ func TestParseAndGenerateStatistics(t *testing.T) {
 		{Words: "open source programming language", NGram: 4},
 		{Words: "google", NGram: 1},
 		{Words: "windows", NGram: 1},
-		{Words: "11", NGram: 1},
 		{Words: "windows 11", NGram: 2},
 		{Words: "operating", NGram: 1},
 		{Words: "system", NGram: 1},
@@ -122,12 +128,8 @@ func TestParseAndGenerateStatistics(t *testing.T) {
 		{Words: "augmented generation", NGram: 2},
 		{Words: "retrieval augmented generation", NGram: 3},
 		{Words: "rag", NGram: 1},
-		{Words: "2023", NGram: 1},
 		{Words: "gpt", NGram: 1},
-		{Words: "3", NGram: 1},
-		{Words: "5", NGram: 1},
 		{Words: "gpt 3", NGram: 2},
-		{Words: "3 5", NGram: 2},
 		{Words: "gpt 3 5", NGram: 3},
 	}
 	assert.Equal(t, expected, ngrams)

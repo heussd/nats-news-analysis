@@ -1,20 +1,32 @@
 package htmlsanitise
 
 import (
+	"html"
 	"strings"
 
 	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/microcosm-cc/bluemonday"
 )
 
-var bm = bluemonday.StrictPolicy()
-
-func PrepareAndCleanString(news *model.News) string {
+func ExtractFields(news *model.News) string {
 	text := strings.Join([]string{
 		news.Title,
 		news.Excerpt,
-		bm.Sanitize(news.Content),
+		news.Content,
 	}, " ")
+
+	return text
+}
+
+func Sanitize(text string) string {
+	text = bluemonday.
+		StrictPolicy().
+		AddSpaceWhenStrippingTag(true).
+		Sanitize(text)
+
+	text = html.UnescapeString(text)
+	text = strings.Join(strings.Fields(text), " ")
+	text = strings.TrimSpace(text)
 
 	return text
 }
