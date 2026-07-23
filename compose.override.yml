@@ -51,3 +51,8 @@ services:
             <<: *build
             context: python/.
             target: search-mcp-server
+    search-rest-server:
+        build:
+            <<: *build
+            context: python/.
+            target: search-rest-server

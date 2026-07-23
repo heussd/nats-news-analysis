@@ -37,7 +37,7 @@ def search(query: str, top: int = 10, baseUrl: str = None) -> dict:
         {
             "search": query,
             "top": top,
-            "select": "title, excerpt, date, url",
+            "select": "title, excerpt, content, date, language, url",
             "vectorQueries": [
                 {
                     "kind": "vector",

@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "dotenv>=0.9.9",
+    "fastapi>=0.118.0",
     "fastembed>=0.7.3",
     "fastmcp>=3.2.0",
     "nats-py>=2.11.0",
@@ -13,4 +14,5 @@ dependencies = [
     "pydantic>=2.12.3",
     "readabilipy>=0.3.0",
     "requests>=2.33.0",
+    "uvicorn>=0.37.0",
 ]

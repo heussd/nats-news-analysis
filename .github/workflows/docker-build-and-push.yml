@@ -89,6 +89,7 @@ jobs:
                   targets: |
                       nats-indexer
                       search-mcp-server
+                      search-rest-server
                   push: true
                   set: |
                       *.cache-from=type=gha

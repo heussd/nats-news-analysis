@@ -8,17 +8,26 @@ services:
       - ../.env
     ports:
       - "8000:8000"
+  rest-service:
+    image: ghcr.io/heussd/nats-news-analysis/search-rest-server:latest
+    build:
+      context: .
+      target: search-rest-server
+    env_file:
+      - ../.env
+    ports:
+      - "8001:8000"
   fullfeedrss:
     image: docker.io/heussd/fivefilters-full-text-rss:latest
     mem_limit: 2G
     restart: always
     deploy:
-        replicas: 2
+      replicas: 2
     environment:
-        # Leave empty to disable admin section
-        - FTR_ADMIN_PASSWORD=
+      # Leave empty to disable admin section
+      - FTR_ADMIN_PASSWORD=
     volumes:
-        - 'rss-cache:/var/www/html/cache'
+      - 'rss-cache:/var/www/html/cache'
 
 volumes:
-    rss-cache:
+  rss-cache:

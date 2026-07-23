@@ -40,6 +40,7 @@ ENV PATH="/root/go/bin:${PATH}"
 
 FROM base AS build
 
+COPY static ./static
 COPY *.py ./
 
 # Sync the project
@@ -54,6 +55,11 @@ ENV PYTHONUNBUFFERED=1 \
 FROM build AS search-mcp-server
 
 CMD ["uv", "run", "mcp-server.py"]
+
+
+FROM build AS search-rest-server
+
+CMD ["uv", "run", "rest_server.py"]
 
 
 FROM build AS nats-indexer

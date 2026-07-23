@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>News Search</title>
+    <style>
+        :root {
+            --bg: #030704;
+            --surface: rgba(5, 18, 10, 0.78);
+            --surface-strong: rgba(3, 12, 7, 0.9);
+            --ink: #d6ffe2;
+            --muted: #75b988;
+            --line: rgba(49, 152, 82, 0.35);
+            --line-strong: rgba(103, 255, 152, 0.8);
+            --accent: #3fff83;
+            --accent-2: #12c95e;
+            --link: #b7ffca;
+            --url: #7effa8;
+            --error: #ff8a8a;
+            --result-border: rgba(76, 219, 117, 0.28);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "SauceCodePro Nerd Font", "SauceCodePro NF", "Source Code Pro", "Share Tech Mono", "JetBrains Mono", "Consolas", monospace;
+            color: var(--ink);
+            background: var(--bg);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 24px 0 56px;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            background:
+                radial-gradient(circle at 20% 15%, rgba(56, 255, 126, 0.16) 0%, transparent 32%),
+                radial-gradient(circle at 80% 25%, rgba(32, 150, 70, 0.18) 0%, transparent 34%),
+                linear-gradient(180deg, rgba(0, 16, 7, 0.68) 0%, rgba(0, 6, 3, 0.92) 100%);
+            animation: glowDrift 16s linear infinite alternate;
+        }
+
+        body::after {
+            background: repeating-linear-gradient(0deg,
+                    rgba(170, 255, 190, 0.045) 0,
+                    rgba(170, 255, 190, 0.045) 1px,
+                    transparent 1px,
+                    transparent 3px);
+            opacity: 0.33;
+            mix-blend-mode: screen;
+            animation: scan 9s linear infinite;
+        }
+
+        @keyframes glowDrift {
+            0% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate3d(1.5%, 1%, 0) scale(1.04);
+            }
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(12px);
+            }
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 rgba(63, 255, 131, 0), 0 0 0 rgba(24, 132, 67, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 26px rgba(63, 255, 131, 0.23), 0 0 44px rgba(24, 132, 67, 0.24);
+            }
+        }
+
+        .wrap {
+            max-width: 900px;
+            margin-inline: auto;
+            padding-inline: 18px;
+        }
+
+        .brand {
+            font-size: clamp(1.4rem, 4.2vw, 2.8rem);
+            line-height: 1;
+            margin: 0 0 24px;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+            user-select: none;
+            text-transform: uppercase;
+            color: var(--accent);
+            text-shadow: 0 0 8px rgba(63, 255, 131, 0.8), 0 0 24px rgba(63, 255, 131, 0.35);
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-wrap {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55);
+            animation: pulseGlow 5s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 6px 8px;
+            background: var(--surface-strong);
+        }
+
+        .search-row:focus-within,
+        .search-row:hover {
+            border-color: var(--line-strong);
+            box-shadow: inset 0 0 0 1px rgba(103, 255, 152, 0.3);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 0;
+            height: 34px;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 0 8px;
+            font-size: 1rem;
+            color: var(--ink);
+            caret-color: var(--accent);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: #5f9f6f;
+        }
+
+        .top-input {
+            width: 68px;
+            height: 34px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 0 8px;
+            outline: none;
+            color: var(--muted);
+            background: rgba(4, 14, 8, 0.92);
+            font-size: 0.86rem;
+            caret-color: var(--accent);
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .top-input:focus {
+            border-color: var(--line-strong);
+            box-shadow: inset 0 0 0 1px rgba(103, 255, 152, 0.28);
+        }
+
+        .filter-row {
+            margin-top: 10px;
+        }
+
+        .filter-input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 0.84rem;
+            color: var(--muted);
+            background: rgba(2, 12, 6, 0.8);
+            font-family: inherit;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--line-strong);
+            box-shadow: inset 0 0 0 1px rgba(103, 255, 152, 0.28);
+        }
+
+        .filter-input::placeholder {
+            color: #5f9f6f;
+        }
+
+        .actions {
+            margin-top: 10px;
+        }
+
+        button {
+            border: 1px solid rgba(103, 255, 152, 0.65);
+            background: linear-gradient(92deg, rgba(23, 145, 73, 0.45), rgba(63, 255, 131, 0.22));
+            color: #e6ffed;
+            border-radius: 7px;
+            padding: 9px 15px;
+            font-size: 0.84rem;
+            font-weight: 620;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px rgba(63, 255, 131, 0.28);
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        .status {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.84rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        .results {
+            margin-top: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result {
+            border: 1px solid var(--result-border);
+            border-radius: 12px;
+            background: var(--surface);
+            padding: 12px 13px;
+            backdrop-filter: blur(4px);
+            margin-bottom: 10px;
+        }
+
+        .result-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .result-link:hover .result,
+        .result-link:focus-visible .result {
+            border-color: var(--line-strong);
+            box-shadow: 0 0 0 1px rgba(103, 255, 152, 0.24);
+        }
+
+        .result-url {
+            color: var(--url);
+            font-size: 0.79rem;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .result-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.3;
+            overflow-wrap: break-word;
+        }
+
+        .result-title-text {
+            color: var(--link);
+            text-shadow: 0 0 8px rgba(110, 255, 162, 0.22);
+        }
+
+        .result-snippet {
+            margin-top: 4px;
+            color: #8dc09a;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .result-meta {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.76rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .score-wrap,
+        .freshness-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-bar {
+            width: 52px;
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(58, 126, 78, 0.38);
+            overflow: hidden;
+        }
+
+        .score-fill {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-2), var(--accent));
+            box-shadow: 0 0 8px rgba(63, 255, 131, 0.48);
+        }
+
+        .freshness-fill {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #1f6f3c, #7effa8);
+            box-shadow: 0 0 8px rgba(126, 255, 168, 0.4);
+        }
+
+        .empty,
+        .error {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 18px;
+        }
+
+        .error {
+            color: var(--error);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <h1 class="brand">knock knock neo</h1>
+
+        <form id="search-form" class="search-wrap">
+            <div class="search-row">
+                <input id="query" class="search-input" name="q" placeholder="Search news" required autocomplete="off" />
+                <input id="top" class="top-input" name="n" type="text" inputmode="numeric" pattern="[0-9]*"
+                    maxlength="3" value="10" title="Number of results" />
+            </div>
+            <div class="filter-row">
+                <input id="base-url" class="filter-input" name="u" placeholder="Optional base URL filter (u)" />
+            </div>
+            <div class="actions">
+                <button id="submit" type="submit">Search</button>
+            </div>
+        </form>
+
+        <div id="status" class="status"></div>
+        <section id="results" class="results" aria-live="polite"></section>
+    </div>
+
+    <script>
+        const form = document.getElementById("search-form");
+        const queryInput = document.getElementById("query");
+        const topInput = document.getElementById("top");
+        const baseUrlInput = document.getElementById("base-url");
+        const submitBtn = document.getElementById("submit");
+        const status = document.getElementById("status");
+        const results = document.getElementById("results");
+        const MATRIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+-/=";
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+        function getItems(data) {
+            if (Array.isArray(data)) {
+                return data;
+            }
+            if (Array.isArray(data?.value)) {
+                return data.value;
+            }
+            if (Array.isArray(data?.results)) {
+                return data.results;
+            }
+            if (Array.isArray(data?.documents)) {
+                return data.documents;
+            }
+            return [];
+        }
+
+        function pick(item, keys) {
+            for (const key of keys) {
+                const value = item?.[key];
+                if (typeof value === "string" && value.trim()) {
+                    return value.trim();
+                }
+            }
+            return "";
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#39;");
+        }
+
+        function formatDate(isoDate) {
+            if (!isoDate) {
+                return "";
+            }
+            const date = new Date(isoDate);
+            if (Number.isNaN(date.getTime())) {
+                return "";
+            }
+            return date.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            });
+        }
+
+        function freshnessPercent(isoDate) {
+            if (!isoDate) {
+                return null;
+            }
+            const date = new Date(isoDate);
+            if (Number.isNaN(date.getTime())) {
+                return null;
+            }
+
+            const now = Date.now();
+            const ageMs = now - date.getTime();
+            if (ageMs <= 0) {
+                return 100;
+            }
+
+            const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+            if (ageMs <= sevenDaysMs) {
+                return 100;
+            }
+
+            const ratio = sevenDaysMs / ageMs;
+            return Math.max(4, Math.min(100, ratio * 100));
+        }
+
+        function renderResults(items) {
+            if (!items.length) {
+                results.innerHTML = '<p class="empty">No results found.</p>';
+                return;
+            }
+
+            const firstScore = typeof items[0]?.["@search.score"] === "number"
+                ? items[0]["@search.score"]
+                : 0;
+            const maxScore = items.reduce((max, item) => {
+                const score = typeof item?.["@search.score"] === "number" ? item["@search.score"] : 0;
+                return Math.max(max, score);
+            }, 0);
+            const scoreBaseline = firstScore > 0 ? firstScore : maxScore;
+
+            const html = items.map((item) => {
+                const url = pick(item, ["url", "link", "sourceUrl", "source_url"]);
+                const title = pick(item, ["title", "name", "headline"]) || (url || "Untitled result");
+                const snippet = pick(item, ["excerpt", "content", "snippet", "summary", "description", "text"]);
+                const safeUrl = url || "#";
+                const openAttrs = url ? 'target="_blank" rel="noreferrer"' : "";
+                const language = pick(item, ["language"]);
+                const publishedAt = pick(item, ["date", "publishedAt", "published_at"]);
+                const rawScore = typeof item?.["@search.score"] === "number"
+                    ? item["@search.score"]
+                    : null;
+                const scoreValue = rawScore !== null ? rawScore.toFixed(4) : "";
+                const scoreRatio = rawScore !== null && scoreBaseline > 0
+                    ? Math.max(0, Math.min(1, rawScore / scoreBaseline))
+                    : 0;
+                const scoreWidthPercent = scoreValue
+                    ? Math.max(4, scoreRatio * 100)
+                    : 0;
+
+                const dateText = formatDate(publishedAt);
+                const otherMetaParts = [language].filter(Boolean);
+
+                const freshnessValue = freshnessPercent(publishedAt);
+                const freshnessHtml = freshnessValue !== null
+                    ? `<span class="freshness-wrap"><span class="score-bar"><span class="freshness-fill" style="width: ${freshnessValue.toFixed(1)}%"></span></span></span>`
+                    : "";
+
+                const dateMetaHtml = dateText
+                    ? `<span class="meta-text">${escapeHtml(dateText)}</span>${freshnessHtml}`
+                    : "";
+
+                const scoreHtml = scoreValue
+                    ? `<span class="score-wrap"><span>score ${escapeHtml(scoreValue)}</span><span class="score-bar"><span class="score-fill" style="width: ${scoreWidthPercent.toFixed(1)}%"></span></span></span>`
+                    : "";
+
+                const safeDisplayUrl = escapeHtml(url || "Local result");
+                const safeHref = escapeHtml(safeUrl);
+                const safeTitle = escapeHtml(title);
+                const safeSnippet = escapeHtml(snippet || "No excerpt or content available.");
+                const metaText = (dateMetaHtml || otherMetaParts.length || scoreHtml)
+                    ? `<div class="result-meta">${dateMetaHtml}${otherMetaParts.length ? `<span class="meta-text">${escapeHtml(otherMetaParts.join(" • "))}</span>` : ""}${scoreHtml}</div>`
+                    : "";
+
+                const articleHtml = `
+                    <article class="result">
+                        <div class="result-url">${safeDisplayUrl}</div>
+                        <h2 class="result-title"><span class="result-title-text">${safeTitle}</span></h2>
+                        <div class="result-snippet">${safeSnippet}</div>
+                        ${metaText}
+                    </article>
+                `;
+
+                if (url) {
+                    return `<a class="result-link" href="${safeHref}" ${openAttrs}>${articleHtml}</a>`;
+                }
+
+                return articleHtml;
+            }).join("");
+
+            results.innerHTML = html;
+        }
+
+        function animateMatrixText() {
+            if (prefersReducedMotion.matches) {
+                return;
+            }
+
+            const targets = Array.from(results.querySelectorAll(".result-url, .result-title-text, .result-snippet, .meta-text"))
+                .slice(0, 72);
+
+            const baseDurationMs = 210;
+            const charPoolSize = MATRIX_CHARS.length;
+
+            targets.forEach((node, idx) => {
+                const finalText = node.textContent || "";
+                if (!finalText.trim()) {
+                    return;
+                }
+
+                const chars = Array.from(finalText);
+                const startAt = performance.now() + idx * 11;
+                const durationMs = Math.min(260, baseDurationMs + chars.length * 0.7);
+
+                const tick = (now) => {
+                    if (now < startAt) {
+                        requestAnimationFrame(tick);
+                        return;
+                    }
+
+                    const progress = Math.min(1, (now - startAt) / durationMs);
+                    const revealed = Math.floor(chars.length * progress);
+                    let out = "";
+
+                    for (let i = 0; i < chars.length; i += 1) {
+                        const current = chars[i];
+                        if (i < revealed || /\s/.test(current)) {
+                            out += current;
+                            continue;
+                        }
+
+                        const randomIndex = Math.floor(Math.random() * charPoolSize);
+                        out += MATRIX_CHARS[randomIndex];
+                    }
+
+                    node.textContent = out;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        node.textContent = finalText;
+                    }
+                };
+
+                requestAnimationFrame(tick);
+            });
+        }
+
+        function normalizeTop(rawValue) {
+            const text = String(rawValue ?? "");
+            const match = text.match(/\d+/);
+            const numeric = Number(match ? match[0] : 10);
+            if (!Number.isFinite(numeric)) {
+                return 10;
+            }
+            return Math.min(200, Math.max(1, Math.round(numeric)));
+        }
+
+        topInput.addEventListener("input", () => {
+            const digitsOnly = topInput.value.replace(/\D+/g, "").slice(0, 3);
+            topInput.value = digitsOnly;
+        });
+
+        topInput.addEventListener("blur", () => {
+            const normalized = normalizeTop(topInput.value);
+            topInput.value = String(normalized);
+        });
+
+        function updatePageParams(q, n, u) {
+            const params = new URLSearchParams();
+            params.set("q", q);
+            params.set("n", String(n));
+            if (u) {
+                params.set("u", u);
+            }
+            const queryString = params.toString();
+            const nextUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+            window.history.replaceState({}, "", nextUrl);
+        }
+
+        async function runSearch(q, n, u, syncUrl = true) {
+            if (!q) {
+                return;
+            }
+
+            queryInput.value = q;
+            const normalizedTop = normalizeTop(n);
+            topInput.value = String(normalizedTop);
+            if (syncUrl) {
+                updatePageParams(q, normalizedTop, u);
+            }
+
+            submitBtn.disabled = true;
+            status.textContent = "Searching...";
+            results.innerHTML = "";
+
+            const params = new URLSearchParams();
+            params.set("q", q);
+            params.set("n", String(normalizedTop));
+            if (u) {
+                params.set("u", u);
+            }
+
+            try {
+                const response = await fetch(`/search?${params.toString()}`);
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data?.detail || "Search failed");
+                }
+
+                const items = getItems(data);
+                document.body.classList.add("has-results");
+                status.textContent = `${items.length} result${items.length === 1 ? "" : "s"}`;
+                renderResults(items);
+                animateMatrixText();
+            } catch (error) {
+                document.body.classList.add("has-results");
+                status.textContent = "Search failed";
+                results.innerHTML = `<p class="error">${String(error)}</p>`;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const query = queryInput.value.trim();
+            if (!query) {
+                return;
+            }
+
+            await runSearch(query, topInput.value, baseUrlInput.value.trim(), true);
+        });
+
+        const pageParams = new URLSearchParams(window.location.search);
+        const initialQ = (pageParams.get("q") || pageParams.get("query") || "").trim();
+        const initialN = normalizeTop(pageParams.get("n") || pageParams.get("top") || "10");
+        const initialU = (pageParams.get("u") || pageParams.get("baseUrl") || "").trim();
+
+        if (initialQ) {
+            queryInput.value = initialQ;
+        }
+        topInput.value = String(initialN);
+        baseUrlInput.value = initialU;
+
+        if (initialQ) {
+            runSearch(initialQ, initialN, initialU, false);
+        }
+    </script>
+</body>
+
+</html>
