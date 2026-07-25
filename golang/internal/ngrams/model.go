@@ -5,5 +5,6 @@ type NGram struct {
 	Language  string
 	NGram     int
 	Source    string
+	Frequency int
 	Timestamp string
 }

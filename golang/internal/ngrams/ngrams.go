@@ -117,5 +117,20 @@ func ParseAndGenerateStatistics(news *model.News, minimumNGramSize int, maximumN
 	}
 	ngrams = filtered
 
+	// Deduplicate: keep a single entry per unique Words value and
+	// accumulate its occurrence count in Frequency.
+	deduped := make([]NGram, 0, len(ngrams))
+	index := make(map[string]int, len(ngrams))
+	for _, ng := range ngrams {
+		if pos, exists := index[ng.Words]; exists {
+			deduped[pos].Frequency++
+			continue
+		}
+		ng.Frequency = 1
+		index[ng.Words] = len(deduped)
+		deduped = append(deduped, ng)
+	}
+	ngrams = deduped
+
 	return ngrams, nil
 }

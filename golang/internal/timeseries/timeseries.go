@@ -109,7 +109,7 @@ func AddTimeSeriesData(data []ngrams.NGram) error {
 	}
 	defer tx.Rollback() // no-op once Commit succeeds
 
-	stmt, err := tx.Prepare("COPY ngrams (words, n_gram, source, language, timestamp) FROM STDIN")
+	stmt, err := tx.Prepare("COPY ngrams (words, n_gram, source, frequency, language, timestamp) FROM STDIN")
 	if err != nil {
 		return err
 	}
@@ -119,6 +119,7 @@ func AddTimeSeriesData(data []ngrams.NGram) error {
 			ngram.Words,
 			ngram.NGram,
 			ngram.Source,
+			ngram.Frequency,
 			ngram.Language,
 			ngram.Timestamp,
 		); err != nil {

@@ -86,12 +86,12 @@ func TestParseAndGenerateStatisticsSample1(t *testing.T) {
 	assert.NotEmpty(t, ngrams)
 
 	expected := []NGram{
-		{Words: "macos", NGram: 1},
-		{Words: "tahoe", NGram: 1},
-		{Words: "beta", NGram: 1},
-		{Words: "macos tahoe", NGram: 2},
-		{Words: "tahoe beta", NGram: 2},
-		{Words: "macos tahoe beta", NGram: 3},
+		{Words: "macos", NGram: 1, Frequency: 1},
+		{Words: "tahoe", NGram: 1, Frequency: 1},
+		{Words: "beta", NGram: 1, Frequency: 1},
+		{Words: "macos tahoe", NGram: 2, Frequency: 1},
+		{Words: "tahoe beta", NGram: 2, Frequency: 1},
+		{Words: "macos tahoe beta", NGram: 3, Frequency: 1},
 	}
 	assert.Equal(t, expected, ngrams)
 }
@@ -104,33 +104,33 @@ func TestParseAndGenerateStatistics(t *testing.T) {
 	assert.NotEmpty(t, ngrams)
 
 	expected := []NGram{
-		{Words: "go", NGram: 1},
-		{Words: "open", NGram: 1},
-		{Words: "source", NGram: 1},
-		{Words: "programming", NGram: 1},
-		{Words: "language", NGram: 1},
-		{Words: "open source", NGram: 2},
-		{Words: "source programming", NGram: 2},
-		{Words: "programming language", NGram: 2},
-		{Words: "open source programming", NGram: 3},
-		{Words: "source programming language", NGram: 3},
-		{Words: "open source programming language", NGram: 4},
-		{Words: "google", NGram: 1},
-		{Words: "windows", NGram: 1},
-		{Words: "windows 11", NGram: 2},
-		{Words: "operating", NGram: 1},
-		{Words: "system", NGram: 1},
-		{Words: "operating system", NGram: 2},
-		{Words: "retrieval", NGram: 1},
-		{Words: "augmented", NGram: 1},
-		{Words: "generation", NGram: 1},
-		{Words: "retrieval augmented", NGram: 2},
-		{Words: "augmented generation", NGram: 2},
-		{Words: "retrieval augmented generation", NGram: 3},
-		{Words: "rag", NGram: 1},
-		{Words: "gpt", NGram: 1},
-		{Words: "gpt 3", NGram: 2},
-		{Words: "gpt 3 5", NGram: 3},
+		{Words: "go", NGram: 1, Frequency: 1},
+		{Words: "open", NGram: 1, Frequency: 1},
+		{Words: "source", NGram: 1, Frequency: 1},
+		{Words: "programming", NGram: 1, Frequency: 1},
+		{Words: "language", NGram: 1, Frequency: 1},
+		{Words: "open source", NGram: 2, Frequency: 1},
+		{Words: "source programming", NGram: 2, Frequency: 1},
+		{Words: "programming language", NGram: 2, Frequency: 1},
+		{Words: "open source programming", NGram: 3, Frequency: 1},
+		{Words: "source programming language", NGram: 3, Frequency: 1},
+		{Words: "open source programming language", NGram: 4, Frequency: 1},
+		{Words: "google", NGram: 1, Frequency: 1},
+		{Words: "windows", NGram: 1, Frequency: 1},
+		{Words: "windows 11", NGram: 2, Frequency: 1},
+		{Words: "operating", NGram: 1, Frequency: 1},
+		{Words: "system", NGram: 1, Frequency: 1},
+		{Words: "operating system", NGram: 2, Frequency: 1},
+		{Words: "retrieval", NGram: 1, Frequency: 1},
+		{Words: "augmented", NGram: 1, Frequency: 1},
+		{Words: "generation", NGram: 1, Frequency: 1},
+		{Words: "retrieval augmented", NGram: 2, Frequency: 1},
+		{Words: "augmented generation", NGram: 2, Frequency: 1},
+		{Words: "retrieval augmented generation", NGram: 3, Frequency: 1},
+		{Words: "rag", NGram: 1, Frequency: 1},
+		{Words: "gpt", NGram: 1, Frequency: 1},
+		{Words: "gpt 3", NGram: 2, Frequency: 1},
+		{Words: "gpt 3 5", NGram: 3, Frequency: 1},
 	}
 	assert.Equal(t, expected, ngrams)
 }
@@ -140,5 +140,25 @@ func TestParseAndGenerateStatisticsFilterOutHttps(t *testing.T) {
 	news.Content = "https://example.com https://example.com/test https://example.com/test/test https://example.com/test/test/test"
 	ngrams, err := ParseAndGenerateStatistics(&news, 1, 3)
 	assert.NoError(t, err)
-	assert.Equal(t, 14, len(ngrams))
+	assert.Equal(t, 4, len(ngrams))
+}
+
+func TestDeduplication(t *testing.T) {
+	var news model.News
+	news.Content = "This is a test test string for generating ngrams. test test test string is a test."
+	ngrams, err := ParseAndGenerateStatistics(&news, 3, 4)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, ngrams)
+
+	t.Log("NGrams:", ngrams)
+
+	assert.Equal(t, 3, len(ngrams))
+
+	testTest := ngrams[0]
+	assert.Equal(t, "test test string", testTest.Words)
+	assert.Equal(t, 2, testTest.Frequency)
+
+	testTestString := ngrams[2]
+	assert.Equal(t, "test test test string", testTestString.Words)
+	assert.Equal(t, 1, testTestString.Frequency)
 }
