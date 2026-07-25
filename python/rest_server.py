@@ -13,7 +13,7 @@ from model import SearchDoc
 
 app = FastAPI(
     title="News Search REST API",
-    description="REST wrapper for indexing and semantic search.",
+    description="REST wrapper for semantic search.",
     version="1.0.0",
 )
 
