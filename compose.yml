@@ -93,7 +93,7 @@ services:
             - 'AI_SEARCH_API_KEY=${AI_SEARCH_API_KEY}'
             - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
             - 'RAINDROP_RSS_FEED=${RAINDROP_RSS_FEED}'
-    search-rest-service:
+    search-rest-server:
         image: ghcr.io/heussd/nats-news-analysis/search-rest-server:latest
         ports:
             - "8001:8000"
