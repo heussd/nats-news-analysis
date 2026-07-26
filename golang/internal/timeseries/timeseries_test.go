@@ -3,6 +3,7 @@ package timeseries
 import (
 	"testing"
 
+	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/heussd/nats-news-analysis/internal/ngrams"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,6 +25,20 @@ func TestAddTimeSeriesData(t *testing.T) {
 	if err != nil {
 		t.Errorf("AddTimeSeriesData() error = %v, wantErr %v", err, false)
 	}
+}
+
+func TestAddGenerated(t *testing.T) {
+	news := model.News{
+		Content: "This is a test news content for generating n-grams.",
+		URL:     "https://example.com/test-news",
+	}
+	ngrams, err := ngrams.ParseAndGenerateStatistics(&news, 1, 3)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, ngrams)
+	assert.NotEqual(t, 0, ngrams[0].Frequency)
+
+	err = AddTimeSeriesData(ngrams)
+	assert.NoError(t, err)
 }
 
 func TestValidateTimestamp(t *testing.T) {

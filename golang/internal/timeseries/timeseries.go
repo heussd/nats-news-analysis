@@ -75,20 +75,9 @@ func init() {
 		source TEXT NOT NULL,
 		language TEXT NOT NULL,
 		n_gram INTEGER NOT NULL,
+		frequency INTEGER NOT NULL DEFAULT 0,
 		timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
 	)`)
-	if err != nil {
-		panic(err)
-	}
-
-	// Index the timestamp for the time-window range scans used by trend queries.
-	_, err = db.Exec(`CREATE INDEX IF NOT EXISTS idx_ngrams_timestamp ON ngrams (timestamp)`)
-	if err != nil {
-		panic(err)
-	}
-
-	// Composite index to support grouping/lookups of phrases by (words, n_gram).
-	_, err = db.Exec(`CREATE INDEX IF NOT EXISTS idx_ngrams_words_ngram ON ngrams (words, n_gram)`)
 	if err != nil {
 		panic(err)
 	}
