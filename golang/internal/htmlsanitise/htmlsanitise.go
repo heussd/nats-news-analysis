@@ -21,6 +21,7 @@ func ExtractFields(news *model.News) string {
 func Sanitize(text string) string {
 	text = bluemonday.
 		StrictPolicy().
+		SkipElementsContent("pre", "code").
 		AddSpaceWhenStrippingTag(true).
 		Sanitize(text)
 

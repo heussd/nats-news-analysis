@@ -37,3 +37,13 @@ func TestSanitisationP(t *testing.T) {
 	assert.False(t, strings.Contains(outcome, "</p>"))
 	assert.True(t, strings.Contains(outcome, "HELLO WORLD"))
 }
+
+func TestSanitiseCodeBlock(t *testing.T) {
+	outcome := Sanitize("HELLO <pre><code>BEAUTIFUL</code></pre> WORLD")
+
+	assert.False(t, strings.Contains(outcome, "<pre>"))
+	assert.False(t, strings.Contains(outcome, "</pre>"))
+	assert.False(t, strings.Contains(outcome, "<code>"))
+	assert.False(t, strings.Contains(outcome, "</code>"))
+	assert.Equal(t, "HELLO WORLD", outcome)
+}
