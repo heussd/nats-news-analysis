@@ -1,13 +1,22 @@
 services:
-  feed-feeder: !reset
-  n-gram-analysis: !reset
-  article-feeder: !reset
-  news-feeder: !reset
-  keyword-matcher: !reset
-  raindrop-integration: !reset
-  watchtower: !reset
-  nats-indexer: !reset
-  search-rest-service: !reset
+  feed-feeder:
+    profiles: ["disabled"]
+  n-gram-analysis:
+    profiles: ["disabled"]
+  article-feeder:
+    profiles: ["disabled"]
+  news-feeder:
+    profiles: ["disabled"]
+  keyword-matcher:
+    profiles: ["disabled"]
+  raindrop-integration:
+    profiles: ["disabled"]
+  watchtower:
+    profiles: ["disabled"]
+  nats-indexer:
+    profiles: ["disabled"]
+  search-rest-service:
+    profiles: ["disabled"]
   fullfeedrss:
     ports:
       - "55800:80"
