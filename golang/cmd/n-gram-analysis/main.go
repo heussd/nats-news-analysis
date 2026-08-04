@@ -2,7 +2,6 @@ package main
 
 import (
 	"strings"
-	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
@@ -37,17 +36,6 @@ func main() {
 			if err != nil {
 				logger.Error().Err(err).Msg("Failed to generate n-gram statistics")
 				return
-			}
-
-			for i := range ngrams {
-				ngrams[i].Source = news.URL
-				ngrams[i].Language = news.Language
-				ngrams[i].Timestamp = news.Date
-
-				if ngrams[i].Timestamp == "" || timeseries.ValidateTimestamp(ngrams[i].Timestamp) != nil {
-					// Fallback directly in the n-gram field when timestamp is missing or invalid.
-					ngrams[i].Timestamp = time.Now().UTC().Format("2006-01-02 15:04:05-07")
-				}
 			}
 
 			if err := timeseries.AddTimeSeriesData(ngrams); err != nil {

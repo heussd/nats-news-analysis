@@ -3,12 +3,34 @@ package ngrams
 import (
 	"regexp"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/heussd/nats-news-analysis/internal/htmlsanitise"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/tsawler/prose/v3"
 )
+
+// dateLayouts mirrors the formats accepted by timeseries.ValidateTimestamp.
+var dateLayouts = []string{
+	"2006-01-02 15:04:05-07",
+	time.RFC3339,
+}
+
+// clampToNow returns timestamp unchanged, unless it parses to a time in the
+// future, in which case it returns the current time instead.
+func clampToNow(timestamp string) string {
+	now := time.Now().UTC()
+	for _, layout := range dateLayouts {
+		if parsed, err := time.Parse(layout, timestamp); err == nil {
+			if parsed.After(now) {
+				return now.Format(time.RFC3339)
+			}
+			break
+		}
+	}
+	return timestamp
+}
 
 var (
 	// remove purely numeric phrases (digits and spaces only)
@@ -131,6 +153,12 @@ func ParseAndGenerateStatistics(news *model.News, minimumNGramSize int, maximumN
 		deduped = append(deduped, ng)
 	}
 	ngrams = deduped
+
+	for i := range ngrams {
+		ngrams[i].Timestamp = clampToNow(news.Date)
+		ngrams[i].Source = news.URL
+		ngrams[i].Language = news.Language
+	}
 
 	return ngrams, nil
 }
