@@ -104,8 +104,6 @@ func TestParseAndGenerateStatistics(t *testing.T) {
 	assert.NotEmpty(t, ngrams)
 
 	expected := []NGram{
-		{Words: "go", NGram: 1, Frequency: 1},
-		{Words: "open", NGram: 1, Frequency: 1},
 		{Words: "source", NGram: 1, Frequency: 1},
 		{Words: "programming", NGram: 1, Frequency: 1},
 		{Words: "language", NGram: 1, Frequency: 1},
@@ -140,7 +138,7 @@ func TestParseAndGenerateStatisticsFilterOutHttps(t *testing.T) {
 	news.Content = "https://example.com https://example.com/test https://example.com/test/test https://example.com/test/test/test"
 	ngrams, err := ParseAndGenerateStatistics(&news, 1, 3)
 	assert.NoError(t, err)
-	assert.Equal(t, 4, len(ngrams))
+	assert.Equal(t, 3, len(ngrams))
 }
 
 func TestDeduplication(t *testing.T) {
@@ -161,4 +159,13 @@ func TestDeduplication(t *testing.T) {
 	testTestString := ngrams[2]
 	assert.Equal(t, "test test test string", testTestString.Words)
 	assert.Equal(t, 1, testTestString.Frequency)
+}
+
+func TestIsStopword(t *testing.T) {
+	assert.True(t, isStopword("the"))
+	assert.True(t, isStopword("and"))
+	assert.True(t, isStopword("is"))
+	assert.True(t, isStopword("reflist"))
+	assert.False(t, isStopword("golang"))
+	assert.False(t, isStopword("programming"))
 }

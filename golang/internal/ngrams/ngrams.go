@@ -1,7 +1,9 @@
 package ngrams
 
 import (
+	_ "embed"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 	"unicode"
@@ -34,27 +36,22 @@ func clampToNow(timestamp string) string {
 
 var (
 	// remove purely numeric phrases (digits and spaces only)
-	reOnlyNumbers = regexp.MustCompile(`^[0-9]+(\s+[0-9]+)*$`)
-	// remove common HTML entity leftovers (e.g. "39", "34", "gt", "lt")
-	reHTMLEntities = regexp.MustCompile(`(^|\s)(39|34|gt|lt)(\s|$)`)
-	// remove parser/wiki template artifacts
-	reWikiArtifacts = regexp.MustCompile(`(^|\s)(parser|navbox|hlist|reflist|liststyle|mw|cs1)(\s|$)`)
-	// remove style/template boilerplate
-	reStyleBoilerplate = regexp.MustCompile(`font size|font weight|background color|output div|references list|list style|style type|not skin`)
-	// remove CSS/DOM noise
-	reCSSNoise = regexp.MustCompile(`none none|padding 0|first child|last child|child before|child after|html skin|skin theme|theme clientpref|output [a-z0-9_]+|doi [0-9]+|id lock`)
-
-	reHttp = regexp.MustCompile(`\b(https?|www|com|org|net|gov|edu|io|co|us|uk|de|fr|jp|cn|ru|br|in|au|ca)\b`)
+	reOnlyNumbers  = regexp.MustCompile(`^[0-9]+(\s+[0-9]+)*$`)
+	reAnyStopwords = AnyStopwordsRegex()
+	reHttp         = regexp.MustCompile(`\b(https?|www|com|org|net|gov|edu|io|co|us|uk|de|fr|jp|cn|ru|br|in|au|ca)\b`)
 )
+
+func isStopword(word string) bool {
+	stopwordsExact, _ := CachedStopwords()
+	return slices.Contains(stopwordsExact, word)
+}
 
 func isNoise(words string) bool {
 	w := strings.ToLower(words)
 	return reOnlyNumbers.MatchString(words) ||
-		reHTMLEntities.MatchString(w) ||
-		reWikiArtifacts.MatchString(w) ||
-		reStyleBoilerplate.MatchString(w) ||
-		reCSSNoise.MatchString(w) ||
-		reHttp.MatchString(w)
+		reAnyStopwords.MatchString(w) ||
+		reHttp.MatchString(w) ||
+		isStopword(w)
 }
 
 func generateNGrams(text string, n int) (ngram []NGram, err error) {
@@ -129,8 +126,8 @@ func ParseAndGenerateStatistics(news *model.News, minimumNGramSize int, maximumN
 		ngrams = append(ngrams, newNGrams...)
 	}
 
-	// Filter out noise: purely numeric phrases, HTML entity leftovers,
-	// wiki/parser artifacts, style boilerplate, and CSS/DOM noise.
+	// Filter out noise: numeric phrases, HTML entity leftovers,
+	// URL/domain fragments, and stopwords.
 	filtered := ngrams[:0]
 	for _, ng := range ngrams {
 		if !isNoise(ng.Words) {
