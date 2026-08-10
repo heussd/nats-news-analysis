@@ -103,7 +103,7 @@ func AddTimeSeriesData(data []ngrams.NGram) error {
 		return err
 	}
 
-	for _, ngram := range data {
+	for i, ngram := range data {
 		if _, err := stmt.Exec(
 			ngram.Words,
 			ngram.NGram,
@@ -112,20 +112,33 @@ func AddTimeSeriesData(data []ngrams.NGram) error {
 			ngram.Language,
 			ngram.Timestamp,
 		); err != nil {
-			return err
+			return fmt.Errorf(
+				"copy row %d failed (words=%q ngram=%d source=%q language=%q timestamp=%q): %w",
+				i,
+				ngram.Words,
+				ngram.NGram,
+				ngram.Source,
+				ngram.Language,
+				ngram.Timestamp,
+				err,
+			)
 		}
 	}
 
 	// A final Exec with no arguments flushes the buffered COPY data.
 	if _, err := stmt.Exec(); err != nil {
-		return err
+		return fmt.Errorf("copy flush failed: %w", err)
 	}
 
 	if err := stmt.Close(); err != nil {
-		return err
+		return fmt.Errorf("copy close failed: %w", err)
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("transaction commit failed: %w", err)
+	}
+
+	return nil
 }
 
 func ValidateTimestamp(timestamp string) error {

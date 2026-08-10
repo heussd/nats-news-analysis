@@ -2,10 +2,29 @@ package ngrams
 
 import (
 	"testing"
+	"time"
 
 	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestClampToNowInvalidDateFallsBackToNow(t *testing.T) {
+	invalid := "not-a-date"
+	got := clampToNow(invalid)
+
+	if got == invalid {
+		t.Fatalf("expected fallback timestamp for invalid input %q, got unchanged value %q", invalid, got)
+	}
+
+	parsed, err := time.Parse(time.RFC3339, got)
+	if err != nil {
+		t.Fatalf("expected RFC3339 fallback timestamp, got %q: %v", got, err)
+	}
+
+	if delta := time.Since(parsed); delta < 0 || delta > 5*time.Second {
+		t.Fatalf("expected fallback close to now, delta=%v (value=%q)", delta, got)
+	}
+}
 
 func TestGenerate1Grams(t *testing.T) {
 	text := "This is a test test string for generating 1-grams."
@@ -85,13 +104,16 @@ func TestParseAndGenerateStatisticsSample1(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, ngrams)
 
+	// news.Date is unset, so Timestamp falls back to time.Now(); use the
+	// actual value to avoid racing against a second boundary.
+	ts := ngrams[0].Timestamp
 	expected := []NGram{
-		{Words: "macos", NGram: 1, Frequency: 1},
-		{Words: "tahoe", NGram: 1, Frequency: 1},
-		{Words: "beta", NGram: 1, Frequency: 1},
-		{Words: "macos tahoe", NGram: 2, Frequency: 1},
-		{Words: "tahoe beta", NGram: 2, Frequency: 1},
-		{Words: "macos tahoe beta", NGram: 3, Frequency: 1},
+		{Words: "macos", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "tahoe", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "beta", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "macos tahoe", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "tahoe beta", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "macos tahoe beta", NGram: 3, Frequency: 1, Timestamp: ts},
 	}
 	assert.Equal(t, expected, ngrams)
 }
@@ -103,32 +125,33 @@ func TestParseAndGenerateStatistics(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, ngrams)
 
+	ts := ngrams[0].Timestamp
 	expected := []NGram{
-		{Words: "source", NGram: 1, Frequency: 1},
-		{Words: "programming", NGram: 1, Frequency: 1},
-		{Words: "language", NGram: 1, Frequency: 1},
-		{Words: "open source", NGram: 2, Frequency: 1},
-		{Words: "source programming", NGram: 2, Frequency: 1},
-		{Words: "programming language", NGram: 2, Frequency: 1},
-		{Words: "open source programming", NGram: 3, Frequency: 1},
-		{Words: "source programming language", NGram: 3, Frequency: 1},
-		{Words: "open source programming language", NGram: 4, Frequency: 1},
-		{Words: "google", NGram: 1, Frequency: 1},
-		{Words: "windows", NGram: 1, Frequency: 1},
-		{Words: "windows 11", NGram: 2, Frequency: 1},
-		{Words: "operating", NGram: 1, Frequency: 1},
-		{Words: "system", NGram: 1, Frequency: 1},
-		{Words: "operating system", NGram: 2, Frequency: 1},
-		{Words: "retrieval", NGram: 1, Frequency: 1},
-		{Words: "augmented", NGram: 1, Frequency: 1},
-		{Words: "generation", NGram: 1, Frequency: 1},
-		{Words: "retrieval augmented", NGram: 2, Frequency: 1},
-		{Words: "augmented generation", NGram: 2, Frequency: 1},
-		{Words: "retrieval augmented generation", NGram: 3, Frequency: 1},
-		{Words: "rag", NGram: 1, Frequency: 1},
-		{Words: "gpt", NGram: 1, Frequency: 1},
-		{Words: "gpt 3", NGram: 2, Frequency: 1},
-		{Words: "gpt 3 5", NGram: 3, Frequency: 1},
+		{Words: "source", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "programming", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "language", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "open source", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "source programming", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "programming language", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "open source programming", NGram: 3, Frequency: 1, Timestamp: ts},
+		{Words: "source programming language", NGram: 3, Frequency: 1, Timestamp: ts},
+		{Words: "open source programming language", NGram: 4, Frequency: 1, Timestamp: ts},
+		{Words: "google", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "windows", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "windows 11", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "operating", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "system", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "operating system", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "retrieval", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "augmented", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "generation", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "retrieval augmented", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "augmented generation", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "retrieval augmented generation", NGram: 3, Frequency: 1, Timestamp: ts},
+		{Words: "rag", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "gpt", NGram: 1, Frequency: 1, Timestamp: ts},
+		{Words: "gpt 3", NGram: 2, Frequency: 1, Timestamp: ts},
+		{Words: "gpt 3 5", NGram: 3, Frequency: 1, Timestamp: ts},
 	}
 	assert.Equal(t, expected, ngrams)
 }

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"strings"
-
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
 	"github.com/heussd/nats-news-analysis/internal/ngrams"
@@ -28,18 +26,14 @@ func main() {
 
 	err := queue.Subscribe(
 		func(news *model.News) {
-			if !strings.HasPrefix(news.Language, "en") {
-				return
-			}
-
 			ngrams, err := ngrams.ParseAndGenerateStatistics(news, minimumNGramSize, maximumNGramSize)
 			if err != nil {
-				logger.Error().Err(err).Msg("Failed to generate n-gram statistics")
+				logger.Error().Err(err).Msgf("Failed to generate n-gram statistics: %v", err)
 				return
 			}
 
 			if err := timeseries.AddTimeSeriesData(ngrams); err != nil {
-				logger.Error().Err(err).Msg("Failed to add n-gram statistics to time series database")
+				logger.Error().Err(err).Msgf("Failed to add n-gram statistics to time series database: %v", err)
 				return
 			}
 

@@ -20,7 +20,7 @@ var dateLayouts = []string{
 }
 
 // clampToNow returns timestamp unchanged, unless it parses to a time in the
-// future, in which case it returns the current time instead.
+// future or cannot be parsed, in which case it returns the current time.
 func clampToNow(timestamp string) string {
 	now := time.Now().UTC()
 	for _, layout := range dateLayouts {
@@ -28,10 +28,10 @@ func clampToNow(timestamp string) string {
 			if parsed.After(now) {
 				return now.Format(time.RFC3339)
 			}
-			break
+			return parsed.UTC().Format(time.RFC3339)
 		}
 	}
-	return timestamp
+	return now.Format(time.RFC3339)
 }
 
 var (
