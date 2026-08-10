@@ -67,7 +67,7 @@ services:
             replicas: 6
         environment:
             - NATS_URL=nats-server:4222
-            - NATS_SUBSCRIBE_SUBJECT=news.*
+            - NATS_SUBSCRIBE_SUBJECT=news.en
             - POSTGRES_HOST=${POSTGRES_HOST}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
