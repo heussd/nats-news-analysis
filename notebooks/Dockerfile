@@ -23,5 +23,5 @@ ENV PYTHONUNBUFFERED=1 \
 
 COPY pyproject.toml uv.lock ./
 
-RUN uv tool install nbstripout
+RUN uv tool install pre-commit
 RUN uv pip install --system -r pyproject.toml

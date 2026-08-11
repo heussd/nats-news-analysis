@@ -31,6 +31,7 @@ RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment && \
     echo "LANG=en_US.UTF-8" > /etc/locale.conf && \
     locale-gen en_US.UTF-8
 
+RUN uv tool install pre-commit
 
 FROM base AS builder
 

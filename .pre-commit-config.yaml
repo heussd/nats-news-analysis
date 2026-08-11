@@ -1,0 +1,7 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/kynan/nbstripout
+    rev: 0.5.0
+    hooks:
+        - id: nbstripout
