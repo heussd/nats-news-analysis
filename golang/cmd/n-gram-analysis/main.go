@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
 	"github.com/heussd/nats-news-analysis/internal/ngrams"
@@ -26,6 +28,13 @@ func main() {
 
 	err := queue.Subscribe(
 		func(news *model.News) {
+			if !strings.HasPrefix(news.Language, "en") {
+				logger.Info().
+					Str("language", news.Language).
+					Msg("Skipping n-gram analysis for non-English news article")
+				return
+			}
+
 			ngrams, err := ngrams.ParseAndGenerateStatistics(news, minimumNGramSize, maximumNGramSize)
 			if err != nil {
 				logger.Error().Err(err).Msgf("Failed to generate n-gram statistics: %v", err)
