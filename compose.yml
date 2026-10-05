@@ -95,6 +95,8 @@ services:
             - 'RAINDROP_RSS_FEED=${RAINDROP_RSS_FEED}'
     search-rest-server:
         image: ghcr.io/heussd/nats-news-analysis/search-rest-server:latest
+        deploy:
+            replicas: 0
         ports:
             - "8001:8000"
         environment:
