@@ -9,7 +9,7 @@ import requests
 def add(searchDocs: List[dict]) -> bool:
     if len(searchDocs) == 0:
         print("No documents to add.")
-        return
+        return True
 
     data = {"value": [searchDoc for searchDoc in searchDocs]}
 
@@ -22,14 +22,25 @@ def add(searchDocs: List[dict]) -> bool:
         data=json.dumps(data, cls=NumpyEncoder),
     )
 
-    if res.status_code == 200:
-        print(f"{len(searchDocs)} documents added to the search index successfully.")
-        return True
-    else:
-        print(
-            f"Failed to add documents to the search index. Status code: {res.status_code}, Status text: {res.text}"
+    if not res.ok:
+        raise RuntimeError(
+            f"Failed to add documents to the search index. "
+            f"Status code: {res.status_code}, Response: {res.text}"
         )
-        return False
+
+    response = res.json()
+    failed_documents = [
+        result for result in response.get("value", [])
+        if result.get("status") is False
+    ]
+    if failed_documents:
+        raise RuntimeError(
+            "Some documents failed to add to the search index: "
+            f"{json.dumps(failed_documents)}"
+        )
+
+    print(f"{len(searchDocs)} documents added to the search index successfully.")
+    return True
 
 
 def search(query: str, top: int = 10, baseUrl: str = None) -> dict:

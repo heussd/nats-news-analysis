@@ -12,18 +12,9 @@ async def process(msgs: List[nats.aio.msg.Msg]):
     jsonmsgs = []
     for msg in msgs:
         json_data = json.loads(msg.data.decode())
-        jsonmsgs.append(SearchDoc(
-            title=json_data["title"],
-            author=json_data["author"],
-            content=json_data["content"],
-            excerpt=json_data["excerpt"],
-            date=json_data["date"],
-            language=json_data["language"],
-            url=json_data["url"],
-        ))
+        jsonmsgs.append(SearchDoc(**json_data))
     prepared_search_docs = prepare(jsonmsgs)
-    if not add(prepared_search_docs):
-        raise Exception("Failed to add documents to AI search index")
+    add(prepared_search_docs)
 
 
 async def run():
@@ -41,9 +32,16 @@ async def run():
         try:
             msgs = await psub.fetch(10, timeout=5)
             print(f"Fetched {len(msgs)} messages")
-            await process(msgs)
+            try:
+                await process(msgs)
+            except Exception as exc:
+                print(f"Failed to process batch; acknowledging messages anyway: {exc}")
+
             for msg in msgs:
-                await msg.ack()
+                try:
+                    await msg.ack()
+                except Exception as exc:
+                    print(f"Failed to acknowledge message: {exc}")
         except asyncio.TimeoutError:
             print("No new messages, waiting 10 secs...")
             await asyncio.sleep(10)
