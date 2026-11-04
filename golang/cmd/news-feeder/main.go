@@ -7,7 +7,7 @@ import (
 	"github.com/heussd/nats-news-analysis/internal/langdetect"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
-	"github.com/heussd/nats-news-analysis/pkg/fulltextrss"
+	"github.com/heussd/nats-news-analysis/pkg/defuddle"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -22,14 +22,18 @@ func main() {
 	if err := queue.Subscribe(
 		func(article *model.Article) {
 			url := article.Url
+			var news model.News
+			var err error
 
 			retrievalStart := time.Now()
-			fulltext := fulltextrss.RetrieveFullText(url)
+			if news, err = defuddle.RetrieveFullText(url); err != nil {
+				logger.Error().Err(err).Str("url", url).Msg("Failed to retrieve full text for url")
+				return
+			}
 			retrievalTime := time.Since(retrievalStart)
 
-			news := fulltextrss.MakeNews(fulltext)
 			langPostfix := langdetect.AssignSubjectPostfixBasedOnLanguage(
-				fmt.Sprintf("%s %s", fulltext.Title, fulltext.Content),
+				news.Content,
 			)
 			news.Language = string(langPostfix)
 
@@ -42,10 +46,10 @@ func main() {
 			}
 
 			logger.Info().
-				Str("domain", fulltext.Domain).
-				Int("fulltext-length", len(fulltext.Content)).
+				Str("domain", news.Domain).
+				Int("fulltext-length", len(news.Content)).
 				Int64("retrieval-duration-ms", retrievalTime.Milliseconds()).
-				Msg("Full text retrieval complete")
+				Msg("News feeding complete")
 		},
 	); err != nil {
 		panic(err)

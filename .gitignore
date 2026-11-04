@@ -13,3 +13,5 @@ __debug_*
 *.pyc
 
 compose.guests.yml
+settings.json
+.DS_Store

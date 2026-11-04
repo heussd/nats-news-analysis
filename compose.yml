@@ -1,6 +1,6 @@
 services:
     nats-server:
-        image: docker.io/nats:2.12
+        image: docker.io/nats:2.15
         restart: always
         ports:
             - '4222:4222' # 4222 is for clients.
@@ -9,17 +9,12 @@ services:
         volumes:
             - './nats-persistence/:/data'
         command: '--jetstream --http_port 8222 --store_dir /data'
-    fullfeedrss:
-        image: docker.io/heussd/fivefilters-full-text-rss:latest
-        restart: always
-        mem_limit: 3G
-        deploy:
-            replicas: 2
+    defuddle:
+        scale: 2
+        image: ghcr.io/heussd/defuddle-server
         environment:
-            # Leave empty to disable admin section
-            - FTR_ADMIN_PASSWORD=
-        volumes:
-            - 'rss-cache:/var/www/html/cache'
+            ALLOW_PRIVATE_NETWORKS: "false"
+        restart: always
     feed-feeder:
         image: ghcr.io/heussd/nats-news-analysis/feed-feeder:latest
         restart: always
@@ -40,7 +35,7 @@ services:
             replicas: 2
         environment:
             - NATS_URL=nats-server:4222
-            - FULLTEXTRSS_SERVER=http://fullfeedrss:80
+            - DEFUDDLE_SERVER=http://loadbalancer:80
     keyword-matcher:
         image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
         restart: always
@@ -103,11 +98,19 @@ services:
             - 'AI_SEARCH_ENDPOINT=${AI_SEARCH_ENDPOINT}'
             - 'AI_SEARCH_API_KEY=${AI_SEARCH_API_KEY}'
             - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
-    watchtower:
-        image: nickfedor/watchtower
-        restart: always
+    loadbalancer:
+        image: nginx
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
+            - "./loadbalancer/nginx.conf:/etc/nginx/nginx.conf"
+        depends_on:
+            - defuddle
+        ports:
+            - '8080:80'
 
-volumes:
-    rss-cache:
+    watchtower:
+        image: docker.io/nickfedor/watchtower
+        container_name: watchtower
+        restart: unless-stopped
+        volumes:
+            - /run/podman/podman.sock:/var/run/docker.sock
+        command: --cleanup

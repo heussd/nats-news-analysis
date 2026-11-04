@@ -16,14 +16,14 @@ The system has the following NATS queues:
 1. `news` - News texts and their metadata.
 1. `match-urls` - URLs of positive matching articles.
 
-
 The outcomes of this system are:
 
 1. A Raindrop.io collection with articles matching to keywords.
 1. An Azure AI Search index prepared for hybrid search on news.
+1. A REST- and MCP-Server that allows consuming the search index with an agent.
+1. A PostgreSQL time series database with n-gram statistics of English news.
+1. A set of Jupyter notebooks to explore trends, sources, languages and phrases.
 1. A Grafana dashboard with metrics.
-1. An MCP-Server that allows consuming 1 and 2 with an agentic LLM (such as [Roo Code](https://roocode.com)).
-
 
 ## Involved services
 
@@ -31,23 +31,29 @@ All services are orchestrated and scaled with `compose.yml`.
 
 ### Custom services
 
--   [ghcr.io/heussd/nats-news-analysis/feed-feeder](https://ghcr.io/heussd/nats-news-analysis/feed-feeder) - **Bash** - Feeds rss feed urls from a text file.
--   [ghcr.io/heussd/nats-news-analysis/article-feeder](https://ghcr.io/heussd/nats-news-analysis/article-feeder) - **Golang** - Feeds news article URLs from RSS feeds.
--   [ghcr.io/heussd/nats-news-analysis/news-feeder](https://ghcr.io/heussd/nats-news-analysis/news-feeder) - **Golang** - Retrieves news and feeds article content plus metadata.
--   [ghcr.io/heussd/nats-news-analysis/keyword-matcher](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher) - **Golang** - Matches against keywords list.
--   [ghcr.io/heussd/nats-news-analysis/nats-indexer](https://ghcr.io/heussd/nats-news-analysis/nats-indexer) - **Python** - Indexes news and their metadata.
--   [ghcr.io/heussd/nats-news-analysis/raindrop-integration](https://ghcr.io/heussd/nats-news-analysis/raindrop-integration) - **Golang** - Publishes matches on [raindrop.io](https://raindrop.io/).
+| Service                                                                                                       | Language | Description                                                                              |
+| ------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
+| [feed-feeder](https://ghcr.io/heussd/nats-news-analysis/feed-feeder)                                           | Golang   | Feeds rss feed urls from a text file.                                                      |
+| [article-feeder](https://ghcr.io/heussd/nats-news-analysis/article-feeder)                                     | Golang   | Feeds news article URLs from RSS feeds.                                                    |
+| [news-feeder](https://ghcr.io/heussd/nats-news-analysis/news-feeder)                                           | Golang   | Retrieves news and feeds article content plus metadata.                                    |
+| [keyword-matcher](https://ghcr.io/heussd/nats-news-analysis/keyword-matcher)                                   | Golang   | Matches against keywords list.                                                             |
+| [n-gram-analysis](https://ghcr.io/heussd/nats-news-analysis/n-gram-analysis)                                   | Golang   | Generates n-gram statistics of English news and stores them in a time series database.     |
+| [nats-indexer](https://ghcr.io/heussd/nats-news-analysis/nats-indexer)                                         | Python   | Indexes news and their metadata.                                                           |
+| [raindrop-integration](https://ghcr.io/heussd/nats-news-analysis/raindrop-integration)                         | Golang   | Publishes matches on [raindrop.io](https://raindrop.io/).                                  |
+| [defuddle-server](https://ghcr.io/heussd/defuddle-server)                                                      | Node     | Retrieves full text of web pages.                                                          |
+| [search-rest-server](https://ghcr.io/heussd/nats-news-analysis/search-rest-server)                             | Python   | Provides a REST API for querying the Azure AI Search index.                                |
+| [search-mcp-server](https://ghcr.io/heussd/nats-news-analysis/search-mcp-server)                               | Python   | Provides an MCP server for consuming the search index with an agent.                       |
 
 ### Third party services
 
--   [docker.io/heussd/fivefilters-full-text-rss](https://hub.docker.com/r/heussd/fivefilters-full-text-rss) - Retrieves full text of web pages.
--   [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
--   [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy.
--   [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus.
--   [Prometheus](https://prometheus.io/) - Metrics & monitoring.
--   [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation.
--   [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats.
--   [Watchtower](https://github.com/containrrr/watchtower) - Keep containers updated.
+- [docker.io/nats](https://hub.docker.com/_/nats) - Event queue, key-value store and deduplication.
+- [PostgreSQL](https://www.postgresql.org/) - Time series storage for n-gram statistics.
+- [NGINX](https://www.nginx.com/) - Simple load balancer / reverse proxy.
+- [Prometheus NATS Exporter](https://github.com/nats-io/prometheus-nats-exporter) - Make NATS metrics available to Prometheus.
+- [Prometheus](https://prometheus.io/) - Metrics & monitoring.
+- [Grafana Loki](https://grafana.com/oss/loki/) - Log aggregation.
+- [Grafana](https://grafana.com/grafana/) - Dashboard for metrics and stats.
+- [Watchtower](https://github.com/nicholas-fedor/watchtower) - Keep containers updated.
 
 ## Message queue for scaling
 
@@ -60,6 +66,10 @@ Instead of blocking the application with a single core keyword matching operatio
 ### One core per keyword matching
 
 ![](cpu-cores.png)
+
+## N-gram analysis
+
+English news articles are broken down into 1- to 4-grams (stopwords removed) and counted over time in a PostgreSQL time series database. The Jupyter notebooks in `notebooks/` query this database to visualise trends, news pulse, source landscape, language mix, phrase tracking and vocabulary growth.
 
 ## Observability
 

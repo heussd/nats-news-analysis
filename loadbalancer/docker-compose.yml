@@ -1,18 +1,18 @@
-version: '3.2'
 services:
-  fullfeedrss:
+  defuddle:
     scale: 2
-    image: "heussd/fivefilters-full-text-rss:latest"
+    image: ghcr.io/heussd/defuddle-server
     environment:
-      # Leave empty to disable admin section
-      - FTR_ADMIN_PASSWORD=
+      ALLOW_PRIVATE_NETWORKS: "false"
+    restart: always
+   
 
   loadbalancer:
       image: nginx
       volumes:
         - "./nginx.conf:/etc/nginx/nginx.conf"
       depends_on:
-          - fullfeedrss
+          - defuddle
       ports:
-          - '80:80'
+          - '8080:80'
 

@@ -38,17 +38,3 @@ type Keyword struct {
 	Id     string         `json:"id"`
 	Text   string         `json:"Text"` // The original regex text
 }
-
-type News struct {
-	Title    string `json:"title"`
-	Excerpt  string `json:"excerpt"`
-	Author   string `json:"author"`
-	Language string `json:"language"`
-	URL      string `json:"url"`
-	Content  string `json:"content"`
-	Date     string `json:"date"`
-}
-
-func (m News) GetUrl() string {
-	return m.URL
-}

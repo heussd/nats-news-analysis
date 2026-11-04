@@ -1,25 +1,24 @@
 services:
   feed-feeder:
-    profiles: ["disabled"]
+    profiles: [ "disabled" ]
   n-gram-analysis:
-    profiles: ["disabled"]
+    profiles: [ "disabled" ]
   article-feeder:
-    profiles: ["disabled"]
+    profiles: [ "disabled" ]
   news-feeder:
-    profiles: ["disabled"]
+    profiles: [ "disabled" ]
   keyword-matcher:
-    profiles: ["disabled"]
+    profiles: [ "disabled" ]
   raindrop-integration:
-    profiles: ["disabled"]
+    profiles: [ "disabled" ]
   watchtower:
-    profiles: ["disabled"]
+    profiles: [ "disabled" ]
   nats-indexer:
-    profiles: ["disabled"]
-  search-rest-service:
-    profiles: ["disabled"]
-  fullfeedrss:
-    ports:
-      - "55800:80"
+    profiles: [ "disabled" ]
+  search-mcp-server:
+    profiles: [ "disabled" ]
+  search-rest-server:
+    profiles: [ "disabled" ]
   devcontainer:
     build:
       context: ./golang/
@@ -27,6 +26,7 @@ services:
       target: devcontainer
     environment:
       - NATS_URL=nats-server
+      - DEFUDDLE_SERVER=http://loadbalancer:80
     env_file:
       - ./.env
     volumes:

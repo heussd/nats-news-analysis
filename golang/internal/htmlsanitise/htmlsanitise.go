@@ -11,7 +11,7 @@ import (
 func ExtractFields(news *model.News) string {
 	text := strings.Join([]string{
 		news.Title,
-		news.Excerpt,
+		news.Description,
 		news.Content,
 	}, " ")
 
