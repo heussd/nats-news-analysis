@@ -10,20 +10,25 @@ services:
             - './nats-persistence/:/data'
         command: '--jetstream --http_port 8222 --store_dir /data'
     defuddle:
-        scale: 2
         image: ghcr.io/heussd/defuddle-server
+        deploy:
+            replicas: 2
         environment:
             ALLOW_PRIVATE_NETWORKS: "false"
         restart: always
     feed-feeder:
         image: ghcr.io/heussd/nats-news-analysis/feed-feeder:latest
         restart: always
+        depends_on:
+            - nats-server
         environment:
-            - NATS_URL=http://nats-server:4222
+            - NATS_URL=nats://nats-server:4222
             - URLS_URL=${URLS_URL}
     article-feeder:
         image: ghcr.io/heussd/nats-news-analysis/article-feeder:latest
         restart: always
+        depends_on:
+            - nats-server
         deploy:
             replicas: 3
         environment:
@@ -31,6 +36,8 @@ services:
     news-feeder:
         image: ghcr.io/heussd/nats-news-analysis/news-feeder:latest
         restart: always
+        depends_on:
+            - nats-server
         deploy:
             replicas: 2
         environment:
@@ -39,6 +46,8 @@ services:
     keyword-matcher:
         image: ghcr.io/heussd/nats-news-analysis/keyword-matcher:latest
         restart: always
+        depends_on:
+            - nats-server
         deploy:
             replicas: 6
         environment:
@@ -50,6 +59,8 @@ services:
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
         restart: always
+        depends_on:
+            - nats-server
         environment:
             - NATS_URL=nats-server:4222
             - NATS_SUBJECT=match-urls
@@ -58,6 +69,8 @@ services:
     n-gram-analysis:
         image: ghcr.io/heussd/nats-news-analysis/n-gram-analysis:latest
         restart: always
+        depends_on:
+            - nats-server
         deploy:
             replicas: 0
         environment:
@@ -70,6 +83,8 @@ services:
     nats-indexer:
         image: ghcr.io/heussd/nats-news-analysis/nats-indexer:latest
         restart: always
+        depends_on:
+            - nats-server
         deploy:
             replicas: 1
         environment:
@@ -99,7 +114,8 @@ services:
             - 'AI_SEARCH_API_KEY=${AI_SEARCH_API_KEY}'
             - 'AI_SEARCH_API_VERSION=${AI_SEARCH_API_VERSION}'
     loadbalancer:
-        image: nginx
+        image: docker.io/nginx
+        restart: always
         volumes:
             - "./loadbalancer/nginx.conf:/etc/nginx/nginx.conf"
         depends_on:
@@ -112,5 +128,5 @@ services:
         container_name: watchtower
         restart: unless-stopped
         volumes:
-            - /run/podman/podman.sock:/var/run/docker.sock
+            - ${PODMAN_SOCKET:-/run/user/1000/podman/podman.sock}:/var/run/docker.sock # rootless podman socket; override PODMAN_SOCKET in .env
         command: --cleanup
