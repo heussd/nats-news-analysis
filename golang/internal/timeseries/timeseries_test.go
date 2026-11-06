@@ -29,9 +29,9 @@ func TestAddTimeSeriesData(t *testing.T) {
 
 func TestAddGenerated(t *testing.T) {
 	news := model.News{
-		Content: "This is a test news content for generating n-grams.",
-		URL:     "https://example.com/test-news",
-		Date:    "2224-06-01T00:00:00Z",
+		Content:       "This is a test news content for generating n-grams.",
+		URL:           "https://example.com/test-news",
+		DatePublished: "2224-06-01T00:00:00Z",
 	}
 	ngrams, err := ngrams.ParseAndGenerateStatistics(&news, 1, 3)
 	assert.NoError(t, err)
@@ -41,7 +41,7 @@ func TestAddGenerated(t *testing.T) {
 	err = AddTimeSeriesData(ngrams)
 	assert.NoError(t, err)
 
-	assert.NotEqual(t, news.Date, ngrams[0].Timestamp)
+	assert.NotEqual(t, news.DatePublished, ngrams[0].Timestamp)
 }
 
 func TestValidateTimestamp(t *testing.T) {

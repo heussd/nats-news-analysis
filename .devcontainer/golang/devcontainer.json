@@ -63,7 +63,7 @@
     },
     "containerEnv": {
         "GOROOT2": "./golang",
-        "FULLTEXTRSS_SERVER": "http://fullfeedrss:80"
+        "DEFUDDLE_SERVER": "http://loadbalancer"
     },
     "shutdownAction": "stopCompose"
 }

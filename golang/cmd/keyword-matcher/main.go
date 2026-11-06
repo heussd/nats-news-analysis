@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/heussd/nats-news-analysis/internal/htmlsanitise"
 	"github.com/heussd/nats-news-analysis/internal/keywords"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	queue "github.com/heussd/nats-news-analysis/internal/nats"
@@ -27,8 +27,7 @@ func main() {
 
 	err := queue.Subscribe(
 		func(news *model.News) {
-			text := htmlsanitise.ExtractFields(news)
-			text = htmlsanitise.Sanitize(text)
+			text := fmt.Sprintf("%s %s %s", news.Title, news.Description, news.ContentRawText)
 
 			matchingStart := time.Now()
 			var matched []model.Keyword

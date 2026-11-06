@@ -1,7 +1,6 @@
 package htmlsanitise
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -12,7 +11,6 @@ import (
 func TestSanitisation(t *testing.T) {
 	news := &model.News{
 		Title:   "Title",
-		Excerpt: "Excerpt",
 		Content: "<p>HELLO WORLD</p>",
 	}
 	outcome := ExtractFields(news)
@@ -21,7 +19,6 @@ func TestSanitisation(t *testing.T) {
 	assert.False(t, strings.Contains(outcome, "<p>"))
 	assert.False(t, strings.Contains(outcome, "</p>"))
 	assert.True(t, strings.Contains(outcome, "HELLO WORLD"))
-	assert.Equal(t, fmt.Sprintf("%s %s %s", news.Title, news.Excerpt, "HELLO WORLD"), outcome)
 }
 
 func TestSanitisationWithEmptyContentAndNoHTML(t *testing.T) {

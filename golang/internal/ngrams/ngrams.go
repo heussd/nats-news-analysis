@@ -8,7 +8,6 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/heussd/nats-news-analysis/internal/htmlsanitise"
 	"github.com/heussd/nats-news-analysis/internal/model"
 	"github.com/tsawler/prose/v3"
 )
@@ -88,9 +87,7 @@ func GenerateNGramStatistics(text string, minimumNGramSize int, maximumNGramSize
 }
 
 func ParseAndGenerateStatistics(news *model.News, minimumNGramSize int, maximumNGramSize int) (ngrams []NGram, err error) {
-	var text string
-	text = news.Content
-	text = htmlsanitise.Sanitize(text)
+	text := news.ContentRawText
 
 	doc, err := prose.NewDocument(text, prose.WithExtraction(false))
 	if err != nil {
@@ -152,7 +149,7 @@ func ParseAndGenerateStatistics(news *model.News, minimumNGramSize int, maximumN
 	ngrams = deduped
 
 	for i := range ngrams {
-		ngrams[i].Timestamp = clampToNow(news.Date)
+		ngrams[i].Timestamp = clampToNow(news.DatePublished)
 		ngrams[i].Source = news.URL
 		ngrams[i].Language = news.Language
 	}
