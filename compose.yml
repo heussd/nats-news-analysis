@@ -123,10 +123,3 @@ services:
         ports:
             - '8080:80'
 
-    watchtower:
-        image: docker.io/nickfedor/watchtower
-        container_name: watchtower
-        restart: unless-stopped
-        volumes:
-            - ${PODMAN_SOCKET:-/run/user/1000/podman/podman.sock}:/var/run/docker.sock # rootless podman socket; override PODMAN_SOCKET in .env
-        command: --cleanup
