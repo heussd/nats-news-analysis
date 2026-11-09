@@ -39,8 +39,8 @@ func main() {
 
 			if _, err := queue.Publish(
 				news,
-				queue.PublishSubject(
-					fmt.Sprintf("news.%s", langPostfix)),
+				queue.PublishSubject(fmt.Sprintf("news.%s", langPostfix)),
+				queue.MessageID(url),
 			); err != nil {
 				logger.Error().Err(err).Msg("Failed to publish news")
 			}

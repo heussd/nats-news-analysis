@@ -18,6 +18,10 @@ func firstMatch(matched []model.Keyword, err error) string {
 	return ""
 }
 
+func init() {
+	keywordsFileUrl = "https://raw.githubusercontent.com/heussd/nats-news-analysis/refs/heads/main/golang/internal/keywords/keywords.txt"
+}
+
 func TestLocalIT(t *testing.T) {
 	assert.Equal(t, true, hasMatch(Match("Peach")))
 	assert.Equal(t, false, hasMatch(Match("Pineapple")))

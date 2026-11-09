@@ -70,6 +70,12 @@ func PublishSubject(subject string) func(*NatsPublishOpts) {
 	}
 }
 
+func MessageID(messageID string) func(*NatsPublishOpts) {
+	return func(c *NatsPublishOpts) {
+		c.NatsMessageID = messageID
+	}
+}
+
 func StopAfterOneMessage() func(*NatsSubscribeOpts) {
 	return func(s *NatsSubscribeOpts) {
 		s.TerminateAfterOneMessage = true
