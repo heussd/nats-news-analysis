@@ -45,6 +45,7 @@ func main() {
 						Keywords: matched,
 					},
 					queue.PublishSubject(publishSubject),
+					queue.MessageID(news.URL),
 				)
 				if err != nil {
 					logger.Error().Err(err).Msg("Failed to publish match")
