@@ -55,7 +55,6 @@ func main() {
 					logger.Error().Err(err).Msg("Failed to publish match")
 				}
 			}
-
 			logger.Info().
 				Bool("match", liked).
 				Int("fulltext-length", len(text)).
