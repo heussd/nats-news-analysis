@@ -71,6 +71,7 @@ jobs:
                       news-feeder
                       n-gram-analysis
                       keyword-matcher
+                      like-model-matcher
                       raindrop-integration
                   push: true
                   set: |

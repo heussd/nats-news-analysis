@@ -14,7 +14,7 @@ import (
 
 var (
 	subscribeSubject = utils.GetEnv("NATS_SUBSCRIBE_SUBJECT", "news.*")
-	consumerName     = utils.GetEnv("NATS_CONSUMER", "default")
+	consumerName     = utils.GetEnv("NATS_CONSUMER", "keyword-matcher")
 	publishSubject   = utils.GetEnv("NATS_PUBLISH_SUBJECT", "match-urls")
 )
 

@@ -35,6 +35,12 @@ services:
             context: golang/.
             args:
                 - MAIN=keyword-matcher
+    like-model-matcher:
+        build:
+            <<: *build
+            context: golang/.
+            args:
+                - MAIN=like-model-matcher
     raindrop-integration:
         build:
             <<: *build

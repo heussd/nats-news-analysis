@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -16,7 +17,6 @@ func init() {
 }
 
 func Unmarshal(obj any, filename string) (err error) {
-
 	jsonFile, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -44,4 +44,13 @@ func RequireNotEmpty(value, name string) {
 	if len(value) == 0 {
 		panic(fmt.Sprintf("%s is empty", name))
 	}
+}
+
+func GetEnvFloat(value, fallback string) float64 {
+	valueFromEnv := GetEnv(value, fallback)
+	parsedValueFromEnv, err := strconv.ParseFloat(valueFromEnv, 64)
+	if err != nil {
+		panic(fmt.Sprintf("invalid float value %q: %v", valueFromEnv, err))
+	}
+	return parsedValueFromEnv
 }

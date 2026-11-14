@@ -56,6 +56,18 @@ services:
             - NATS_SUBSCRIBE_SUBJECT=news.*
             - NATS_CONSUMER=default
             - NATS_PUBLISH_SUBJECT=match-urls
+    like-model-matcher:
+        image: ghcr.io/heussd/nats-news-analysis/like-model-matcher:latest
+        restart: always
+        depends_on:
+            - nats-server
+        deploy:
+            replicas: 1
+        environment:
+            - NATS_URL=nats-server:4222
+            - NATS_SUBSCRIBE_SUBJECT=news.*
+            - NATS_PUBLISH_SUBJECT=match-urls
+
     raindrop-integration:
         image: ghcr.io/heussd/nats-news-analysis/raindrop-integration:latest
         restart: always
@@ -123,3 +135,6 @@ services:
         ports:
             - '8080:80'
 
+    like-model-server:
+        image: ghcr.io/heussd/like-model-server:latest
+        restart: always
